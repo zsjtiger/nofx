@@ -287,6 +287,7 @@ Use this to enable/disable an exchange or update API credentials. The "id" field
 				s.handleDeleteExchange)
 
 			// Telegram bot configuration
+			s.route(protected, "GET", "/equity/klines", "Daily bars for a stock (market=us_equity|cn_equity, symbol, limit)", s.handleGetEquityKlines)
 			s.routeWithSchema(protected, "GET", "/telegram", "Get Telegram bot configuration",
 				`Returns: {"bot_token":"<string>","model_id":"<EXACT id of configured AI model>","chat_id":"<bound Telegram chat id, empty if not bound>"}`,
 				s.handleGetTelegramConfig)

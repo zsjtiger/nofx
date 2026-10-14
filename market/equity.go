@@ -2,6 +2,7 @@ package market
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -68,6 +69,36 @@ func GetForMarket(symbol string, m types.Market) (*Data, error) {
 	// BuildDataFromKlines applies crypto symbol rules, so restore the equity symbol.
 	data.Symbol = canonical
 	return data, nil
+}
+
+// ErrNoEquitySource is returned when no daily-bar source is registered for a market,
+// which happens until a trader for that market has been created.
+var ErrNoEquitySource = errors.New("no daily bar source registered")
+
+// FetchEquityKlines returns up to limit daily bars for a stock in market m, oldest
+// first. The limit is clamped to the equity history window.
+func FetchEquityKlines(symbol string, m types.Market, limit int) ([]Kline, error) {
+	canonical, err := types.NormalizeSymbol(m, symbol)
+	if err != nil {
+		return nil, err
+	}
+	src := equitySource(m)
+	if src == nil {
+		return nil, fmt.Errorf("%w for %s", ErrNoEquitySource, m)
+	}
+	if limit <= 0 || limit > equityHistoryDays {
+		limit = equityHistoryDays
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	klines, err := src(ctx, canonical, limit)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get daily bars for %s: %w", canonical, err)
+	}
+	if len(klines) > limit {
+		klines = klines[len(klines)-limit:]
+	}
+	return klines, nil
 }
 
 // CNDailyKlineSource reads forward-adjusted daily bars for A-shares from Tushare.
