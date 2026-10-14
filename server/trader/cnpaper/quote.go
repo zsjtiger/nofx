@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"nofx/provider/tushare"
+	"crux/provider/tushare"
 )
 
 // TushareQuoter prices A-shares from Tushare daily data. Tushare has no free

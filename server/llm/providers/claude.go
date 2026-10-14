@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"nofx/llm"
+	"crux/llm"
 )
 
 const (

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"nofx/logger"
-	"nofx/market"
-	"nofx/security"
-	"nofx/store"
-	"nofx/trader/types"
+	"crux/logger"
+	"crux/market"
+	"crux/security"
+	"crux/store"
+	"crux/trader/types"
 )
 
 // StrategyEngine decides for one stock market. The market is set by WithMarket

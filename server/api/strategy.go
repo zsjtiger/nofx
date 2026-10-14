@@ -1,16 +1,16 @@
 package api
 
 import (
+	"crux/kernel"
+	"crux/llm"
+	_ "crux/llm/providers"
+	"crux/logger"
+	"crux/market"
+	"crux/store"
+	"crux/trader/types"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"nofx/kernel"
-	"nofx/llm"
-	_ "nofx/llm/providers"
-	"nofx/logger"
-	"nofx/market"
-	"nofx/store"
-	"nofx/trader/types"
 	"strings"
 	"time"
 

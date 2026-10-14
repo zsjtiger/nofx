@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"nofx/store"
+	"crux/store"
 
 	"github.com/gin-gonic/gin"
 )

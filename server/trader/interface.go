@@ -1,7 +1,7 @@
 package trader
 
 import (
-	"nofx/trader/types"
+	"crux/trader/types"
 )
 
 // Re-export types for backward compatibility

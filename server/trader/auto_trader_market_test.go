@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"nofx/kernel"
-	"nofx/trader/types"
+	"crux/kernel"
+	"crux/trader/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

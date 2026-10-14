@@ -3,7 +3,7 @@ package trader
 import (
 	"testing"
 
-	"nofx/store"
+	"crux/store"
 )
 
 func testTraderWithRisk(rc store.RiskControlConfig) *AutoTrader {

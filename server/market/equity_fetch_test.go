@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"nofx/trader/types"
+	"crux/trader/types"
 )
 
 func TestFetchEquityKlinesUsesCanonicalSymbolAndClamps(t *testing.T) {

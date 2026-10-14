@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"nofx/auth"
-	"nofx/config"
-	"nofx/logger"
-	"nofx/secrets"
-	"nofx/store"
+	"crux/auth"
+	"crux/config"
+	"crux/logger"
+	"crux/secrets"
+	"crux/store"
 
 	"golang.org/x/term"
 	"gorm.io/gorm"

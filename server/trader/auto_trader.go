@@ -1,13 +1,13 @@
 package trader
 
 import (
+	"crux/kernel"
+	"crux/llm"
+	_ "crux/llm/providers"
+	"crux/logger"
+	"crux/store"
+	"crux/trader/types"
 	"fmt"
-	"nofx/kernel"
-	"nofx/llm"
-	_ "nofx/llm/providers"
-	"nofx/logger"
-	"nofx/store"
-	"nofx/trader/types"
 	"sync"
 	"time"
 )

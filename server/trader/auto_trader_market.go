@@ -1,9 +1,9 @@
 package trader
 
 import (
+	"crux/kernel"
+	"crux/trader/types"
 	"fmt"
-	"nofx/kernel"
-	"nofx/trader/types"
 	"time"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"nofx/market"
+	"crux/market"
 )
 
 // BuildSystemPrompt returns the decision prompt for the engine's market. It

@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"nofx/market"
-	"nofx/trader/types"
+	"crux/market"
+	"crux/trader/types"
 
 	"github.com/gin-gonic/gin"
 )

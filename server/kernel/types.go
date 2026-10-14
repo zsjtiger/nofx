@@ -3,7 +3,7 @@ package kernel
 import (
 	"time"
 
-	"nofx/market"
+	"crux/market"
 )
 
 // Language is the language a strategy's text is written in.

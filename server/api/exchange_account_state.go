@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"nofx/logger"
-	"nofx/provider/tushare"
-	"nofx/store"
-	"nofx/trader"
-	"nofx/trader/alpacapaper"
-	"nofx/trader/cnpaper"
+	"crux/logger"
+	"crux/provider/tushare"
+	"crux/store"
+	"crux/trader"
+	"crux/trader/alpacapaper"
+	"crux/trader/cnpaper"
 
 	"github.com/gin-gonic/gin"
 )

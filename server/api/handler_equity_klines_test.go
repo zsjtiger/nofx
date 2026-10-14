@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"nofx/market"
-	"nofx/trader/types"
+	"crux/market"
+	"crux/trader/types"
 
 	"github.com/gin-gonic/gin"
 )

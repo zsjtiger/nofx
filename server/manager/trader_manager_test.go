@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"nofx/trader"
+	"crux/trader"
 )
 
 // newIdleTrader returns a zero-value AutoTrader. It is safe to store in the

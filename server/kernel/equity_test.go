@@ -3,8 +3,8 @@ package kernel
 import (
 	"testing"
 
-	"nofx/store"
-	"nofx/trader/types"
+	"crux/store"
+	"crux/trader/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

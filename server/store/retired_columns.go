@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"nofx/logger"
+	"crux/logger"
 )
 
 // retiredColumn is a column of the crypto-era schema that the stock version no

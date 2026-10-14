@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"nofx/kernel"
+	"crux/kernel"
 )
 
 // ValidateProtectionPrices checks the stop-loss and take-profit of an open order

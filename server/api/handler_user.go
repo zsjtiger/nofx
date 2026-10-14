@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"nofx/auth"
-	"nofx/logger"
-	"nofx/store"
+	"crux/auth"
+	"crux/logger"
+	"crux/store"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

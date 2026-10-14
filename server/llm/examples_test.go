@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"nofx/llm"
-	"nofx/llm/providers"
+	"crux/llm"
+	"crux/llm/providers"
 )
 
 // ============================================================

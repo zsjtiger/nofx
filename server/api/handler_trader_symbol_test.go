@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	"nofx/trader/types"
+	"crux/trader/types"
 )
 
 func TestIsSupportedTraderSymbol(t *testing.T) {

@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"nofx/provider/alpaca"
-	"nofx/provider/tushare"
-	"nofx/trader/types"
+	"crux/provider/alpaca"
+	"crux/provider/tushare"
+	"crux/trader/types"
 )
 
 // minEquityBars is the history needed for the indicators in BuildDataFromKlines.

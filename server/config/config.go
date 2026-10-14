@@ -1,9 +1,9 @@
 package config
 
 import (
+	"crux/llm"
+	"crux/telemetry"
 	"fmt"
-	"nofx/llm"
-	"nofx/telemetry"
 	"os"
 	"strconv"
 	"strings"

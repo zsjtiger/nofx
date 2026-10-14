@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"nofx/provider/tushare"
-	"nofx/trader/types"
+	"crux/provider/tushare"
+	"crux/trader/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

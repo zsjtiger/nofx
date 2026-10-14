@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"nofx/logger"
-	"nofx/store"
+	"crux/logger"
+	"crux/store"
 
 	"github.com/gin-gonic/gin"
 )

@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"nofx/trader/types"
+	"crux/trader/types"
 )
 
 const (

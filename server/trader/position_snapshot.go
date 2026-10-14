@@ -1,12 +1,12 @@
 package trader
 
 import (
+	"crux/logger"
+	"crux/market"
+	"crux/store"
+	"crux/store/position"
+	"crux/trader/types"
 	"fmt"
-	"nofx/logger"
-	"nofx/market"
-	"nofx/store"
-	"nofx/store/position"
-	"nofx/trader/types"
 	"time"
 )
 

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"nofx/store/position"
+	"crux/store/position"
 )
 
 func newReconcileTestStore(t *testing.T) *Store {

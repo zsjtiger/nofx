@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"nofx/llm"
-	"nofx/logger"
-	"nofx/market"
-	"nofx/store"
-	"nofx/trader/types"
+	"crux/llm"
+	"crux/logger"
+	"crux/market"
+	"crux/store"
+	"crux/trader/types"
 )
 
 // ============================================================================

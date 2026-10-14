@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"crux/logger"
 	"github.com/gin-gonic/gin"
-	"nofx/logger"
 )
 
 type APIErrorResponse struct {

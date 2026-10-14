@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"nofx/kernel"
+	"crux/kernel"
 )
 
 func TestActionPredicatesAndSides(t *testing.T) {

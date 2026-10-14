@@ -1,15 +1,15 @@
 package api
 
 import (
+	"crux/trader/types"
 	"fmt"
 	"net/http"
-	"nofx/trader/types"
 	"strings"
 	"time"
 
-	"nofx/logger"
-	"nofx/store"
-	"nofx/trader"
+	"crux/logger"
+	"crux/store"
+	"crux/trader"
 
 	"github.com/gin-gonic/gin"
 )

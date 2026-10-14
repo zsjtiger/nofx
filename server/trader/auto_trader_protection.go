@@ -1,9 +1,9 @@
 package trader
 
 import (
+	"crux/logger"
+	"crux/trader/types"
 	"fmt"
-	"nofx/logger"
-	"nofx/trader/types"
 	"strings"
 )
 

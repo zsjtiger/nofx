@@ -1,12 +1,12 @@
 package api
 
 import (
+	"crux/trader/types"
 	"net/http"
-	"nofx/trader/types"
 	"strconv"
 
-	"nofx/logger"
-	"nofx/market"
+	"crux/logger"
+	"crux/market"
 
 	"github.com/gin-gonic/gin"
 )

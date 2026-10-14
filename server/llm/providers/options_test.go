@@ -3,7 +3,7 @@ package providers
 import (
 	"testing"
 
-	"nofx/llm"
+	"crux/llm"
 )
 
 func TestOptionsWithDeepSeekClient(t *testing.T) {

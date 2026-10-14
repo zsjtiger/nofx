@@ -1,4 +1,4 @@
-module nofx
+module crux
 
 go 1.25.11
 

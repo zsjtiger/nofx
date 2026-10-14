@@ -1,7 +1,7 @@
 package trader
 
 import (
-	"nofx/store/position"
+	"crux/store/position"
 	"testing"
 	"time"
 

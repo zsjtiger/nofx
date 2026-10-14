@@ -1,9 +1,9 @@
 package api
 
 import (
+	"crux/config"
+	"crux/secrets"
 	"net/http"
-	"nofx/config"
-	"nofx/secrets"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"nofx/logger"
-	"nofx/market"
-	"nofx/provider/alpaca"
-	"nofx/provider/tushare"
-	"nofx/trader/alpacapaper"
-	"nofx/trader/cnpaper"
-	"nofx/trader/types"
+	"crux/logger"
+	"crux/market"
+	"crux/provider/alpaca"
+	"crux/provider/tushare"
+	"crux/trader/alpacapaper"
+	"crux/trader/cnpaper"
+	"crux/trader/types"
 )
 
 // DefaultCNPaperCash is the starting cash for A-share paper accounts, in CNY.

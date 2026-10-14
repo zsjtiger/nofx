@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	"nofx/config"
-	"nofx/logger"
-	"nofx/secrets"
-	"nofx/store"
+	"crux/config"
+	"crux/logger"
+	"crux/secrets"
+	"crux/store"
 
 	"github.com/gin-gonic/gin"
 )

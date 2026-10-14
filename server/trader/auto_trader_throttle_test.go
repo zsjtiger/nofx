@@ -1,8 +1,8 @@
 package trader
 
 import (
-	"nofx/kernel"
-	"nofx/trader/types"
+	"crux/kernel"
+	"crux/trader/types"
 	"strings"
 	"testing"
 	"time"

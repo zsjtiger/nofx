@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"nofx/logger"
-	"nofx/security"
+	"crux/logger"
+	"crux/security"
 )
 
 // Config client configuration (centralized management of all configurations)

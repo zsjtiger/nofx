@@ -3,10 +3,10 @@
 package store
 
 import (
+	"crux/logger"
+	"crux/store/position"
 	"database/sql"
 	"fmt"
-	"nofx/logger"
-	"nofx/store/position"
 	"sync"
 
 	"gorm.io/gorm"

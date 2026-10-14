@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"nofx/logger"
-	"nofx/store"
-	"nofx/trader/types"
+	"crux/logger"
+	"crux/store"
+	"crux/trader/types"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"nofx/logger"
-	"nofx/store"
-	"nofx/trader/types"
+	"crux/logger"
+	"crux/store"
+	"crux/trader/types"
 )
 
 // BuildEquitySystemPrompt is the decision prompt for stock markets. It states the

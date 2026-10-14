@@ -1,8 +1,8 @@
 package trader
 
 import (
+	"crux/store"
 	"errors"
-	"nofx/store"
 	"testing"
 )
 

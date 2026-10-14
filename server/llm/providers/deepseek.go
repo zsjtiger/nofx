@@ -3,7 +3,7 @@ package providers
 import (
 	"net/http"
 
-	"nofx/llm"
+	"crux/llm"
 )
 
 func init() {

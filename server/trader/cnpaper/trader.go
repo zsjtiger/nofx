@@ -15,8 +15,8 @@ import (
 	"sync"
 	"time"
 
-	"nofx/logger"
-	"nofx/trader/types"
+	"crux/logger"
+	"crux/trader/types"
 )
 
 // Quote is the latest market state for one A-share.
