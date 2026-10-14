@@ -2,6 +2,7 @@ package trader
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"nofx/logger"
 	"nofx/market"
@@ -13,6 +14,18 @@ import (
 
 // DefaultCNPaperCash is the starting cash for A-share paper accounts, in CNY.
 const DefaultCNPaperCash = 1_000_000
+
+// paperStatePath is where a cn_paper trader keeps its ledger, one file per trader.
+func paperStatePath(config AutoTraderConfig) string {
+	id := config.ID
+	if id == "" {
+		id = "default_trader"
+	}
+	return filepath.Join(PaperStateDir, id+".json")
+}
+
+// PaperStateDir holds paper-trading ledgers. It is relative to the working directory.
+var PaperStateDir = "data/paper"
 
 // newAlpacaPaperTrader builds a US-equity paper trader and registers its daily-bar source.
 func newAlpacaPaperTrader(config AutoTraderConfig) (Trader, error) {
@@ -38,7 +51,7 @@ func newCNPaperTrader(config AutoTraderConfig) (Trader, error) {
 		cash = DefaultCNPaperCash
 	}
 	client := tushare.NewClient(config.TushareToken)
-	t, err := cnpaper.New(cash, cnpaper.NewTushareQuoter(client))
+	t, err := cnpaper.NewPersistent(cash, cnpaper.NewTushareQuoter(client), paperStatePath(config))
 	if err != nil {
 		return nil, err
 	}

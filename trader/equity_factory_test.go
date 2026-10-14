@@ -1,6 +1,7 @@
 package trader
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,6 +18,10 @@ func TestNewAlpacaPaperTraderRequiresKeys(t *testing.T) {
 }
 
 func TestNewCNPaperTraderRequiresTokenAndUsesDefaultCash(t *testing.T) {
+	prev := PaperStateDir
+	PaperStateDir = t.TempDir()
+	t.Cleanup(func() { PaperStateDir = prev })
+
 	_, err := newCNPaperTrader(AutoTraderConfig{Name: "t"})
 	assert.ErrorContains(t, err, "tushare token")
 
@@ -26,11 +31,16 @@ func TestNewCNPaperTraderRequiresTokenAndUsesDefaultCash(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, float64(DefaultCNPaperCash), bal["totalWalletBalance"], "no positions means no quote calls")
 
-	tr, err = newCNPaperTrader(AutoTraderConfig{Name: "t", TushareToken: "tok", PaperInitialCash: 250000})
+	tr, err = newCNPaperTrader(AutoTraderConfig{ID: "second", Name: "t", TushareToken: "tok", PaperInitialCash: 250000})
 	require.NoError(t, err)
 	bal, err = tr.GetBalance()
 	require.NoError(t, err)
 	assert.Equal(t, 250000.0, bal["totalWalletBalance"])
+}
+
+func TestPaperStatePathIsPerTrader(t *testing.T) {
+	assert.Equal(t, filepath.Join(PaperStateDir, "default_trader.json"), paperStatePath(AutoTraderConfig{}))
+	assert.Equal(t, filepath.Join(PaperStateDir, "abc.json"), paperStatePath(AutoTraderConfig{ID: "abc"}))
 }
 
 func TestNewAutoTraderRejectsUnknownMarket(t *testing.T) {

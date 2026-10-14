@@ -6,12 +6,16 @@ package cnpaper
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
+	"nofx/logger"
 	"nofx/trader/types"
 )
 
@@ -68,10 +72,37 @@ type Trader struct {
 	fills     map[string]fill
 	closed    []types.ClosedPnLRecord
 	nextID    int
+	statePath string // when set, the ledger is saved here after every change
 }
 
-// New returns a paper trader with the given starting cash in CNY.
+// state is the persisted form of the ledger.
+type state struct {
+	Cash      float64                 `json:"cash"`
+	NextID    int                     `json:"next_id"`
+	Positions []positionState         `json:"positions"`
+	Fills     map[string]fill         `json:"fills"`
+	Closed    []types.ClosedPnLRecord `json:"closed"`
+}
+
+type positionState struct {
+	Symbol     string    `json:"symbol"`
+	Quantity   float64   `json:"quantity"`
+	AvgCost    float64   `json:"avg_cost"`
+	EntryTime  time.Time `json:"entry_time"`
+	StopLoss   float64   `json:"stop_loss"`
+	TakeProfit float64   `json:"take_profit"`
+}
+
+// New returns a paper trader with the given starting cash in CNY. The ledger
+// lives in memory only; use NewPersistent to keep it across restarts.
 func New(initialCash float64, quoter Quoter) (*Trader, error) {
+	return NewPersistent(initialCash, quoter, "")
+}
+
+// NewPersistent returns a paper trader whose ledger is saved to statePath after
+// every change. If the file exists, the saved ledger is loaded and initialCash
+// is ignored. An empty statePath keeps the ledger in memory only.
+func NewPersistent(initialCash float64, quoter Quoter, statePath string) (*Trader, error) {
 	if initialCash <= 0 {
 		return nil, fmt.Errorf("initial cash must be positive")
 	}
@@ -82,14 +113,84 @@ func New(initialCash float64, quoter Quoter) (*Trader, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Trader{
+	t := &Trader{
 		caps:      caps,
 		quoter:    quoter,
 		now:       time.Now,
 		cash:      initialCash,
 		positions: map[string]*position{},
 		fills:     map[string]fill{},
-	}, nil
+		statePath: statePath,
+	}
+	if statePath != "" {
+		if err := t.load(); err != nil {
+			return nil, err
+		}
+	}
+	return t, nil
+}
+
+// load restores the ledger from statePath when the file exists.
+func (t *Trader) load() error {
+	raw, err := os.ReadFile(t.statePath)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("read paper ledger: %w", err)
+	}
+	var st state
+	if err := json.Unmarshal(raw, &st); err != nil {
+		return fmt.Errorf("parse paper ledger %s: %w", t.statePath, err)
+	}
+	t.cash = st.Cash
+	t.nextID = st.NextID
+	t.closed = st.Closed
+	if st.Fills != nil {
+		t.fills = st.Fills
+	}
+	t.positions = make(map[string]*position, len(st.Positions))
+	for _, p := range st.Positions {
+		t.positions[p.Symbol] = &position{
+			symbol:     p.Symbol,
+			quantity:   p.Quantity,
+			avgCost:    p.AvgCost,
+			entryTime:  p.EntryTime,
+			stopLoss:   p.StopLoss,
+			takeProfit: p.TakeProfit,
+		}
+	}
+	return nil
+}
+
+// save writes the ledger atomically: a temp file is written, then renamed over the old one.
+func (t *Trader) save() error {
+	if t.statePath == "" {
+		return nil
+	}
+	st := state{Cash: t.cash, NextID: t.nextID, Fills: t.fills, Closed: t.closed}
+	for _, p := range t.positions {
+		st.Positions = append(st.Positions, positionState{
+			Symbol:     p.symbol,
+			Quantity:   p.quantity,
+			AvgCost:    p.avgCost,
+			EntryTime:  p.entryTime,
+			StopLoss:   p.stopLoss,
+			TakeProfit: p.takeProfit,
+		})
+	}
+	raw, err := json.MarshalIndent(st, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(t.statePath), 0o755); err != nil {
+		return err
+	}
+	tmp := t.statePath + ".tmp"
+	if err := os.WriteFile(tmp, raw, 0o600); err != nil {
+		return err
+	}
+	return os.Rename(tmp, t.statePath)
 }
 
 func (t *Trader) quote(symbol string) (Quote, error) {
@@ -192,6 +293,7 @@ func (t *Trader) OpenLong(symbol string, quantity float64, leverage int) (map[st
 	p.quantity += quantity
 	p.avgCost = totalCost / p.quantity
 	t.recordFill(id, symbol, "BUY", quantity, q.Price, fee)
+	t.persist()
 	return orderResult(id, q.Price, quantity), nil
 }
 
@@ -264,7 +366,16 @@ func (t *Trader) closeLocked(symbol string, quantity float64, reason string) (ma
 	if p.quantity <= 0 {
 		delete(t.positions, symbol)
 	}
+	t.persist()
 	return orderResult(id, q.Price, quantity), nil
+}
+
+// persist saves the ledger after a change. A failed write is logged, not returned,
+// because the trade has already happened in memory and the caller cannot undo it.
+func (t *Trader) persist() {
+	if err := t.save(); err != nil {
+		logger.Errorf("[cnpaper] failed to save paper ledger %s: %v", t.statePath, err)
+	}
 }
 
 // checkFillable blocks fills at the daily limits or while suspended.
@@ -331,6 +442,7 @@ func (t *Trader) SetStopLoss(symbol string, positionSide string, quantity, stopP
 		return fmt.Errorf("stop price must be positive")
 	}
 	p.stopLoss = stopPrice
+	t.persist()
 	return nil
 }
 
@@ -346,6 +458,7 @@ func (t *Trader) SetTakeProfit(symbol string, positionSide string, quantity, tak
 		return fmt.Errorf("take-profit price must be positive")
 	}
 	p.takeProfit = takeProfitPrice
+	t.persist()
 	return nil
 }
 
@@ -356,6 +469,7 @@ func (t *Trader) CancelStopLossOrders(symbol string) error {
 	if p, ok := t.positions[symbol]; ok {
 		p.stopLoss = 0
 	}
+	t.persist()
 	return nil
 }
 
@@ -366,6 +480,7 @@ func (t *Trader) CancelTakeProfitOrders(symbol string) error {
 	if p, ok := t.positions[symbol]; ok {
 		p.takeProfit = 0
 	}
+	t.persist()
 	return nil
 }
 
