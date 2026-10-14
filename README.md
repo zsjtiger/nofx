@@ -64,12 +64,7 @@ curl -fsSL https://raw.githubusercontent.com/NoFxAiOS/nofx/main/install.sh | bas
 
 Then open `http://127.0.0.1:3000`.
 
-**Docker**
-
-```bash
-curl -O https://raw.githubusercontent.com/NoFxAiOS/nofx/main/docker-compose.prod.yml
-docker compose -f docker-compose.prod.yml up -d
-```
+**Docker** — see [Docker deployment](#docker-deployment).
 
 **From source** — Go 1.25+ and Node.js 18+:
 
@@ -80,6 +75,147 @@ cd web && npm install && npm run dev  # frontend, in a second terminal
 ```
 
 **Update** — re-run the install script, or pull the new image and restart with `docker compose`.
+
+## Local development
+
+Requirements: Go 1.25.11 or newer (the toolchain named in `server/go.mod` is downloaded automatically if needed), Node.js 20 or newer, and Git.
+
+### 1. Create `.env`
+
+```bash
+cp .env.example .env
+```
+
+Set the three secrets. The server refuses to start without them.
+
+```bash
+# JWT_SECRET: any random string of at least 32 characters
+openssl rand -base64 48
+
+# DATA_ENCRYPTION_KEY: base64-encoded 32-byte key
+openssl rand -base64 32
+
+# RSA_PRIVATE_KEY: a PEM key on one line, with \n for each newline
+openssl genrsa -out key.pem 2048
+awk 'NF{printf "%s\\n",$0}' key.pem
+```
+
+Paste the output into `.env` as `JWT_SECRET=...`, `DATA_ENCRYPTION_KEY=...` and `RSA_PRIVATE_KEY=...`, then delete `key.pem`. `.env` is git-ignored; keep it that way.
+
+### 2. Start the backend
+
+```bash
+cd server
+go run main.go          # listens on http://localhost:8080
+```
+
+`main.go` reads `.env` from `server/` or from the repository root. The first start creates `data/data.db` (SQLite) in the directory it runs from. Equivalent Make target: `make run`.
+
+### 3. Start the frontend
+
+In a second terminal:
+
+```bash
+cd web
+npm install
+npm run dev             # http://127.0.0.1:3000
+```
+
+The Vite dev server proxies `/api` to `localhost:8080`, so keep the backend running.
+
+### 4. First use
+
+Open `http://127.0.0.1:3000`, register the first account (it becomes the owner), then follow [Quick start](#quick-start).
+
+### Common tasks
+
+| Task | Command |
+| :--- | :--- |
+| Run all tests | `make test` (or see [Testing](#testing)) |
+| Backend tests only | `cd server && go test ./...` |
+| Frontend type check and tests | `cd web && npx tsc --noEmit -p . && npx vitest run` |
+| Build the backend binary | `cd server && go build -o crux` (or `make build`) |
+| Build the frontend | `cd web && npm run build` (or `make build-frontend`) |
+| List Make targets | `make help` |
+
+### Switching the database
+
+SQLite is the default. To use PostgreSQL, set `DB_TYPE=postgres` and `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` and `DB_SSLMODE` in `.env`.
+
+On startup the server drops columns from the crypto-era schema. Before it changes a SQLite database, it writes a backup named `data.db.bak-<UTC timestamp>` next to the database.
+
+### Troubleshooting
+
+| Message | Fix |
+| :--- | :--- |
+| `config: JWT_SECRET is required` | Set `JWT_SECRET` in `.env` to a string of at least 32 characters. |
+| `failed to load RSA private key` | Set `RSA_PRIVATE_KEY` to one PEM line with `\n` escapes. |
+| `failed to load data encryption key` | Set `DATA_ENCRYPTION_KEY` to a base64 32-byte value. |
+| Web page shows API errors | Check that the backend is running on port 8080. |
+
+## Docker deployment
+
+Requirements: Docker with Compose v2 (`docker compose`).
+
+The stack has two services:
+
+| Service | Image | Host port | Role |
+| :--- | :--- | :--- | :--- |
+| `crux` | built from `deploy/docker/Dockerfile.backend` | `CRUX_BACKEND_PORT` (default 8080) | API and trading engine. Data is stored in `./data`. |
+| `crux-frontend` | built from `deploy/docker/Dockerfile.frontend` | `CRUX_FRONTEND_PORT` (default 3000) | Serves the web app and proxies `/api` to the backend. |
+
+### Quick start with `start.sh`
+
+```bash
+git clone <this repository> && cd nofx
+./start.sh start --build
+```
+
+On the first run, `start.sh` creates `.env` from `.env.example` and generates any missing `JWT_SECRET`, `DATA_ENCRYPTION_KEY` and `RSA_PRIVATE_KEY`. It then builds the images and starts both services. Open `http://127.0.0.1:3000`, or the port set in `CRUX_FRONTEND_PORT`.
+
+### Manual start
+
+```bash
+cp .env.example .env    # then set the three secrets as in Local development, step 1
+docker compose up -d --build
+docker compose ps       # both services should report healthy
+```
+
+### Managing the stack
+
+| Command | Effect |
+| :--- | :--- |
+| `./start.sh start` | Start the services. Add `--build` to rebuild the images. |
+| `./start.sh stop` | Stop the services. Data is kept. |
+| `./start.sh restart` | Restart the services. |
+| `./start.sh logs backend` | Follow backend logs. Use `frontend` for the web server, or omit it for both. |
+| `./start.sh status` | Show service status. |
+| `./start.sh update` | Pull the latest code and rebuild. |
+| `./start.sh clean` | **Destructive.** Removes the containers and data. |
+| `./start.sh regenerate-keys` | **Destructive.** Regenerates all encryption keys. |
+
+Equivalent Compose commands: `docker compose logs -f crux`, `docker compose down`.
+
+### Configuration
+
+Set these in `.env`:
+
+| Variable | Default | Purpose |
+| :--- | :--- | :--- |
+| `CRUX_BACKEND_PORT` | `8080` | Host port for the API. |
+| `CRUX_FRONTEND_PORT` | `3000` | Host port for the web app. |
+| `TZ` | `Asia/Shanghai` | Container timezone, read by `docker-compose.yml`. |
+
+The container uses `./data` for its database and paper-account state.
+
+### Backup and upgrade
+
+- **Back up:** stop the stack, then copy `.env` and the `data/` directory. Without the original `DATA_ENCRYPTION_KEY`, the stored API keys cannot be decrypted.
+- **Upgrade:** `git pull` and `./start.sh start --build`, or run `./start.sh update`.
+
+### Health checks
+
+The backend exposes `GET /api/health`. The frontend exposes `GET /health`. Both are used by the compose health checks.
 
 ## Architecture
 
