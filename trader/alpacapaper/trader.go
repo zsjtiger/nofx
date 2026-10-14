@@ -495,47 +495,4 @@ func (t *Trader) GetOpenOrders(symbol string) ([]types.OpenOrder, error) {
 	return out, nil
 }
 
-// PlaceLimitOrder submits a day limit order.
-func (t *Trader) PlaceLimitOrder(req *types.LimitOrderRequest) (*types.LimitOrderResult, error) {
-	if req == nil {
-		return nil, errors.New("limit order request is required")
-	}
-	side := strings.ToLower(req.Side)
-	if side != "buy" && side != "sell" {
-		return nil, fmt.Errorf("invalid side %q", req.Side)
-	}
-	body := map[string]any{
-		"symbol":        req.Symbol,
-		"qty":           formatQty(req.Quantity),
-		"side":          side,
-		"type":          "limit",
-		"limit_price":   strconv.FormatFloat(req.Price, 'f', 2, 64),
-		"time_in_force": "day",
-	}
-	var o apiOrder
-	if err := t.do(http.MethodPost, t.tradingURL, "/orders", nil, body, &o); err != nil {
-		return nil, err
-	}
-	return &types.LimitOrderResult{
-		OrderID:      o.ID,
-		ClientID:     req.ClientID,
-		Symbol:       req.Symbol,
-		Side:         req.Side,
-		PositionSide: req.PositionSide,
-		Price:        req.Price,
-		Quantity:     req.Quantity,
-		Status:       mapOrderStatus(o.Status),
-	}, nil
-}
-
-// CancelOrder cancels one order by ID.
-func (t *Trader) CancelOrder(symbol, orderID string) error {
-	return t.do(http.MethodDelete, t.tradingURL, "/orders/"+url.PathEscape(orderID), nil, nil, nil)
-}
-
-// GetOrderBook is not available from the Alpaca paper API.
-func (t *Trader) GetOrderBook(symbol string, depth int) (bids, asks [][]float64, err error) {
-	return nil, nil, errors.New("order book is not available for Alpaca paper trading")
-}
-
 var _ types.Trader = (*Trader)(nil)

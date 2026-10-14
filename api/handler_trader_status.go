@@ -222,15 +222,9 @@ func (s *Server) syncOrdersAfterManualClose(exchangeTrader trader.Trader, trader
 	return fmt.Errorf("manual close sync did not run")
 }
 
-// recordClosePositionOrder Record close position order to database (Lighter version - direct FILLED status)
+// recordClosePositionOrder records a manual close. Paper brokers fill synchronously,
+// so the order is written here with its fill.
 func (s *Server) recordClosePositionOrder(traderID, exchangeID, exchangeType, symbol, side string, quantity, exitPrice float64, result map[string]interface{}) {
-	// Skip for exchanges with OrderSync - let the background sync handle it to avoid duplicates
-	switch exchangeType {
-	case "binance", "lighter", "hyperliquid", "bybit", "okx", "bitget", "aster", "gate":
-		logger.Infof("  📝 Close order will be synced by OrderSync, skipping immediate record")
-		return
-	}
-
 	// Check if order was placed (skip if NO_POSITION)
 	status, _ := result["status"].(string)
 	if status == "NO_POSITION" {

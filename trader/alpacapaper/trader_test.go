@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	"nofx/trader/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -319,32 +318,10 @@ func TestGetOrderStatusMapsAlpacaStatus(t *testing.T) {
 	assert.Equal(t, "NEW", mapOrderStatus("accepted"))
 }
 
-func TestPlaceLimitOrder(t *testing.T) {
-	tr, f := newFake(t)
-	res, err := tr.PlaceLimitOrder(&types.LimitOrderRequest{Symbol: "AAPL", Side: "BUY", Quantity: 2, Price: 149.5})
-	require.NoError(t, err)
-	assert.Equal(t, "order-1", res.OrderID)
-	assert.Equal(t, "limit", f.last().Body["type"])
-	assert.Equal(t, "149.50", f.last().Body["limit_price"])
-
-	_, err = tr.PlaceLimitOrder(&types.LimitOrderRequest{Symbol: "AAPL", Side: "hold", Quantity: 1, Price: 1})
-	assert.Error(t, err)
-}
-
 func TestFormatQuantity(t *testing.T) {
 	assert.Equal(t, "2.5", formatQty(2.5))
 	assert.Equal(t, "3", formatQty(3))
 	assert.Equal(t, "0.000001", formatQty(0.0000012345))
-}
-
-func TestUnsupportedCallsReturnErrors(t *testing.T) {
-	tr, _ := newFake(t)
-	_, _, err := tr.GetOrderBook("AAPL", 5)
-	assert.Error(t, err)
-
-	closed, err := tr.GetClosedPnL(time.Time{}, 10)
-	assert.NoError(t, err)
-	assert.Empty(t, closed)
 }
 
 func TestOrderRejectionSurfaces(t *testing.T) {

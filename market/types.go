@@ -12,7 +12,6 @@ type Data struct {
 	CurrentMACD       float64
 	CurrentRSI7       float64
 	OpenInterest      *OIData
-	FundingRate       float64
 	IntradaySeries    *IntradayData
 	LongerTermContext *LongerTermData
 	// Multi-timeframe data (new)

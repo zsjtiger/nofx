@@ -66,7 +66,7 @@ type AutoTraderConfig struct {
 	AIModel    string // AI model: "qwen" or "deepseek"
 
 	// Trading platform selection
-	Exchange   string // Exchange type: "binance", "bybit", "okx", "bitget", "gate", "hyperliquid", "aster" or "lighter"
+	Exchange   string // Exchange type: "alpaca_paper" or "cn_paper"
 	ExchangeID string // Exchange account UUID (for multi-account support)
 	Market     string // Asset class: "crypto" (default), "us_equity" or "cn_equity"
 
@@ -369,7 +369,6 @@ func (at *AutoTrader) Run() error {
 
 	// Start Lighter order sync if using Lighter exchange
 
-	// Start Hyperliquid order sync if using Hyperliquid exchange
 
 	// Start Bybit order sync if using Bybit exchange
 

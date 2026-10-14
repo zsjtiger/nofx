@@ -225,7 +225,7 @@ Runs launch preflight first and returns 400 with {"error_key":"trader.start.pref
 				s.handleStartTrader)
 			s.routeWithSchema(protected, "GET", "/traders/:id/preflight", "Run launch readiness checks for a trader",
 				`:id = trader_id from GET /api/my-traders.
-Returns: {"ready":<bool>,"checks":[{"id":"ai_model|ai_wallet|ai_wallet_funds|strategy|exchange_config|exchange_account|exchange_funds","status":"ok|failed|warning|skipped","code":"<string>","message":"<string>","required":<number>,"actual":<number>,"asset":"<string>","address":"<string>"}],"min_ai_fee_usdc":<number>,"min_trading_usdc":<number>}`,
+Returns: {"ready":<bool>,"checks":[{"id":"ai_model|strategy|exchange_config|exchange_account|exchange_funds","status":"ok|failed|warning|skipped","code":"<string>","message":"<string>","required":<number>,"actual":<number>,"asset":"<string>","address":"<string>"}],"min_ai_fee_usdc":<number>,"min_trading_usdc":<number>}`,
 				s.handleTraderPreflight)
 			s.routeWithSchema(protected, "POST", "/launch/preflight", "Run launch readiness checks before creating a trader",
 				`Body: {"ai_model_id":"<EXACT id from GET /api/models>","exchange_id":"<EXACT id from GET /api/exchanges>","strategy_id":"<optional, EXACT id from GET /api/strategies>"}
@@ -242,7 +242,7 @@ Returns the same shape as GET /api/traders/:id/preflight. Use this before POST /
 				s.handleSyncBalance)
 			s.routeWithSchema(protected, "POST", "/traders/:id/close-position", "Force-close an open position",
 				`:id = trader_id from GET /api/my-traders.
-Body: {"symbol":"<string, e.g. BTCUSDT — must match an open position symbol from GET /api/positions>"}`,
+Body: {"symbol":"<string, e.g. AAPL or 600519.SH — must match an open position symbol from GET /api/positions>"}`,
 				s.handleClosePosition)
 			s.routeWithSchema(protected, "PUT", "/traders/:id/competition", "Toggle competition leaderboard visibility",
 				`:id = trader_id from GET /api/my-traders.
@@ -272,17 +272,14 @@ CRITICAL: Always use the "id" field for exchange_id. Do not use "exchange_type" 
 Use this endpoint to show balance and health in the exchange list without depending on traders.`,
 				s.handleGetExchangeAccountStates)
 			s.routeWithSchema(protected, "POST", "/exchanges", "Create a new exchange account",
-				`Body: {"exchange_type":"<string>","account_name":"<string, user label>","enabled":true,"api_key":"<string>","secret_key":"<string>","passphrase":"<string, required for okx/gate/kucoin>"}
-exchange_type values: "binance","bybit","okx","bitget","gate","kucoin","indodax" (CEX) | "hyperliquid","aster","lighter" (DEX)
+				`Body: {"exchange_type":"<string>","account_name":"<string, user label>","api_key":"<string>","secret_key":"<string>"}
+exchange_type values: "alpaca_paper" (US equities, Alpaca paper account) | "cn_paper" (A-shares, paper account priced from Tushare)
 Required fields by exchange:
-  binance/bybit/bitget/indodax: api_key + secret_key
-  okx/gate/kucoin: api_key + secret_key + passphrase
-  hyperliquid: hyperliquid_wallet_addr
-  aster: aster_user + aster_signer + aster_private_key
-  lighter: lighter_wallet_addr + lighter_private_key + lighter_api_key_private_key + lighter_api_key_index`,
+  alpaca_paper: api_key (Alpaca key ID) + secret_key
+  cn_paper: api_key (Tushare token)`,
 				s.handleCreateExchange)
 			s.routeWithSchema(protected, "PUT", "/exchanges", "Update an existing exchange account configuration",
-				`Body: {"id":"<EXACT id from GET /api/exchanges>","exchange_type":"<string>","account_name":"<string>","enabled":<bool>,"api_key":"<string>","secret_key":"<string>","passphrase":"<string, for okx/gate/kucoin>"}
+				`Body: {"id":"<EXACT id from GET /api/exchanges>","exchange_type":"<string>","account_name":"<string>","enabled":<bool>,"api_key":"<string>","secret_key":"<string>",}
 Use this to enable/disable an exchange or update API credentials. The "id" field is required to identify which exchange to update.`,
 				s.handleUpdateExchangeConfigs)
 			s.routeWithSchema(protected, "DELETE", "/exchanges/:id", "Delete exchange account",
@@ -322,44 +319,22 @@ CRITICAL: Always use the "id" field for strategy_id.`,
 				`Body: {"name":"<string, required>","description":"<string, optional>","lang":"zh|en","config":<StrategyConfig object, OPTIONAL — if omitted the system applies complete working defaults automatically (ai500 top coins, all standard indicators, standard risk control)>}
 IMPORTANT: For most use cases just POST {"name":"<name>"} — the backend fills everything in. Only include "config" when the user explicitly requests custom settings (specific coins, custom leverage, custom timeframes).
 
-StrategyConfig fields:
-  coin_source.source_type: "vergex_signal" (Claw402/Vergex direction board; default and recommended)
-  coin_source.vergex_limit: number of Claw402 candidates enriched with detail data (default 10, max 10)
-  coin_source.vergex_market_type: "all" for the full Claw402 board; detail calls use each ranking item's market_type
-  coin_source.vergex_chain: "hyperliquid"
-  indicators.klines.primary_timeframe: "1m"|"3m"|"5m"|"15m"|"1h"|"4h" — scalping→"5m", trend/swing→"1h"/"4h"
-  indicators.klines.primary_count: number of candles (20-100)
-  indicators.klines.enable_multi_timeframe: true for trend/swing analysis
-  indicators.klines.selected_timeframes: e.g. ["5m","15m","1h","4h"]
+StrategyConfig fields (stock markets; the market comes from the exchange account):
+  coin_source.source_type: "static" (the only supported source)
+  coin_source.static_coins: list of symbols, e.g. ["AAPL","MSFT"] for US or ["600519.SH","000001.SZ"] for A-shares
+  coin_source.excluded_coins: symbols to skip
+  indicators.klines.primary_timeframe: "1d" (daily bars are the only data available)
+  indicators.klines.primary_count: number of daily bars (10-120, default 60)
   indicators.enable_raw_klines: ALWAYS true (raw OHLCV required)
-  indicators.enable_ema: true for trend-following (EMA crossover signals)
-  indicators.enable_macd: true for trend + momentum confirmation
-  indicators.enable_rsi: true for overbought/oversold, divergence detection
-  indicators.enable_boll: true for volatility, range trading, breakout strategies
-  indicators.enable_atr: true for volatility measurement and stop-loss sizing
-  indicators.enable_volume: ALWAYS true
-  indicators.enable_oi: ALWAYS true (open interest data)
-  indicators.enable_funding_rate: ALWAYS true
-  indicators.ema_periods: [20,50] default, [9,21] for faster signals
-  indicators.rsi_periods: [7,14] default
-  indicators.atr_periods: [14] default
-  indicators.boll_periods: [20] default
-  indicators.nofxos_api_key: ALWAYS "cm_568c67eae410d912c54c"
-  indicators.enable_quant_data: ALWAYS true
-  indicators.enable_quant_oi: ALWAYS true
-  indicators.enable_quant_netflow: ALWAYS true
-  indicators.enable_oi_ranking: ALWAYS true, oi_ranking_duration:"1h", oi_ranking_limit:10
-  indicators.enable_netflow_ranking: ALWAYS true, netflow_ranking_duration:"1h", netflow_ranking_limit:10
-  indicators.enable_price_ranking: ALWAYS true, price_ranking_duration:"1h,4h,24h", price_ranking_limit:10
-  risk_control.max_positions: max simultaneous positions (1=single coin, 3=diversified, 5=wide)
-  risk_control.btc_eth_max_leverage: BTC/ETH leverage (conservative:3-5, moderate:5-10, aggressive:10-20)
-  risk_control.altcoin_max_leverage: altcoin leverage (usually lower than BTC leverage)
-  risk_control.btc_eth_max_position_value_ratio: max position size as multiple of equity (default 5)
-  risk_control.altcoin_max_position_value_ratio: default 1
-  risk_control.max_margin_usage: 0.5-0.95 (default 0.9 = use up to 90% margin)
-  risk_control.min_position_size: minimum USDT per trade (default 12)
-  risk_control.min_risk_reward_ratio: minimum profit/loss ratio required (default 3 = 3:1)
-  risk_control.min_confidence: minimum AI confidence to open position (default 75, range 60-90)
+  indicators.enable_ema / enable_macd / enable_rsi / enable_atr / enable_boll / enable_volume: indicator toggles
+  indicators.ema_periods: [20,50] default; rsi_periods: [14] default; atr_periods: [14]; boll_periods: [20]
+  indicators.external_data_sources: optional HTTP JSON feeds
+  risk_control.max_positions: max simultaneous positions (default 3, max 8)
+  risk_control.altcoin_max_position_value_ratio: max position value as a multiple of equity (default 1)
+  risk_control.max_margin_usage: 0.1-1.0 (default 1.0; stocks are not levered)
+  risk_control.min_position_size: minimum position value (default 1)
+  risk_control.min_risk_reward_ratio: minimum profit/loss ratio (default 2)
+  risk_control.min_confidence: minimum AI confidence to open a position (default 70, range 50-100)
   prompt_sections.role_definition: describe the AI's trading persona and goal
   prompt_sections.trading_frequency: guidelines on how often to trade
   prompt_sections.entry_standards: conditions that must align before entering a position

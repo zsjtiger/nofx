@@ -9,6 +9,7 @@ import (
 
 	"nofx/logger"
 	"nofx/store"
+	"nofx/trader/types"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -36,8 +37,6 @@ type CreateTraderRequest struct {
 	CustomPrompt         string `json:"custom_prompt"`
 	OverrideBasePrompt   bool   `json:"override_base_prompt"`
 	SystemPromptTemplate string `json:"system_prompt_template"` // System prompt template name
-	UseAI500             bool   `json:"use_ai500"`
-	UseOITop             bool   `json:"use_oi_top"`
 }
 
 // UpdateTraderRequest Update trader request
@@ -80,12 +79,14 @@ func validateTraderLeverageRange(btcEthLeverage, altcoinLeverage int) (string, s
 	return "", ""
 }
 
-func isSupportedTraderSymbol(symbol string) bool {
-	normalized := strings.ToUpper(strings.TrimSpace(symbol))
-	if normalized == "" {
+// isSupportedTraderSymbol reports whether a symbol is valid for the market.
+// An empty symbol is allowed, since the symbol list is optional.
+func isSupportedTraderSymbol(m types.Market, symbol string) bool {
+	if strings.TrimSpace(symbol) == "" {
 		return true
 	}
-	return strings.HasSuffix(normalized, "USDT") || strings.HasSuffix(normalized, "-USDC") || strings.HasPrefix(normalized, "XYZ:")
+	_, err := types.NormalizeSymbol(m, symbol)
+	return err == nil
 }
 
 func exchangeDisplayName(exchange *store.Exchange) string {
@@ -137,7 +138,7 @@ func validateExchangeForTraderCreation(exchange *store.Exchange) (string, string
 	}
 
 	switch exchange.ExchangeType {
-	case "binance", "bybit", "okx", "bitget", "gate", "kucoin", "hyperliquid", "aster", "lighter", "indodax", "alpaca_paper", "cn_paper":
+	case "alpaca_paper", "cn_paper":
 		return "", "", nil
 	default:
 		return formatTraderCreationError(
@@ -167,16 +168,10 @@ func classifyTraderSetupReason(reason string) (string, string) {
 	case strings.Contains(lower, "failed to parse private key"),
 		(strings.Contains(lower, "invalid hex character") && strings.Contains(lower, "private key")):
 		return "trader.reason.private_key_invalid", "The private key format is incorrect and the system cannot recognize it"
-	case strings.Contains(lower, "failed to initialize hyperliquid trader"):
-		return "trader.reason.hyperliquid_init_failed", "Hyperliquid account initialization failed; please confirm the private key, main wallet address, and Agent Wallet configuration are correct"
-	case strings.Contains(lower, "failed to initialize aster trader"):
-		return "trader.reason.aster_init_failed", "Aster account initialization failed; please confirm the Aster User, Signer, and private key are correct"
 	case strings.Contains(lower, "failed to get meta information"):
 		return "trader.reason.exchange_meta_unavailable", "The system cannot read account meta information from the exchange for now"
-	case strings.Contains(lower, "security check failed") && strings.Contains(lower, "agent wallet balance too high"):
-		return "trader.reason.hyperliquid_agent_balance_too_high", "The Hyperliquid Agent Wallet balance is too high and does not meet the current security requirements"
 	case strings.Contains(lower, "failed to initialize account"):
-		return "trader.reason.exchange_account_init_failed", "Exchange account initialization failed; please confirm the wallet address and API Key match"
+		return "trader.reason.exchange_account_init_failed", "Exchange account initialization failed; please confirm the API Key and secrettch"
 	case strings.Contains(lower, "unsupported trading platform"):
 		return "trader.reason.exchange_unsupported", "The current exchange type does not support bot initialization"
 	case strings.Contains(lower, "initial balance not set and unable to fetch balance from exchange"):
@@ -282,16 +277,20 @@ func (s *Server) handleCreateTrader(c *gin.Context) {
 		return
 	}
 
-	// Validate trading symbol format. Hyperliquid xyz dex markets (stocks,
-	// commodities, indices, FX, Pre-IPO) are user-facing SYMBOL-USDC pairs,
-	// while standard crypto/perp markets keep the legacy USDT suffix format.
+	// Validate trading symbol format against the market of the exchange account.
 	if req.TradingSymbols != "" {
+		m := types.MarketUSEquity
+		if ex, err := s.store.Exchange().GetByID(userID, req.ExchangeID); err == nil {
+			if parsed, perr := types.ParseMarket(store.MarketForExchangeType(ex.ExchangeType)); perr == nil {
+				m = parsed
+			}
+		}
 		symbols := strings.Split(req.TradingSymbols, ",")
 		for _, symbol := range symbols {
 			symbol = strings.TrimSpace(symbol)
-			if !isSupportedTraderSymbol(symbol) {
+			if !isSupportedTraderSymbol(m, symbol) {
 				SafeBadRequestWithDetails(c, traderCreationRequestError(
-					fmt.Sprintf("The trading pair %s has an invalid format; only USDT perpetuals or Hyperliquid XYZ USDC instruments (SYMBOL-USDC) are currently supported", symbol),
+					fmt.Sprintf("The trading pair %s is not a valid symbol for %s", symbol, m),
 				), "trader.create.invalid_symbol", mapStringPairs("symbol", symbol))
 				return
 			}
@@ -452,8 +451,6 @@ func (s *Server) handleCreateTrader(c *gin.Context) {
 		BTCETHLeverage:       btcEthLeverage,
 		AltcoinLeverage:      altcoinLeverage,
 		TradingSymbols:       req.TradingSymbols,
-		UseAI500:             req.UseAI500,
-		UseOITop:             req.UseOITop,
 		CustomPrompt:         req.CustomPrompt,
 		OverrideBasePrompt:   req.OverrideBasePrompt,
 		SystemPromptTemplate: systemPromptTemplate,

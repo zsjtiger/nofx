@@ -627,16 +627,6 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 		if err != nil {
 			return fmt.Errorf("failed to parse strategy config for trader %s: %w", traderCfg.Name, err)
 		}
-		if store.MigrateLegacyAutopilotRiskDefaults(strategyConfig) {
-			if err := strategy.SetConfig(strategyConfig); err != nil {
-				return fmt.Errorf("failed to serialize migrated strategy config for trader %s: %w", traderCfg.Name, err)
-			}
-			if err := st.Strategy().Update(strategy); err != nil {
-				logger.Warnf("⚠️ Failed to persist eight-position Autopilot migration for trader %s: %v", traderCfg.Name, err)
-			} else {
-				logger.Infof("✓ Migrated trader %s to the eight-position Autopilot book", traderCfg.Name)
-			}
-		}
 		strategyConfigRaw = strategy.Config
 		strategyConfig.ClampLimits()
 		// Sizing comes from the strategy's RiskControl. Autopilot separately

@@ -234,13 +234,7 @@ func (s *Server) createDefaultStrategies(userID string, lang string) error {
 		return func(c *store.StrategyConfig) {
 			c.CoinSource.SourceType = "static"
 			c.CoinSource.StaticCoins = append([]string(nil), symbols...)
-			c.CoinSource.UseAI500 = false
-			c.CoinSource.UseOITop = false
-			c.CoinSource.UseOILow = false
 			c.RiskControl.MaxPositions = 3
-			c.RiskControl.BTCETHMaxLeverage = 1
-			c.RiskControl.AltcoinMaxLeverage = 1
-			c.RiskControl.BTCETHMaxPositionValueRatio = 1.0
 			c.RiskControl.AltcoinMaxPositionValueRatio = 1.0
 			c.RiskControl.MaxMarginUsage = 1.0
 			c.RiskControl.MinConfidence = 70
@@ -340,22 +334,6 @@ func (s *Server) createDefaultStrategies(userID string, lang string) error {
 			var existing store.Strategy
 			query := tx.Where("user_id = ? AND name = ?", userID, strategy.Name).First(&existing)
 			if query.Error == nil {
-				config, err := existing.ParseConfig()
-				if err != nil {
-					return fmt.Errorf("failed to parse existing strategy %q: %w", strategy.Name, err)
-				}
-				if store.MigrateLegacyAutopilotRiskDefaults(config) {
-					config.ClampLimits()
-					if err := existing.SetConfig(config); err != nil {
-						return fmt.Errorf("failed to serialize migrated strategy %q: %w", strategy.Name, err)
-					}
-					if err := tx.Model(&store.Strategy{}).
-						Where("id = ? AND user_id = ?", existing.ID, userID).
-						Updates(map[string]interface{}{"config": existing.Config, "updated_at": time.Now().UTC()}).Error; err != nil {
-						return fmt.Errorf("failed to migrate strategy %q: %w", strategy.Name, err)
-					}
-					logger.Infof("  ✓ Migrated default strategy to eight-position Autopilot: %s", strategy.Name)
-				}
 				continue
 			}
 			if query.Error != gorm.ErrRecordNotFound {

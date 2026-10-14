@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,18 +34,8 @@ func (s *Server) handleStatisticsFull(c *gin.Context) {
 		return
 	}
 
-	// Aggregate across the trader's historical IDs exactly like the position
-	// history endpoint (handler_order.go). One-click "NOFX Autopilot" relaunches
-	// create fresh trader rows, but the closed positions stay under the old
-	// generated IDs (which embed userID + "claw402"). Without this, a freshly
-	// relaunched Autopilot would report only the current incarnation's trades
-	// instead of its real lifetime history.
-	userID := c.GetString("user_id")
 	traderIDs := []string{trader.GetID()}
 	var traderIDPatterns []string
-	if strings.EqualFold(strings.TrimSpace(trader.GetName()), "NOFX Autopilot") && strings.TrimSpace(userID) != "" {
-		traderIDPatterns = append(traderIDPatterns, "%_"+userID+"_claw402_%")
-	}
 
 	stats, err := store.Position().GetFullStatsByTraderFilters(traderIDs, traderIDPatterns, trader.GetInitialBalance())
 	if err != nil {

@@ -72,6 +72,5 @@ func getFreshPositions(tr types.Trader) ([]map[string]interface{}, error) {
 	return tr.GetPositions()
 }
 
-// enforceVergexSignalPolicy turns the current direction board into a strict
 // position state machine. Detail data can explain a signal, but cannot reverse
 // or prematurely exit it.

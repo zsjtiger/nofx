@@ -1,27 +1,33 @@
 package api
 
-import "testing"
+import (
+	"testing"
+
+	"nofx/trader/types"
+)
 
 func TestIsSupportedTraderSymbol(t *testing.T) {
 	tests := []struct {
 		name   string
+		market types.Market
 		symbol string
 		want   bool
 	}{
-		{name: "legacy USDT perp", symbol: "BTCUSDT", want: true},
-		{name: "legacy USDT perp lowercase", symbol: "ethusdt", want: true},
-		{name: "Hyperliquid xyz stock USDC pair", symbol: "SMSN-USDC", want: true},
-		{name: "Hyperliquid xyz commodity USDC pair", symbol: "GOLD-USDC", want: true},
-		{name: "legacy internal xyz prefix still accepted", symbol: "xyz:SMSN", want: true},
-		{name: "empty slot ignored", symbol: "  ", want: true},
-		{name: "bare stock without xyz prefix rejected", symbol: "SMSN", want: false},
-		{name: "unknown non-USDT pair rejected", symbol: "BTCUSD", want: false},
+		{name: "US ticker", market: types.MarketUSEquity, symbol: "AAPL", want: true},
+		{name: "US ticker lowercase", market: types.MarketUSEquity, symbol: "msft", want: true},
+		{name: "US class share", market: types.MarketUSEquity, symbol: "BRK.B", want: true},
+		{name: "US rejects A-share code", market: types.MarketUSEquity, symbol: "600519.SH", want: false},
+		{name: "A-share with suffix", market: types.MarketCNEquity, symbol: "600519.SH", want: true},
+		{name: "A-share bare code", market: types.MarketCNEquity, symbol: "000001", want: true},
+		{name: "A-share rejects US ticker", market: types.MarketCNEquity, symbol: "AAPL", want: false},
+		{name: "A-share rejects crypto pair", market: types.MarketCNEquity, symbol: "BTCUSDT", want: false},
+		{name: "empty slot ignored", market: types.MarketUSEquity, symbol: "  ", want: true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := isSupportedTraderSymbol(tt.symbol); got != tt.want {
-				t.Fatalf("isSupportedTraderSymbol(%q) = %v, want %v", tt.symbol, got, tt.want)
+			if got := isSupportedTraderSymbol(tt.market, tt.symbol); got != tt.want {
+				t.Fatalf("isSupportedTraderSymbol(%s, %q) = %v, want %v", tt.market, tt.symbol, got, tt.want)
 			}
 		})
 	}

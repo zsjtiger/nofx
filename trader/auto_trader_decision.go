@@ -103,16 +103,8 @@ func (at *AutoTrader) GetStatus() map[string]interface{} {
 		"ai_provider":     aiProvider,
 	}
 
-	// Add strategy info
-	if at.config.StrategyConfig != nil {
-		result["strategy_type"] = at.config.StrategyConfig.StrategyType
-		if at.config.StrategyConfig.GridConfig != nil {
-			result["grid_symbol"] = at.config.StrategyConfig.GridConfig.Symbol
-		}
-	}
-
-	// Runtime health: safe mode + AI fee wallet, so the dashboard can show a
-	// persistent banner instead of the user digging through logs.
+	// Runtime health: safe mode, so the dashboard can show a persistent banner
+	// instead of the user digging through logs.
 	safeMode, safeModeReason := at.safeModeState()
 	result["safe_mode"] = safeMode
 	at.runtimeHealthMu.RLock()
@@ -313,15 +305,7 @@ func (at *AutoTrader) recordAndConfirmOrder(orderResult map[string]interface{}, 
 	var actualQty = quantity
 	var fee float64
 
-	// Exchanges with OrderSync: Skip immediate order recording, let OrderSync handle it
-	// This ensures accurate data from GetTrades API and avoids duplicate records
-	switch at.exchange {
-	case "binance", "lighter", "hyperliquid", "bybit", "okx", "bitget", "aster", "kucoin", "gate":
-		logger.Infof("  📝 Order submitted (id: %s), will be synced by OrderSync", orderID)
-		return
-	}
-
-	// For exchanges without OrderSync (e.g., Binance): record immediately and poll for fill data
+	// Paper brokers fill synchronously, so the order is recorded here.
 	orderRecord := at.createOrderRecord(orderID, symbol, action, positionSide, quantity, price, leverage)
 	if err := at.store.Order().CreateOrder(orderRecord); err != nil {
 		logger.Infof("  ⚠️ Failed to record order: %v", err)

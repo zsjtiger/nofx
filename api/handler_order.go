@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"nofx/trader/types"
 	"strconv"
-	"strings"
 
 	"nofx/logger"
 	"nofx/market"
@@ -101,8 +100,6 @@ func (s *Server) handleGetTraderConfig(c *gin.Context) {
 		"custom_prompt":         traderConfig.CustomPrompt,
 		"override_base_prompt":  traderConfig.OverrideBasePrompt,
 		"is_cross_margin":       traderConfig.IsCrossMargin,
-		"use_ai500":             traderConfig.UseAI500,
-		"use_oi_top":            traderConfig.UseOITop,
 		"is_running":            isRunning,
 	}
 
@@ -222,13 +219,6 @@ func (s *Server) handlePositionHistory(c *gin.Context) {
 
 	traderIDs := []string{trader.GetID()}
 	var traderIDPatterns []string
-	if strings.EqualFold(strings.TrimSpace(trader.GetName()), "NOFX Autopilot") && strings.TrimSpace(userID) != "" {
-		// Older one-click launches created new Autopilot trader rows. When a row was
-		// deleted, its closed position records remained under the old generated ID.
-		// The generated Autopilot ID embeds userID + "claw402", so this safely
-		// restores same-user history continuity without joining deleted rows.
-		traderIDPatterns = append(traderIDPatterns, "%_"+userID+"_claw402_%")
-	}
 
 	// Get closed positions
 	positions, err := store.Position().GetClosedPositionsByTraderFilters(traderIDs, traderIDPatterns, limit)

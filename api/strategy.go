@@ -346,7 +346,7 @@ func (s *Server) handleUpdateStrategy(c *gin.Context) {
 	}
 
 	// Token overflow check — block save if all models exceed context limits
-	if mergedConfig.StrategyType == "" || mergedConfig.StrategyType == "ai_trading" {
+	{
 		estimate := mergedConfig.EstimateTokens()
 		allExceed := true
 		for _, ml := range estimate.ModelLimits {

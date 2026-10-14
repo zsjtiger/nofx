@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"nofx/trader/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -272,8 +271,6 @@ func TestSessionAndFormatHelpers(t *testing.T) {
 
 	assert.NoError(t, tr.SetLeverage("600519.SH", 1))
 	assert.Error(t, tr.SetLeverage("600519.SH", 2))
-	_, err = tr.PlaceLimitOrder(&types.LimitOrderRequest{})
-	assert.Error(t, err)
 }
 
 func TestNoPriceMeansNoFill(t *testing.T) {

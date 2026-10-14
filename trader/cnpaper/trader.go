@@ -552,21 +552,6 @@ func (t *Trader) GetOpenOrders(symbol string) ([]types.OpenOrder, error) {
 	return out, nil
 }
 
-// PlaceLimitOrder is not supported by the paper broker.
-func (t *Trader) PlaceLimitOrder(req *types.LimitOrderRequest) (*types.LimitOrderResult, error) {
-	return nil, errors.New("limit orders are not supported in A-share paper trading")
-}
-
-// CancelOrder is not supported: paper orders fill immediately.
-func (t *Trader) CancelOrder(symbol, orderID string) error {
-	return errors.New("paper orders fill immediately and cannot be cancelled")
-}
-
-// GetOrderBook is not supported by the paper broker.
-func (t *Trader) GetOrderBook(symbol string, depth int) (bids, asks [][]float64, err error) {
-	return nil, nil, errors.New("order book is not available in A-share paper trading")
-}
-
 func (t *Trader) newOrderID() string {
 	t.nextID++
 	return fmt.Sprintf("cnpaper-%d", t.nextID)

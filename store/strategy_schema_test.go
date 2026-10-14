@@ -3,181 +3,79 @@ package store
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestStrategyConfigMarshalSeparatesGridAndAIConfig(t *testing.T) {
-	cfg := GetDefaultStrategyConfig("zh")
-	cfg.StrategyType = "grid_trading"
-	cfg.GridConfig = &GridStrategyConfig{
-		Symbol:          "BTCUSDT",
-		GridCount:       20,
-		TotalInvestment: 200,
-		Leverage:        2,
-		UseATRBounds:    true,
-		ATRMultiplier:   2,
-		Distribution:    "uniform",
-	}
-
+func TestStrategyConfigMarshalUsesNestedAIConfig(t *testing.T) {
+	cfg := GetDefaultStrategyConfig("en")
 	raw, err := json.Marshal(cfg)
-	if err != nil {
-		t.Fatalf("marshal grid config: %v", err)
-	}
+	require.NoError(t, err)
 
-	var asMap map[string]any
-	if err := json.Unmarshal(raw, &asMap); err != nil {
-		t.Fatalf("unmarshal grid config map: %v", err)
-	}
-	if asMap["strategy_type"] != "grid_trading" {
-		t.Fatalf("expected grid strategy_type, got %v", asMap["strategy_type"])
-	}
-	if _, ok := asMap["grid_config"]; !ok {
-		t.Fatalf("expected grid_config in grid strategy JSON: %s", string(raw))
-	}
-	for _, key := range []string{"ai_config", "coin_source", "indicators", "risk_control", "prompt_sections", "custom_prompt"} {
-		if _, ok := asMap[key]; ok {
-			t.Fatalf("did not expect %s in grid strategy JSON: %s", key, string(raw))
-		}
-	}
+	var shape map[string]any
+	require.NoError(t, json.Unmarshal(raw, &shape))
+	assert.Contains(t, shape, "ai_config")
+	assert.NotContains(t, shape, "grid_config", "grid configuration is no longer part of the schema")
 }
 
-func TestStrategyConfigUnmarshalLegacyFlatAIConfig(t *testing.T) {
-	raw := []byte(`{
-		"strategy_type":"ai_trading",
-		"coin_source":{"source_type":"static","static_coins":["ETHUSDT"]},
-		"indicators":{"klines":{"primary_timeframe":"15m"}},
-		"risk_control":{"max_positions":2,"min_confidence":80},
-		"prompt_sections":{"entry_standards":"trend only"},
-		"custom_prompt":"prefer ETH"
-	}`)
-
+func TestStrategyConfigUnmarshalLegacyFlatLayout(t *testing.T) {
+	raw := `{"coin_source":{"source_type":"static","static_coins":["aapl","msft"]},"risk_control":{"max_positions":2},"prompt_sections":{"role_definition":"x"}}`
 	var cfg StrategyConfig
-	if err := json.Unmarshal(raw, &cfg); err != nil {
-		t.Fatalf("unmarshal legacy flat config: %v", err)
-	}
-	if cfg.CoinSource.SourceType != "static" || len(cfg.CoinSource.StaticCoins) != 1 || cfg.CoinSource.StaticCoins[0] != "ETHUSDT" {
-		t.Fatalf("legacy coin source was not normalized: %+v", cfg.CoinSource)
-	}
-	if cfg.Indicators.Klines.PrimaryTimeframe != "15m" {
-		t.Fatalf("legacy indicators were not normalized: %+v", cfg.Indicators.Klines)
-	}
-
-	normalized, err := json.Marshal(cfg)
-	if err != nil {
-		t.Fatalf("marshal normalized config: %v", err)
-	}
-	var asMap map[string]any
-	if err := json.Unmarshal(normalized, &asMap); err != nil {
-		t.Fatalf("unmarshal normalized map: %v", err)
-	}
-	if _, ok := asMap["ai_config"]; !ok {
-		t.Fatalf("expected ai_config after normalizing legacy config: %s", string(normalized))
-	}
-	if _, ok := asMap["coin_source"]; ok {
-		t.Fatalf("did not expect legacy coin_source at top level: %s", string(normalized))
-	}
+	require.NoError(t, json.Unmarshal([]byte(raw), &cfg))
+	assert.Equal(t, []string{"aapl", "msft"}, cfg.CoinSource.StaticCoins)
+	assert.Equal(t, 2, cfg.RiskControl.MaxPositions)
+	assert.Equal(t, "x", cfg.PromptSections.RoleDefinition)
 }
 
-func TestStrategyConfigNormalizeProductSchemaForLLMLabels(t *testing.T) {
-	cfg := GetDefaultStrategyConfig("zh")
-	patch := map[string]any{
-		"strategy_type": "AI strategy",
-		"ai_config": map[string]any{
-			"coin_source": map[string]any{
-				"source_type": "AI500",
-			},
-			"indicators": map[string]any{
-				"klines": map[string]any{
-					"primary_timeframe":   "1 minute",
-					"selected_timeframes": []any{`["1m"`, `"5m"`, `"15m"]`},
-				},
-			},
-		},
-	}
-
-	merged, err := MergeStrategyConfig(cfg, patch)
-	if err != nil {
-		t.Fatalf("merge strategy config: %v", err)
-	}
-	merged.ClampLimits()
-
-	if merged.StrategyType != "ai_trading" {
-		t.Fatalf("strategy_type = %q, want ai_trading", merged.StrategyType)
-	}
-	if merged.CoinSource.SourceType != "ai500" {
-		t.Fatalf("source_type = %q, want ai500", merged.CoinSource.SourceType)
-	}
-	if !merged.CoinSource.UseAI500 || merged.CoinSource.UseOITop || merged.CoinSource.UseOILow {
-		t.Fatalf("coin source flags not normalized: %+v", merged.CoinSource)
-	}
-	if merged.Indicators.Klines.PrimaryTimeframe != "1m" {
-		t.Fatalf("primary_timeframe = %q, want 1m", merged.Indicators.Klines.PrimaryTimeframe)
-	}
-	want := []string{"1m", "5m", "15m"}
-	if len(merged.Indicators.Klines.SelectedTimeframes) != len(want) {
-		t.Fatalf("selected_timeframes = %+v, want %+v", merged.Indicators.Klines.SelectedTimeframes, want)
-	}
-	for i := range want {
-		if merged.Indicators.Klines.SelectedTimeframes[i] != want[i] {
-			t.Fatalf("selected_timeframes = %+v, want %+v", merged.Indicators.Klines.SelectedTimeframes, want)
-		}
-	}
-}
-
-func TestStrategyConfigNormalizeProductSchemaForVergexSignal(t *testing.T) {
-	cfg := GetDefaultStrategyConfig("zh")
-	cfg.CoinSource = CoinSourceConfig{
-		SourceType: "Claw402 Vergex signal board",
-	}
-
+func TestStrategyConfigIgnoresRetiredFields(t *testing.T) {
+	raw := `{"ai_config":{"coin_source":{"source_type":"vergex_signal","use_ai500":true},"risk_control":{"btc_eth_max_leverage":10}}}`
+	var cfg StrategyConfig
+	require.NoError(t, json.Unmarshal([]byte(raw), &cfg))
 	cfg.NormalizeProductSchema()
-
-	if cfg.CoinSource.SourceType != "vergex_signal" {
-		t.Fatalf("source_type = %q, want vergex_signal", cfg.CoinSource.SourceType)
-	}
-	if cfg.CoinSource.VergexLimit != 10 {
-		t.Fatalf("vergex_limit = %d, want 10", cfg.CoinSource.VergexLimit)
-	}
-	if cfg.CoinSource.VergexMarketType != "all" {
-		t.Fatalf("vergex_market_type = %q, want all", cfg.CoinSource.VergexMarketType)
-	}
-	if cfg.CoinSource.VergexChain != "hyperliquid" {
-		t.Fatalf("vergex_chain = %q, want hyperliquid", cfg.CoinSource.VergexChain)
-	}
+	assert.Equal(t, "static", cfg.CoinSource.SourceType, "any retired source is coerced to a static list")
 }
 
-func TestStrategyConfigNormalizeProductSchemaForVergexSignalLimits(t *testing.T) {
-	t.Run("dynamic board keeps the one built-in strategy candidate depth", func(t *testing.T) {
-		cfg := GetDefaultStrategyConfig("zh")
-		cfg.CoinSource = CoinSourceConfig{
-			SourceType:    "vergex_signal",
-			VergexLimit:   1,
-			StaticCoins:   nil,
-			VergexChain:   "hyperliquid",
-			VergexLiqBand: "",
-		}
+func TestNormalizeProductSchemaCleansSymbols(t *testing.T) {
+	cfg := StrategyConfig{
+		CoinSource: CoinSourceConfig{StaticCoins: []string{" aapl ", "AAPL", "", "600519.sh"}},
+	}
+	cfg.NormalizeProductSchema()
+	assert.Equal(t, []string{"AAPL", "600519.SH"}, cfg.CoinSource.StaticCoins)
+	assert.Equal(t, "1d", cfg.Indicators.Klines.PrimaryTimeframe)
+	assert.Equal(t, []string{"1d"}, cfg.Indicators.Klines.SelectedTimeframes)
+	assert.Equal(t, "en", cfg.Language)
+}
 
-		cfg.NormalizeProductSchema()
+func TestClampLimitsBoundsRiskSettings(t *testing.T) {
+	cfg := GetDefaultStrategyConfig("en")
+	cfg.RiskControl.MaxPositions = 99
+	cfg.RiskControl.AltcoinMaxPositionValueRatio = 50
+	cfg.RiskControl.MinConfidence = 5
+	cfg.ClampLimits()
 
-		if cfg.CoinSource.VergexLimit != 10 {
-			t.Fatalf("vergex_limit = %d, want 10", cfg.CoinSource.VergexLimit)
-		}
+	assert.Equal(t, MaxPositions, cfg.RiskControl.MaxPositions)
+	assert.Equal(t, MaxPositionValue, cfg.RiskControl.AltcoinMaxPositionValueRatio)
+	assert.Equal(t, MinConfidence, cfg.RiskControl.MinConfidence)
+}
+
+func TestMergeStrategyConfigAppliesNestedPatch(t *testing.T) {
+	base := GetDefaultStrategyConfig("en")
+	merged, err := MergeStrategyConfig(base, map[string]any{
+		"ai_config": map[string]any{
+			"risk_control": map[string]any{"max_positions": 2},
+		},
 	})
+	require.NoError(t, err)
+	assert.Equal(t, 2, merged.RiskControl.MaxPositions)
+	assert.Equal(t, base.CoinSource.StaticCoins, merged.CoinSource.StaticCoins, "untouched fields keep their values")
+}
 
-	t.Run("manual picks keep selected count", func(t *testing.T) {
-		cfg := GetDefaultStrategyConfig("zh")
-		cfg.CoinSource = CoinSourceConfig{
-			SourceType:  "vergex_signal",
-			VergexLimit: 1,
-			StaticCoins: []string{"xyz:nvda", "XYZ:AAPL"},
-		}
-
-		cfg.NormalizeProductSchema()
-
-		if cfg.CoinSource.VergexLimit != 2 {
-			t.Fatalf("vergex_limit = %d, want 2", cfg.CoinSource.VergexLimit)
-		}
-		if got := cfg.CoinSource.StaticCoins; len(got) != 2 || got[0] != "XYZ:NVDA" || got[1] != "XYZ:AAPL" {
-			t.Fatalf("static_coins = %+v, want normalized xyz symbols", got)
-		}
-	})
+func TestStrategyClampWarningsReportChanges(t *testing.T) {
+	before := GetDefaultStrategyConfig("en")
+	after := before
+	after.RiskControl.MaxPositions = 1
+	warnings := StrategyClampWarnings(before, after, "en")
+	require.Len(t, warnings, 1)
+	assert.Contains(t, warnings[0], "max_positions")
 }

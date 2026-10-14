@@ -11,7 +11,6 @@ import (
 // AI fee wallet health statuses exposed via GetStatus as "ai_wallet_status".
 
 // cannot reliably pay for the next AI/data calls.
-const aiWalletLowThresholdUSDC = 1.0
 
 func (at *AutoTrader) checkTradingAuthorization() error {
 	checker, ok := at.trader.(interface{ CheckTradingAuthorization() error })
