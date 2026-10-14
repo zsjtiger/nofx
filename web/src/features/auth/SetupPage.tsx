@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
-import { useAuth } from '../../app/contexts/AuthContext'
+import { useAuth } from '../../shared/contexts/AuthContext'
 import { invalidateSystemConfig } from '../../shared/lib/config'
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 
 const labels = {
   zh: {

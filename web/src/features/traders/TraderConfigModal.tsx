@@ -6,7 +6,7 @@ import type {
   Strategy,
   TraderConfigData,
 } from '../../shared/types'
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { t } from '../../shared/i18n/translations'
 import { Pencil, Plus, X as IconX, Sparkles } from 'lucide-react'
 import { httpClient } from '../../shared/lib/httpClient'

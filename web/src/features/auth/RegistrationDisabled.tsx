@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { t } from '../../shared/i18n/translations'
 
 export function RegistrationDisabled() {

@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { api } from '../../../shared/lib/api'
-import { useAuth } from '../../../app/contexts/AuthContext'
+import { useAuth } from '../../../shared/contexts/AuthContext'
 import type { EquityMarket } from '../../../shared/lib/equityMarket'
 
 interface EquityKlineChartProps {

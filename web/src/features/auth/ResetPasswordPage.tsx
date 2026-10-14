@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { t } from '../../shared/i18n/translations'
-import { Header } from '../../app/chrome/Header'
+import { Header } from '../../shared/layout/Header'
 import { ArrowLeft, KeyRound, Copy, Check } from 'lucide-react'
 import { toast } from 'sonner'
 

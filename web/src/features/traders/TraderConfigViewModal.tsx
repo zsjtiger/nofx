@@ -1,6 +1,6 @@
 import type { TraderConfigData } from '../../shared/types'
 import { t } from '../../shared/i18n/translations'
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { PunkAvatar, getTraderAvatar } from '../../shared/ui/PunkAvatar'
 
 // Extract the name part after the last underscore

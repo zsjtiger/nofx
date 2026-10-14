@@ -10,9 +10,9 @@ import type {
   Exchange,
   ExchangeAccountState,
 } from '../../shared/types'
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { t } from '../../shared/i18n/translations'
-import { useAuth } from '../../app/contexts/AuthContext'
+import { useAuth } from '../../shared/contexts/AuthContext'
 import { TraderConfigModal } from './TraderConfigModal'
 import { DeepVoidBackground } from '../../shared/ui/DeepVoidBackground'
 import { ExchangeConfigModal } from './ExchangeConfigModal'

@@ -1,5 +1,5 @@
 import { Globe } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import type { Language } from '../../shared/i18n/translations'
 
 const languages: { code: Language; label: string }[] = [

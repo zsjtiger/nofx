@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LogIn, UserPlus, X, AlertTriangle, Terminal } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { DeepVoidBackground } from '../../shared/ui/DeepVoidBackground'
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { t } from '../../shared/i18n/translations'
 
 interface LoginRequiredOverlayProps {

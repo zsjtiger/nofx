@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { t, type Language } from '../../shared/i18n/translations'
 import { toast } from 'sonner'
-import { WebCryptoEnvironmentCheck } from '../../app/chrome/WebCryptoEnvironmentCheck'
+import { WebCryptoEnvironmentCheck } from '../../shared/layout/WebCryptoEnvironmentCheck'
 
 const DEFAULT_LENGTH = 64
 

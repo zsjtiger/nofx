@@ -11,8 +11,8 @@ import {
   Plus,
   Pencil,
 } from 'lucide-react'
-import { useAuth } from '../../app/contexts/AuthContext'
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useAuth } from '../../shared/contexts/AuthContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { api } from '../../shared/lib/api'
 import { ExchangeConfigModal } from '../traders/ExchangeConfigModal'
 import { TelegramConfigModal } from '../traders/TelegramConfigModal'

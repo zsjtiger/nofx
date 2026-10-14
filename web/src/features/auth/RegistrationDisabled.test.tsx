@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { RegistrationDisabled } from './RegistrationDisabled'
-import { LanguageProvider } from '../../app/contexts/LanguageContext'
+import { LanguageProvider } from '../../shared/contexts/LanguageContext'
 
 const mockNavigate = vi.fn()
 
@@ -15,8 +15,8 @@ vi.mock('react-router-dom', async () => {
 })
 
 // Mock useLanguage hook
-vi.mock('../../app/contexts/LanguageContext', async () => {
-  const actual = await vi.importActual('../../app/contexts/LanguageContext')
+vi.mock('../../shared/contexts/LanguageContext', async () => {
+  const actual = await vi.importActual('../../shared/contexts/LanguageContext')
   return {
     ...actual,
     useLanguage: () => ({ language: 'en' }),

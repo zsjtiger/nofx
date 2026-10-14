@@ -1,4 +1,4 @@
-import { useLanguage } from '../../app/contexts/LanguageContext'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { t } from '../../shared/i18n/translations'
 
 // Strategy Market — embedded vergex.trade/explore.

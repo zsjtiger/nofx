@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { LanguageProvider, useLanguage } from './LanguageContext'
-import { Header } from '../chrome/Header'
+import { Header } from '../layout/Header'
 
 function LanguageProbe() {
   const { language } = useLanguage()

@@ -1,17 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { flushSync } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import {
-  getSystemConfig,
-  invalidateSystemConfig,
-} from '../../shared/lib/config'
-import { reset401Flag, httpClient } from '../../shared/lib/httpClient'
-import {
-  getPostAuthPath,
-  setUserMode,
-  type UserMode,
-} from '../../shared/lib/onboarding'
-import { ROUTES } from '../router/paths'
+import { getSystemConfig, invalidateSystemConfig } from '../lib/config'
+import { reset401Flag, httpClient } from '../lib/httpClient'
+import { getPostAuthPath, setUserMode, type UserMode } from '../lib/onboarding'
+import { ROUTES } from '../../app/router/paths'
 import { useLanguage } from './LanguageContext'
 
 interface User {

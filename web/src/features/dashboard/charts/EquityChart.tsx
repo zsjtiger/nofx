@@ -11,8 +11,8 @@ import {
 } from 'recharts'
 import useSWR from 'swr'
 import { api } from '../../../shared/lib/api'
-import { useLanguage } from '../../../app/contexts/LanguageContext'
-import { useAuth } from '../../../app/contexts/AuthContext'
+import { useLanguage } from '../../../shared/contexts/LanguageContext'
+import { useAuth } from '../../../shared/contexts/AuthContext'
 import { t } from '../../../shared/i18n/translations'
 import {
   AlertTriangle,

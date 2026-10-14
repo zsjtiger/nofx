@@ -15,7 +15,7 @@ import useSWR from 'swr'
 import { api } from '../../../shared/lib/api'
 import type { CompetitionTraderData } from '../../../shared/types'
 import { getTraderColor } from '../../../shared/utils/traderColors'
-import { useLanguage } from '../../../app/contexts/LanguageContext'
+import { useLanguage } from '../../../shared/contexts/LanguageContext'
 import { t } from '../../../shared/i18n/translations'
 import { BarChart3, TrendingUp, TrendingDown, Zap } from 'lucide-react'
 

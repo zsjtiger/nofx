@@ -1,6 +1,6 @@
 import { useLanguage } from '../contexts/LanguageContext'
-import { t } from '../../shared/i18n/translations'
-import { Container } from '../../shared/ui/Container'
+import { t } from '../i18n/translations'
+import { Container } from '../ui/Container'
 
 interface HeaderProps {
   simple?: boolean // For login/register pages
