@@ -386,7 +386,10 @@ export function AppRoutes() {
     <>
       <LegacyHashRedirect />
       <Routes>
-        <Route path={ROUTES.home} element={<Navigate to={ROUTES.login} replace />} />
+        <Route
+          path={ROUTES.home}
+          element={<Navigate to={ROUTES.login} replace />}
+        />
         <Route path={ROUTES.login} element={<LoginPage />} />
         <Route path={ROUTES.register} element={<RegisterPage />} />
         <Route path={ROUTES.resetPassword} element={<ResetPasswordPage />} />
@@ -466,7 +469,13 @@ export function AppRoutes() {
         />
         <Route
           path={ROUTES.dashboard}
-          element={isAuthenticated ? <DashboardRoute /> : <Navigate to={ROUTES.login} replace />}
+          element={
+            isAuthenticated ? (
+              <DashboardRoute />
+            ) : (
+              <Navigate to={ROUTES.login} replace />
+            )
+          }
         />
         <Route
           path={ROUTES.strategy}

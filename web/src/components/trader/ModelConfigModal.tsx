@@ -6,10 +6,7 @@ import { t } from '../../i18n/translations'
 import { getModelIcon } from '../common/ModelIcons'
 import { ModelStepIndicator } from './ModelStepIndicator'
 import { ModelCard } from './ModelCard'
-import {
-  AI_PROVIDER_CONFIG,
-  getShortName,
-} from './model-constants'
+import { AI_PROVIDER_CONFIG, getShortName } from './model-constants'
 
 interface ModelConfigModalProps {
   allModels: AIModel[]
@@ -51,7 +48,9 @@ export function ModelConfigModal({
   // model name, has_api_key); the template from supportedModels only describes
   // the provider. When editing, the configured entry must win — both can share
   // the same id.
-  const configuredModel = configuredModels?.find((m) => m.id === selectedModelId)
+  const configuredModel = configuredModels?.find(
+    (m) => m.id === selectedModelId
+  )
   const templateModel = allModels?.find((m) => m.id === selectedModelId)
   const selectedModel = editingModelId
     ? configuredModel || templateModel
@@ -188,22 +187,21 @@ export function ModelConfigModal({
           )}
 
           {/* Step 1: Configure — any provider, including OpenAI-compatible endpoints */}
-          {(currentStep === 1 || editingModelId) &&
-            selectedModel && (
-              <StandardProviderConfigForm
-                selectedModel={selectedModel}
-                apiKey={apiKey}
-                baseUrl={baseUrl}
-                modelName={modelName}
-                editingModelId={editingModelId}
-                onApiKeyChange={setApiKey}
-                onBaseUrlChange={setBaseUrl}
-                onModelNameChange={setModelName}
-                onBack={handleBack}
-                onSubmit={handleSubmit}
-                language={language}
-              />
-            )}
+          {(currentStep === 1 || editingModelId) && selectedModel && (
+            <StandardProviderConfigForm
+              selectedModel={selectedModel}
+              apiKey={apiKey}
+              baseUrl={baseUrl}
+              modelName={modelName}
+              editingModelId={editingModelId}
+              onApiKeyChange={setApiKey}
+              onBaseUrlChange={setBaseUrl}
+              onModelNameChange={setModelName}
+              onBack={handleBack}
+              onSubmit={handleSubmit}
+              language={language}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -231,13 +229,9 @@ function ModelSelectionStep({
         {t('modelConfig.chooseProvider', language)}
       </div>
 
-
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
         {availableModels
-          .filter(
-            (m) =>
-              !m.provider?.startsWith('blockrun')
-          )
+          .filter((m) => !m.provider?.startsWith('blockrun'))
           .map((model) => (
             <ModelCard
               key={model.id}
@@ -358,7 +352,9 @@ function StandardProviderConfigForm({
           }}
         >
           Current model key status:{' '}
-          {selectedModel.has_api_key ? 'API Key configured' : 'API Key not configured'}
+          {selectedModel.has_api_key
+            ? 'API Key configured'
+            : 'API Key not configured'}
         </div>
       )}
 
@@ -404,38 +400,38 @@ function StandardProviderConfigForm({
 
       {/* Custom Base URL */}
       <div className="space-y-2">
-          <label
-            className="flex items-center gap-2 text-sm font-semibold"
-            style={{ color: '#1A1813' }}
+        <label
+          className="flex items-center gap-2 text-sm font-semibold"
+          style={{ color: '#1A1813' }}
+        >
+          <svg
+            className="w-4 h-4"
+            style={{ color: '#E0483B' }}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-4 h-4"
-              style={{ color: '#E0483B' }}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-              />
-            </svg>
-            {t('customBaseURL', language)}
-          </label>
-          <input
-            type="url"
-            value={baseUrl}
-            onChange={(e) => onBaseUrlChange(e.target.value)}
-            placeholder={t('customBaseURLPlaceholder', language)}
-            className="w-full px-4 py-3 rounded-xl"
-            style={{
-              background: '#F1ECE2',
-              border: '1px solid rgba(26,24,19,0.14)',
-              color: '#1A1813',
-            }}
-          />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+            />
+          </svg>
+          {t('customBaseURL', language)}
+        </label>
+        <input
+          type="url"
+          value={baseUrl}
+          onChange={(e) => onBaseUrlChange(e.target.value)}
+          placeholder={t('customBaseURLPlaceholder', language)}
+          className="w-full px-4 py-3 rounded-xl"
+          style={{
+            background: '#F1ECE2',
+            border: '1px solid rgba(26,24,19,0.14)',
+            color: '#1A1813',
+          }}
+        />
         <div className="text-xs" style={{ color: '#8A8478' }}>
           {t('leaveBlankForDefault', language)}
         </div>
@@ -443,38 +439,38 @@ function StandardProviderConfigForm({
 
       {/* Custom Model Name */}
       <div className="space-y-2">
-          <label
-            className="flex items-center gap-2 text-sm font-semibold"
-            style={{ color: '#1A1813' }}
+        <label
+          className="flex items-center gap-2 text-sm font-semibold"
+          style={{ color: '#1A1813' }}
+        >
+          <svg
+            className="w-4 h-4"
+            style={{ color: '#E0483B' }}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-4 h-4"
-              style={{ color: '#E0483B' }}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-              />
-            </svg>
-            {t('customModelName', language)}
-          </label>
-          <input
-            type="text"
-            value={modelName}
-            onChange={(e) => onModelNameChange(e.target.value)}
-            placeholder={t('customModelNamePlaceholder', language)}
-            className="w-full px-4 py-3 rounded-xl"
-            style={{
-              background: '#F1ECE2',
-              border: '1px solid rgba(26,24,19,0.14)',
-              color: '#1A1813',
-            }}
-          />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+            />
+          </svg>
+          {t('customModelName', language)}
+        </label>
+        <input
+          type="text"
+          value={modelName}
+          onChange={(e) => onModelNameChange(e.target.value)}
+          placeholder={t('customModelNamePlaceholder', language)}
+          className="w-full px-4 py-3 rounded-xl"
+          style={{
+            background: '#F1ECE2',
+            border: '1px solid rgba(26,24,19,0.14)',
+            color: '#1A1813',
+          }}
+        />
         <div className="text-xs" style={{ color: '#8A8478' }}>
           {t('leaveBlankForDefaultModel', language)}
         </div>
@@ -518,8 +514,7 @@ function StandardProviderConfigForm({
           type="submit"
           disabled={
             !selectedModel ||
-            (!apiKey.trim() &&
-              !(editingModelId && selectedModel.has_api_key))
+            (!apiKey.trim() && !(editingModelId && selectedModel.has_api_key))
           }
           className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ background: '#E0483B', color: '#fff' }}

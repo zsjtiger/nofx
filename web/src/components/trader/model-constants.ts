@@ -49,4 +49,3 @@ export function getExchangeDisplayName(
     ? `${typeName} - ${exchange.account_name}`
     : typeName
 }
-

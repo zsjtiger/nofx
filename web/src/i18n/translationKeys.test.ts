@@ -9,7 +9,10 @@ function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const full = join(dir, name)
     if (statSync(full).isDirectory()) return walk(full)
-    return /\.(ts|tsx)$/.test(name) && !name.endsWith('.test.ts') && !name.endsWith('.test.tsx') && name !== 'translations.ts'
+    return /\.(ts|tsx)$/.test(name) &&
+      !name.endsWith('.test.ts') &&
+      !name.endsWith('.test.tsx') &&
+      name !== 'translations.ts'
       ? [full]
       : []
   })
@@ -18,7 +21,8 @@ function walk(dir: string): string[] {
 function hasKey(root: unknown, dotted: string): boolean {
   let value: any = root
   for (const part of dotted.split('.')) {
-    if (value == null || typeof value !== 'object' || !(part in value)) return false
+    if (value == null || typeof value !== 'object' || !(part in value))
+      return false
     value = value[part]
   }
   return typeof value === 'string'
@@ -33,14 +37,20 @@ describe('translation keys', () => {
       const text = readFileSync(file, 'utf8')
       for (const match of text.matchAll(pattern)) {
         const key = match[1]
-        if (!hasKey(translations.en, key)) missing.add(`${key} (${file.replace(srcDir, 'src')})`)
+        if (!hasKey(translations.en, key))
+          missing.add(`${key} (${file.replace(srcDir, 'src')})`)
       }
     }
     expect([...missing]).toEqual([])
   })
 
   it('the four keys that were referenced without a translation now resolve', () => {
-    for (const key of ['leadPnL', 'loadingChartData', 'loadingError', 'loggingIn']) {
+    for (const key of [
+      'leadPnL',
+      'loadingChartData',
+      'loadingError',
+      'loggingIn',
+    ]) {
       expect(hasKey(translations.en, key)).toBe(true)
       expect(hasKey(translations.zh, key)).toBe(true)
       expect(hasKey(translations.id, key)).toBe(true)

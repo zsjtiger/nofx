@@ -11,7 +11,6 @@ import type {
 import { API_BASE, httpClient } from './helpers'
 
 export const dataApi = {
-
   async getStatus(traderId?: string, silent?: boolean): Promise<SystemStatus> {
     const url = traderId
       ? `${API_BASE}/status?trader_id=${traderId}`
@@ -96,9 +95,23 @@ export const dataApi = {
     symbol: string,
     limit = 120,
     silent?: boolean
-  ): Promise<{ market: string; symbol: string; klines: { openTime: number; open: number; high: number; low: number; close: number; volume: number }[] }> {
+  ): Promise<{
+    market: string
+    symbol: string
+    klines: {
+      openTime: number
+      open: number
+      high: number
+      low: number
+      close: number
+      volume: number
+    }[]
+  }> {
     const params = new URLSearchParams({ market, symbol, limit: String(limit) })
-    const result = await httpClient.request<any>(`${API_BASE}/equity/klines?${params}`, { silent })
+    const result = await httpClient.request<any>(
+      `${API_BASE}/equity/klines?${params}`,
+      { silent }
+    )
     if (!result.success) throw new Error('Failed to fetch daily bars')
     return result.data!
   },

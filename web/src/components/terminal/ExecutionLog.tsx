@@ -53,8 +53,14 @@ type LogTone = 'ok' | 'warn' | 'risk' | 'info'
 // Classify an execution-log line into a tone for color-coding.
 function logTone(line: string): LogTone {
   const s = line.toLowerCase()
-  if (s.includes('succeed') || s.includes('success') || line.includes('✓')) return 'ok'
-  if (s.includes('throttle') || s.includes('re-entry') || s.includes('cooldown') || s.includes('blocked'))
+  if (s.includes('succeed') || s.includes('success') || line.includes('✓'))
+    return 'ok'
+  if (
+    s.includes('throttle') ||
+    s.includes('re-entry') ||
+    s.includes('cooldown') ||
+    s.includes('blocked')
+  )
     return 'warn'
   if (
     s.includes('risk') ||
@@ -75,7 +81,12 @@ const TONE_COLOR: Record<LogTone, string> = {
   risk: 'var(--tm-dn)',
   info: 'var(--tm-ink-2)',
 }
-const TONE_GLYPH: Record<LogTone, string> = { ok: '✓', warn: '⚠', risk: '❌', info: '·' }
+const TONE_GLYPH: Record<LogTone, string> = {
+  ok: '✓',
+  warn: '⚠',
+  risk: '❌',
+  info: '·',
+}
 
 /**
  * Tidy a verbose execution-log string to its gist without fabricating data.
@@ -86,14 +97,19 @@ const TONE_GLYPH: Record<LogTone, string> = { ok: '✓', warn: '⚠', risk: '❌
 function cleanLog(raw: string): string {
   let s = raw.replace(/^[\s└>•·]*[✓✗⚠❌]?\s*/, '').trim()
 
-  const throttle = s.match(/closed\s+([0-9smhd.]+)\s+ago;\s*wait\s+([0-9smhd.]+)/i)
+  const throttle = s.match(
+    /closed\s+([0-9smhd.]+)\s+ago;\s*wait\s+([0-9smhd.]+)/i
+  )
   if (throttle) {
     const ago = throttle[1].replace(/(\d)0s$/, '$1').replace(/0s$/, '')
     const wait = throttle[2].replace(/(\d)0s$/, '$1').replace(/0s$/, '')
     return `throttle · closed ${ago} ago, wait ${wait}`
   }
   // drop a redundant leading "SYMBOL action" prefix when present
-  s = s.replace(/^[A-Z0-9:_-]{2,12}\s+(open_long|open_short|close_long|close_short)\s+/i, '')
+  s = s.replace(
+    /^[A-Z0-9:_-]{2,12}\s+(open_long|open_short|close_long|close_short)\s+/i,
+    ''
+  )
   return formatRequestError(s)
 }
 
@@ -112,11 +128,23 @@ export function ExecutionLog({ decisions, height = 440 }: ExecutionLogProps) {
   return (
     <div style={{ fontFamily: 'var(--tm-mono)' }}>
       {/* header */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 2 }}>
-        <span className="tm-px" style={{ fontSize: 11 }}>Execution log</span>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 8,
+          marginBottom: 2,
+        }}
+      >
+        <span className="tm-px" style={{ fontSize: 11 }}>
+          Execution log
+        </span>
         <span
           className="tm-sc"
-          style={{ marginLeft: 'auto', color: cycles.length ? 'var(--tm-up)' : 'var(--tm-muted)' }}
+          style={{
+            marginLeft: 'auto',
+            color: cycles.length ? 'var(--tm-up)' : 'var(--tm-muted)',
+          }}
         >
           {cycles.length ? `${cycles.length} cyc` : '—'}
         </span>
@@ -128,7 +156,13 @@ export function ExecutionLog({ decisions, height = 440 }: ExecutionLogProps) {
       {/* legend */}
       <div
         className="tm-sc"
-        style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 6, fontSize: 9 }}
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 12,
+          marginBottom: 6,
+          fontSize: 9,
+        }}
       >
         <Legend glyph="✓" c="var(--tm-up)" label="ok" />
         <Legend glyph="⚠" c={C_AMBER} label="throttle" />
@@ -138,7 +172,9 @@ export function ExecutionLog({ decisions, height = 440 }: ExecutionLogProps) {
       <div className="tm-hair" style={{ marginBottom: 0 }} />
 
       {!cycles.length ? (
-        <div className="tm-sc" style={{ padding: '16px 0' }}>No execution events yet.</div>
+        <div className="tm-sc" style={{ padding: '16px 0' }}>
+          No execution events yet.
+        </div>
       ) : (
         <div
           style={{
@@ -158,7 +194,15 @@ export function ExecutionLog({ decisions, height = 440 }: ExecutionLogProps) {
   )
 }
 
-function Legend({ glyph, c, label }: { glyph: string; c: string; label: string }) {
+function Legend({
+  glyph,
+  c,
+  label,
+}: {
+  glyph: string
+  c: string
+  label: string
+}) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
       <span style={{ color: c, fontSize: 10 }}>{glyph}</span>
@@ -176,7 +220,9 @@ function Cycle({ record }: CycleProps) {
   const actions = record.decisions ?? []
   const logs = record.execution_log ?? []
   const count = actions.length
-  const trades = actions.filter((a) => a.action !== 'hold' && a.action !== 'wait')
+  const trades = actions.filter(
+    (a) => a.action !== 'hold' && a.action !== 'wait'
+  )
   const failed = trades.filter((a) => !a.success).length
   // Also correct the display of older records whose aggregate flag was wrong.
   const fault = !record.success || failed > 0
@@ -192,20 +238,30 @@ function Cycle({ record }: CycleProps) {
           gap: 7,
           fontSize: 9,
           padding: '2px 6px',
-          marginBottom: actions.length || logs.length || record.error_message ? 4 : 0,
+          marginBottom:
+            actions.length || logs.length || record.error_message ? 4 : 0,
           background: 'rgba(26,24,19,0.045)',
           borderLeft: `2px solid ${fault ? 'var(--tm-dn)' : 'var(--tm-hair)'}`,
           color: 'var(--tm-ink-2)',
         }}
       >
-        <span style={{ color: 'var(--tm-ink)', fontWeight: 700 }}>CYCLE {record.cycle_number}</span>
+        <span style={{ color: 'var(--tm-ink)', fontWeight: 700 }}>
+          CYCLE {record.cycle_number}
+        </span>
         <span style={{ color: 'var(--tm-muted)' }}>·</span>
-        <span style={{ color: 'var(--tm-muted)' }} title="Local time">{time}</span>
+        <span style={{ color: 'var(--tm-muted)' }} title="Local time">
+          {time}
+        </span>
         <span style={{ marginLeft: 'auto', color: 'var(--tm-muted)' }}>
           {count === 0 ? 'no action' : `${count} action${count > 1 ? 's' : ''}`}
         </span>
         {fault ? (
-          <span style={{ color: 'var(--tm-dn)', fontWeight: 700 }}>FAULT{failed > 0 ? ` · ${failed}/${trades.length} trades failed/blocked` : ''}</span>
+          <span style={{ color: 'var(--tm-dn)', fontWeight: 700 }}>
+            FAULT
+            {failed > 0
+              ? ` · ${failed}/${trades.length} trades failed/blocked`
+              : ''}
+          </span>
         ) : null}
       </div>
 
@@ -224,16 +280,32 @@ function Cycle({ record }: CycleProps) {
               color: 'var(--tm-ink-2)',
             }}
           >
-            <span style={{ color: 'var(--tm-muted)', flex: '0 0 auto', minWidth: 52 }}>
+            <span
+              style={{
+                color: 'var(--tm-muted)',
+                flex: '0 0 auto',
+                minWidth: 52,
+              }}
+            >
               {aTime !== '--:--:--' ? aTime : time}
             </span>
             <ActionBadge action={a.action} side={side} />
-            <span style={{ color: 'var(--tm-ink)', fontWeight: 600, flex: '0 0 auto', minWidth: 48 }}>
+            <span
+              style={{
+                color: 'var(--tm-ink)',
+                fontWeight: 600,
+                flex: '0 0 auto',
+                minWidth: 48,
+              }}
+            >
               {baseSymbol(a.symbol)}
             </span>
             {a.confidence != null ? (
               <span style={{ color: 'var(--tm-muted)', flex: '0 0 auto' }}>
-                conf<span style={{ color: 'var(--tm-ink-2)' }}>{Math.round(a.confidence)}</span>
+                conf
+                <span style={{ color: 'var(--tm-ink-2)' }}>
+                  {Math.round(a.confidence)}
+                </span>
               </span>
             ) : null}
           </div>
@@ -296,7 +368,9 @@ function SubLine({ tone, text }: { tone: LogTone; text: string }) {
         color,
       }}
     >
-      <span style={{ flex: '0 0 auto', width: 10, textAlign: 'center' }}>{glyph}</span>
+      <span style={{ flex: '0 0 auto', width: 10, textAlign: 'center' }}>
+        {glyph}
+      </span>
       <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{text}</span>
     </div>
   )

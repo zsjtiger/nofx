@@ -327,61 +327,21 @@ export const translations = {
 
     // ===== GETTING STARTED =====
 
-
-
-
-
-
     // ===== INSTALLATION =====
-
-
-
-
-
 
     // ===== CONFIGURATION =====
 
-
-
-
-
-
     // ===== TRADING =====
-
-
-
-
-
-
-
 
     // ===== TECHNICAL ISSUES =====
 
-
-
-
-
-
-
-
     // ===== SECURITY =====
-
-
-
 
     // ===== FEATURES =====
 
-
-
     // ===== AI MODELS =====
 
-
-
-
     // ===== CONTRIBUTING =====
-
-
-
 
     // Web Crypto Environment Check
     environmentCheck: {
@@ -410,7 +370,6 @@ export const translations = {
       disabledDesc:
         'Server-side transport encryption is disabled. API keys will be transmitted in plaintext. Enable TRANSPORT_ENCRYPTION=true for enhanced security.',
     },
-
 
     // Two-Stage Key Modal
     twoStageKey: {
@@ -559,8 +518,7 @@ export const translations = {
       positionClosed: 'Position closed successfully',
       closeFailed: 'Failed to close position',
       closeAll: 'Close All',
-      confirmCloseAllPositions:
-        'Market-close ALL {count} open positions?',
+      confirmCloseAllPositions: 'Market-close ALL {count} open positions?',
       allPositionsClosed: 'All positions closed',
       closeAllPartial: '{failed} of {count} positions failed to close',
       action: 'Action',
@@ -1017,61 +975,21 @@ export const translations = {
 
     // ===== 入门指南 =====
 
-
-
-
-
-
     // ===== 安装部署 =====
-
-
-
-
-
 
     // ===== 配置设置 =====
 
-
-
-
-
-
     // ===== 交易相关 =====
-
-
-
-
-
-
-
 
     // ===== 技术问题 =====
 
-
-
-
-
-
-
-
     // ===== 安全相关 =====
-
-
-
 
     // ===== 功能介绍 =====
 
-
-
     // ===== AI 模型 =====
 
-
-
-
     // ===== 参与贡献 =====
-
-
-
 
     // Web Crypto Environment Check
     environmentCheck: {
@@ -1097,7 +1015,6 @@ export const translations = {
       disabledDesc:
         '服务端传输加密已关闭，API 密钥将以明文传输。如需增强安全性，请设置 TRANSPORT_ENCRYPTION=true。',
     },
-
 
     // Two-Stage Key Modal
     twoStageKey: {
@@ -1291,7 +1208,6 @@ export const translations = {
       validating: '验证中...',
       walletAddress: '钱包地址',
     },
-
 
     telegram: {
       botSetup: 'Telegram Bot 配置',
@@ -1878,7 +1794,6 @@ export const translations = {
       validating: 'Memvalidasi...',
       walletAddress: 'Alamat Wallet',
     },
-
 
     telegram: {
       botSetup: 'Setup Telegram Bot',

@@ -43,8 +43,12 @@ interface ExchangeConfigModalProps {
   language: Language
 }
 
-function templateFor(exchangeType: string | null | undefined): Template | undefined {
-  return SUPPORTED_EXCHANGE_TEMPLATES.find((t) => t.exchange_type === exchangeType)
+function templateFor(
+  exchangeType: string | null | undefined
+): Template | undefined {
+  return SUPPORTED_EXCHANGE_TEMPLATES.find(
+    (t) => t.exchange_type === exchangeType
+  )
 }
 
 export function ExchangeConfigModal({
@@ -114,12 +118,25 @@ export function ExchangeConfigModal({
   }
 
   return (
-    <div className="w-full max-w-lg rounded-2xl p-6" style={{ background: '#F7F4EC', color: '#1A1813' }}>
+    <div
+      className="w-full max-w-lg rounded-2xl p-6"
+      style={{ background: '#F7F4EC', color: '#1A1813' }}
+    >
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-lg font-bold">
-          {existing ? (zh ? '编辑纸上账户' : 'Edit paper account') : (zh ? '添加纸上账户' : 'Add paper account')}
+          {existing
+            ? zh
+              ? '编辑纸上账户'
+              : 'Edit paper account'
+            : zh
+              ? '添加纸上账户'
+              : 'Add paper account'}
         </h2>
-        <button type="button" onClick={onClose} className="text-sm opacity-70 hover:opacity-100">
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-sm opacity-70 hover:opacity-100"
+        >
           {zh ? '关闭' : 'Close'}
         </button>
       </div>
@@ -133,19 +150,30 @@ export function ExchangeConfigModal({
               onClick={() => setTemplate(t)}
               className="flex flex-col items-center gap-2 p-4 rounded-xl"
               style={{
-                background: template?.exchange_type === t.exchange_type ? 'rgba(224,72,59,0.15)' : '#FFFDF7',
-                border: template?.exchange_type === t.exchange_type ? '2px solid #E0483B' : '2px solid rgba(26,24,19,0.14)',
+                background:
+                  template?.exchange_type === t.exchange_type
+                    ? 'rgba(224,72,59,0.15)'
+                    : '#FFFDF7',
+                border:
+                  template?.exchange_type === t.exchange_type
+                    ? '2px solid #E0483B'
+                    : '2px solid rgba(26,24,19,0.14)',
               }}
             >
               <div className="relative">
                 {getExchangeIcon(t.exchange_type, { width: 40, height: 40 })}
                 {template?.exchange_type === t.exchange_type && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#2E8B57' }}>
+                  <div
+                    className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ background: '#2E8B57' }}
+                  >
                     <Check className="w-3 h-3 text-white" />
                   </div>
                 )}
               </div>
-              <span className="text-sm font-semibold">{getShortName(t.name)}</span>
+              <span className="text-sm font-semibold">
+                {getShortName(t.name)}
+              </span>
             </button>
           ))}
         </div>
@@ -154,7 +182,9 @@ export function ExchangeConfigModal({
       {template && (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1">{zh ? '账户名称' : 'Account name'}</label>
+            <label className="block text-sm mb-1">
+              {zh ? '账户名称' : 'Account name'}
+            </label>
             <input
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
@@ -169,19 +199,33 @@ export function ExchangeConfigModal({
               autoComplete="off"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder={existing?.has_api_key ? (zh ? '已保存，留空则不修改' : 'Saved — leave blank to keep') : ''}
+              placeholder={
+                existing?.has_api_key
+                  ? zh
+                    ? '已保存，留空则不修改'
+                    : 'Saved — leave blank to keep'
+                  : ''
+              }
               style={inputStyle}
             />
           </div>
           {template.needsSecret && (
             <div>
-              <label className="block text-sm mb-1">{template.secretLabel}</label>
+              <label className="block text-sm mb-1">
+                {template.secretLabel}
+              </label>
               <input
                 type="password"
                 autoComplete="off"
                 value={secretKey}
                 onChange={(e) => setSecretKey(e.target.value)}
-                placeholder={existing?.has_secret_key ? (zh ? '已保存，留空则不修改' : 'Saved — leave blank to keep') : ''}
+                placeholder={
+                  existing?.has_secret_key
+                    ? zh
+                      ? '已保存，留空则不修改'
+                      : 'Saved — leave blank to keep'
+                    : ''
+                }
                 style={inputStyle}
               />
             </div>

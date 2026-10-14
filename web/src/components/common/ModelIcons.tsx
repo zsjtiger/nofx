@@ -49,7 +49,6 @@ export const getModelIcon = (modelType: string, props: IconProps = {}) => {
     case 'minimax':
       iconPath = '/icons/minimax.svg'
       break
-      break
     default:
       return null
   }

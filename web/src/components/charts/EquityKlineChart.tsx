@@ -1,5 +1,13 @@
 import useSWR from 'swr'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import { api } from '../../lib/api'
 import { useAuth } from '../../contexts/AuthContext'
 import type { EquityMarket } from '../../lib/equityMarket'
@@ -20,7 +28,11 @@ export function EquityKlineChart({ market, symbol }: EquityKlineChartProps) {
   )
 
   if (error) {
-    return <p className="text-sm text-nofx-text-muted">Daily bars unavailable for {symbol}.</p>
+    return (
+      <p className="text-sm text-nofx-text-muted">
+        Daily bars unavailable for {symbol}.
+      </p>
+    )
   }
   if (!data) {
     return <p className="text-sm text-nofx-text-muted">Loading {symbol}…</p>

@@ -12,21 +12,28 @@ type Market = 'us_equity' | 'cn_equity'
 const text = (language: string, zh: string, en: string) =>
   language === 'zh' ? zh : en
 
-const SYMBOL_HINT: Record<Market, { zh: string; en: string; example: string }> = {
-  us_equity: {
-    zh: '美股代码，例如 AAPL、MSFT、BRK.B',
-    en: 'US tickers, e.g. AAPL, MSFT, BRK.B',
-    example: 'AAPL, MSFT, NVDA',
-  },
-  cn_equity: {
-    zh: 'A 股代码，例如 600519.SH、000001.SZ，可省略交易所后缀',
-    en: 'A-share codes, e.g. 600519.SH, 000001.SZ; the exchange suffix can be omitted',
-    example: '600519.SH, 000001.SZ',
-  },
-}
+const SYMBOL_HINT: Record<Market, { zh: string; en: string; example: string }> =
+  {
+    us_equity: {
+      zh: '美股代码，例如 AAPL、MSFT、BRK.B',
+      en: 'US tickers, e.g. AAPL, MSFT, BRK.B',
+      example: 'AAPL, MSFT, NVDA',
+    },
+    cn_equity: {
+      zh: 'A 股代码，例如 600519.SH、000001.SZ，可省略交易所后缀',
+      en: 'A-share codes, e.g. 600519.SH, 000001.SZ; the exchange suffix can be omitted',
+      example: '600519.SH, 000001.SZ',
+    },
+  }
 
 const INDICATOR_TOGGLES: Array<{
-  key: 'enable_ema' | 'enable_macd' | 'enable_rsi' | 'enable_atr' | 'enable_boll' | 'enable_volume'
+  key:
+    | 'enable_ema'
+    | 'enable_macd'
+    | 'enable_rsi'
+    | 'enable_atr'
+    | 'enable_boll'
+    | 'enable_volume'
   zh: string
   en: string
 }> = [
@@ -86,7 +93,10 @@ export function StrategyStudioPage() {
     loadStrategies()
       .then((list) => {
         if (cancelled || list.length === 0) return
-        setSelectedId((current) => current ?? list.find((s) => s.is_active)?.id ?? list[0].id)
+        setSelectedId(
+          (current) =>
+            current ?? list.find((s) => s.is_active)?.id ?? list[0].id
+        )
       })
       .catch((err) => notify.error(String(err)))
       .finally(() => {
@@ -103,28 +113,39 @@ export function StrategyStudioPage() {
     setDraft(selected.config)
     setName(selected.name)
     setDescription(selected.description ?? '')
-    setSymbolsText((selected.config.ai_config.coin_source.static_coins ?? []).join(', '))
+    setSymbolsText(
+      (selected.config.ai_config.coin_source.static_coins ?? []).join(', ')
+    )
     setPreviewText(null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, selected?.updated_at])
 
   const updateAI = (patch: Partial<StrategyConfig['ai_config']>) => {
-    setDraft((prev) => (prev ? { ...prev, ai_config: { ...prev.ai_config, ...patch } } : prev))
+    setDraft((prev) =>
+      prev ? { ...prev, ai_config: { ...prev.ai_config, ...patch } } : prev
+    )
   }
 
-  const updateRisk = (patch: Partial<StrategyConfig['ai_config']['risk_control']>) => {
+  const updateRisk = (
+    patch: Partial<StrategyConfig['ai_config']['risk_control']>
+  ) => {
     if (!draft) return
     updateAI({ risk_control: { ...draft.ai_config.risk_control, ...patch } })
   }
 
-  const updateIndicators = (patch: Partial<StrategyConfig['ai_config']['indicators']>) => {
+  const updateIndicators = (
+    patch: Partial<StrategyConfig['ai_config']['indicators']>
+  ) => {
     if (!draft) return
     updateAI({ indicators: { ...draft.ai_config.indicators, ...patch } })
   }
 
-  const updatePrompt = (patch: Partial<NonNullable<StrategyConfig['ai_config']['prompt_sections']>>) => {
+  const updatePrompt = (
+    patch: Partial<NonNullable<StrategyConfig['ai_config']['prompt_sections']>>
+  ) => {
     if (!draft) return
-    updateAI({ prompt_sections: { ...(draft.ai_config.prompt_sections ?? {}), ...patch } })
+    updateAI({
+      prompt_sections: { ...(draft.ai_config.prompt_sections ?? {}), ...patch },
+    })
   }
 
   const handleNew = async () => {
@@ -156,7 +177,11 @@ export function StrategyStudioPage() {
   const handleDelete = async () => {
     if (!selected) return
     const ok = await confirmToast(
-      text(language, `删除策略「${selected.name}」？`, `Delete strategy "${selected.name}"?`)
+      text(
+        language,
+        `删除策略「${selected.name}」？`,
+        `Delete strategy "${selected.name}"?`
+      )
     )
     if (!ok) return
     try {
@@ -173,7 +198,9 @@ export function StrategyStudioPage() {
     try {
       await api.activateStrategy(selected.id)
       await loadStrategies()
-      notify.success(text(language, '已设为当前策略', 'Set as the active strategy'))
+      notify.success(
+        text(language, '已设为当前策略', 'Set as the active strategy')
+      )
     } catch (err) {
       notify.error(String(err))
     }
@@ -183,19 +210,29 @@ export function StrategyStudioPage() {
     if (!selected || !draft) return
     const symbols = parseSymbols(symbolsText)
     if (symbols.length === 0) {
-      notify.error(text(language, '请至少填写一个股票代码', 'Enter at least one symbol'))
+      notify.error(
+        text(language, '请至少填写一个股票代码', 'Enter at least one symbol')
+      )
       return
     }
     const config: StrategyConfig = {
       ...draft,
       ai_config: {
         ...draft.ai_config,
-        coin_source: { ...draft.ai_config.coin_source, source_type: 'static', static_coins: symbols },
+        coin_source: {
+          ...draft.ai_config.coin_source,
+          source_type: 'static',
+          static_coins: symbols,
+        },
       },
     }
     setSaving(true)
     try {
-      await api.updateStrategy(selected.id, { name: name.trim() || selected.name, description, config })
+      await api.updateStrategy(selected.id, {
+        name: name.trim() || selected.name,
+        description,
+        config,
+      })
       await loadStrategies()
       notify.success(text(language, '已保存', 'Saved'))
     } catch (err) {
@@ -226,7 +263,8 @@ export function StrategyStudioPage() {
   const inputClass =
     'w-full rounded-lg border border-[rgba(26,24,19,0.2)] bg-nofx-bg px-3 py-2 text-sm text-nofx-text'
   const labelClass = 'mb-1 block text-sm text-nofx-text-muted'
-  const sectionClass = 'rounded-xl border border-[rgba(26,24,19,0.14)] bg-nofx-bg-deeper p-5 space-y-4'
+  const sectionClass =
+    'rounded-xl border border-[rgba(26,24,19,0.14)] bg-nofx-bg-deeper p-5 space-y-4'
 
   return (
     <DeepVoidBackground className="min-h-[calc(100vh-64px)] bg-nofx-bg">
@@ -281,43 +319,88 @@ export function StrategyStudioPage() {
         {selected && draft ? (
           <div className="space-y-6">
             <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={handleSave} disabled={saving}
-                className="inline-flex items-center gap-2 rounded-lg bg-nofx-gold px-4 py-2 text-sm font-semibold text-nofx-bg disabled:opacity-50">
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                className="inline-flex items-center gap-2 rounded-lg bg-nofx-gold px-4 py-2 text-sm font-semibold text-nofx-bg disabled:opacity-50"
+              >
+                {saving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
                 {text(language, '保存', 'Save')}
               </button>
-              <button type="button" onClick={handleActivate} disabled={selected.is_active}
-                className="inline-flex items-center gap-2 rounded-lg border border-nofx-gold px-4 py-2 text-sm text-nofx-gold disabled:opacity-40">
-                <Zap className="h-4 w-4" /> {text(language, '设为当前', 'Set active')}
+              <button
+                type="button"
+                onClick={handleActivate}
+                disabled={selected.is_active}
+                className="inline-flex items-center gap-2 rounded-lg border border-nofx-gold px-4 py-2 text-sm text-nofx-gold disabled:opacity-40"
+              >
+                <Zap className="h-4 w-4" />{' '}
+                {text(language, '设为当前', 'Set active')}
               </button>
-              <button type="button" onClick={handlePreview}
-                className="inline-flex items-center gap-2 rounded-lg border border-[rgba(26,24,19,0.2)] px-4 py-2 text-sm text-nofx-text">
+              <button
+                type="button"
+                onClick={handlePreview}
+                className="inline-flex items-center gap-2 rounded-lg border border-[rgba(26,24,19,0.2)] px-4 py-2 text-sm text-nofx-text"
+              >
                 {text(language, '预览提示词', 'Preview prompt')}
               </button>
-              <button type="button" onClick={handleDuplicate}
-                className="inline-flex items-center gap-2 rounded-lg border border-[rgba(26,24,19,0.2)] px-4 py-2 text-sm text-nofx-text">
-                <Copy className="h-4 w-4" /> {text(language, '复制', 'Duplicate')}
+              <button
+                type="button"
+                onClick={handleDuplicate}
+                className="inline-flex items-center gap-2 rounded-lg border border-[rgba(26,24,19,0.2)] px-4 py-2 text-sm text-nofx-text"
+              >
+                <Copy className="h-4 w-4" />{' '}
+                {text(language, '复制', 'Duplicate')}
               </button>
-              <button type="button" onClick={handleDelete}
-                className="ml-auto inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-600">
-                <Trash2 className="h-4 w-4" /> {text(language, '删除', 'Delete')}
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="ml-auto inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-600"
+              >
+                <Trash2 className="h-4 w-4" />{' '}
+                {text(language, '删除', 'Delete')}
               </button>
             </div>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">{text(language, '基本信息', 'Basics')}</h2>
+              <h2 className="text-base font-semibold text-nofx-text">
+                {text(language, '基本信息', 'Basics')}
+              </h2>
               <div>
-                <label className={labelClass}>{text(language, '名称', 'Name')}</label>
-                <input className={inputClass} value={name} onChange={(e) => setName(e.target.value)} />
+                <label className={labelClass}>
+                  {text(language, '名称', 'Name')}
+                </label>
+                <input
+                  className={inputClass}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
               <div>
-                <label className={labelClass}>{text(language, '描述', 'Description')}</label>
-                <input className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} />
+                <label className={labelClass}>
+                  {text(language, '描述', 'Description')}
+                </label>
+                <input
+                  className={inputClass}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
               </div>
               <div>
-                <label className={labelClass}>{text(language, '语言', 'Language')}</label>
-                <select className={inputClass} value={draft.language ?? 'en'}
-                  onChange={(e) => setDraft({ ...draft, language: e.target.value })}>
+                <label className={labelClass}>
+                  {text(language, '语言', 'Language')}
+                </label>
+                <select
+                  className={inputClass}
+                  value={draft.language ?? 'en'}
+                  onChange={(e) =>
+                    setDraft({ ...draft, language: e.target.value })
+                  }
+                >
                   <option value="en">English</option>
                   <option value="zh">中文</option>
                 </select>
@@ -325,46 +408,89 @@ export function StrategyStudioPage() {
             </section>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">{text(language, '股票池', 'Universe')}</h2>
+              <h2 className="text-base font-semibold text-nofx-text">
+                {text(language, '股票池', 'Universe')}
+              </h2>
               <div>
-                <label className={labelClass}>{text(language, '股票代码', 'Symbols')}</label>
-                <textarea className={`${inputClass} min-h-[72px]`} value={symbolsText}
-                  onChange={(e) => setSymbolsText(e.target.value)} placeholder={SYMBOL_HINT[market].example} />
+                <label className={labelClass}>
+                  {text(language, '股票代码', 'Symbols')}
+                </label>
+                <textarea
+                  className={`${inputClass} min-h-[72px]`}
+                  value={symbolsText}
+                  onChange={(e) => setSymbolsText(e.target.value)}
+                  placeholder={SYMBOL_HINT[market].example}
+                />
                 <p className="mt-1 text-xs text-nofx-text-muted">
-                  {text(language, SYMBOL_HINT[market].zh, SYMBOL_HINT[market].en)}
+                  {text(
+                    language,
+                    SYMBOL_HINT[market].zh,
+                    SYMBOL_HINT[market].en
+                  )}
                 </p>
               </div>
               <div>
-                <label className={labelClass}>{text(language, '预览市场', 'Preview market')}</label>
-                <select className={inputClass} value={market} onChange={(e) => setMarket(e.target.value as Market)}>
-                  <option value="us_equity">{text(language, '美股', 'US equities')}</option>
-                  <option value="cn_equity">{text(language, 'A 股', 'A-shares')}</option>
+                <label className={labelClass}>
+                  {text(language, '预览市场', 'Preview market')}
+                </label>
+                <select
+                  className={inputClass}
+                  value={market}
+                  onChange={(e) => setMarket(e.target.value as Market)}
+                >
+                  <option value="us_equity">
+                    {text(language, '美股', 'US equities')}
+                  </option>
+                  <option value="cn_equity">
+                    {text(language, 'A 股', 'A-shares')}
+                  </option>
                 </select>
               </div>
             </section>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">{text(language, '数据', 'Data')}</h2>
+              <h2 className="text-base font-semibold text-nofx-text">
+                {text(language, '数据', 'Data')}
+              </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelClass}>{text(language, '日线根数', 'Daily bars')}</label>
-                  <input type="number" className={inputClass} min={10} max={120}
+                  <label className={labelClass}>
+                    {text(language, '日线根数', 'Daily bars')}
+                  </label>
+                  <input
+                    type="number"
+                    className={inputClass}
+                    min={10}
+                    max={120}
                     value={draft.ai_config.indicators.klines.primary_count}
                     onChange={(e) =>
                       updateIndicators({
                         klines: {
                           ...draft.ai_config.indicators.klines,
-                          primary_count: clampNumber(Number(e.target.value), 10, 120),
+                          primary_count: clampNumber(
+                            Number(e.target.value),
+                            10,
+                            120
+                          ),
                         },
                       })
-                    } />
+                    }
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {INDICATOR_TOGGLES.map((item) => (
-                  <label key={item.key} className="flex items-center gap-2 text-sm text-nofx-text">
-                    <input type="checkbox" checked={Boolean(draft.ai_config.indicators[item.key])}
-                      onChange={(e) => updateIndicators({ [item.key]: e.target.checked })} />
+                  <label
+                    key={item.key}
+                    className="flex items-center gap-2 text-sm text-nofx-text"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={Boolean(draft.ai_config.indicators[item.key])}
+                      onChange={(e) =>
+                        updateIndicators({ [item.key]: e.target.checked })
+                      }
+                    />
                     {text(language, item.zh, item.en)}
                   </label>
                 ))}
@@ -372,31 +498,102 @@ export function StrategyStudioPage() {
             </section>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">{text(language, '风控', 'Risk')}</h2>
+              <h2 className="text-base font-semibold text-nofx-text">
+                {text(language, '风控', 'Risk')}
+              </h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 <div>
-                  <label className={labelClass}>{text(language, '最多持仓数', 'Max positions')}</label>
-                  <input type="number" className={inputClass} min={1} max={8}
+                  <label className={labelClass}>
+                    {text(language, '最多持仓数', 'Max positions')}
+                  </label>
+                  <input
+                    type="number"
+                    className={inputClass}
+                    min={1}
+                    max={8}
                     value={draft.ai_config.risk_control.max_positions}
-                    onChange={(e) => updateRisk({ max_positions: clampNumber(Number(e.target.value), 1, 8) })} />
+                    onChange={(e) =>
+                      updateRisk({
+                        max_positions: clampNumber(
+                          Number(e.target.value),
+                          1,
+                          8
+                        ),
+                      })
+                    }
+                  />
                 </div>
                 <div>
-                  <label className={labelClass}>{text(language, '单仓上限（倍数权益）', 'Position cap (x equity)')}</label>
-                  <input type="number" step="0.1" className={inputClass} min={0.1} max={10}
-                    value={draft.ai_config.risk_control.altcoin_max_position_value_ratio}
-                    onChange={(e) => updateRisk({ altcoin_max_position_value_ratio: clampNumber(Number(e.target.value), 0.1, 10) })} />
+                  <label className={labelClass}>
+                    {text(
+                      language,
+                      '单仓上限（倍数权益）',
+                      'Position cap (x equity)'
+                    )}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    className={inputClass}
+                    min={0.1}
+                    max={10}
+                    value={
+                      draft.ai_config.risk_control
+                        .altcoin_max_position_value_ratio
+                    }
+                    onChange={(e) =>
+                      updateRisk({
+                        altcoin_max_position_value_ratio: clampNumber(
+                          Number(e.target.value),
+                          0.1,
+                          10
+                        ),
+                      })
+                    }
+                  />
                 </div>
                 <div>
-                  <label className={labelClass}>{text(language, '最低置信度', 'Min confidence')}</label>
-                  <input type="number" className={inputClass} min={50} max={100}
+                  <label className={labelClass}>
+                    {text(language, '最低置信度', 'Min confidence')}
+                  </label>
+                  <input
+                    type="number"
+                    className={inputClass}
+                    min={50}
+                    max={100}
                     value={draft.ai_config.risk_control.min_confidence}
-                    onChange={(e) => updateRisk({ min_confidence: clampNumber(Number(e.target.value), 50, 100) })} />
+                    onChange={(e) =>
+                      updateRisk({
+                        min_confidence: clampNumber(
+                          Number(e.target.value),
+                          50,
+                          100
+                        ),
+                      })
+                    }
+                  />
                 </div>
                 <div>
-                  <label className={labelClass}>{text(language, '最低盈亏比', 'Min reward / risk')}</label>
-                  <input type="number" step="0.5" className={inputClass} min={1} max={10}
+                  <label className={labelClass}>
+                    {text(language, '最低盈亏比', 'Min reward / risk')}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    className={inputClass}
+                    min={1}
+                    max={10}
                     value={draft.ai_config.risk_control.min_risk_reward_ratio}
-                    onChange={(e) => updateRisk({ min_risk_reward_ratio: clampNumber(Number(e.target.value), 1, 10) })} />
+                    onChange={(e) =>
+                      updateRisk({
+                        min_risk_reward_ratio: clampNumber(
+                          Number(e.target.value),
+                          1,
+                          10
+                        ),
+                      })
+                    }
+                  />
                 </div>
               </div>
               <p className="text-xs text-nofx-text-muted">
@@ -409,39 +606,65 @@ export function StrategyStudioPage() {
             </section>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">{text(language, '提示词', 'Prompt')}</h2>
+              <h2 className="text-base font-semibold text-nofx-text">
+                {text(language, '提示词', 'Prompt')}
+              </h2>
               {(
                 [
                   ['role_definition', text(language, '角色', 'Role')],
-                  ['trading_frequency', text(language, '交易频率', 'Trading frequency')],
-                  ['entry_standards', text(language, '入场标准', 'Entry standards')],
-                  ['decision_process', text(language, '决策流程', 'Decision process')],
+                  [
+                    'trading_frequency',
+                    text(language, '交易频率', 'Trading frequency'),
+                  ],
+                  [
+                    'entry_standards',
+                    text(language, '入场标准', 'Entry standards'),
+                  ],
+                  [
+                    'decision_process',
+                    text(language, '决策流程', 'Decision process'),
+                  ],
                 ] as const
               ).map(([key, label]) => (
                 <div key={key}>
                   <label className={labelClass}>{label}</label>
-                  <textarea className={`${inputClass} min-h-[72px]`}
+                  <textarea
+                    className={`${inputClass} min-h-[72px]`}
                     value={draft.ai_config.prompt_sections?.[key] ?? ''}
-                    onChange={(e) => updatePrompt({ [key]: e.target.value })} />
+                    onChange={(e) => updatePrompt({ [key]: e.target.value })}
+                  />
                 </div>
               ))}
               <div>
-                <label className={labelClass}>{text(language, '自定义指令', 'Custom instructions')}</label>
-                <textarea className={`${inputClass} min-h-[72px]`} value={draft.ai_config.custom_prompt ?? ''}
-                  onChange={(e) => updateAI({ custom_prompt: e.target.value })} />
+                <label className={labelClass}>
+                  {text(language, '自定义指令', 'Custom instructions')}
+                </label>
+                <textarea
+                  className={`${inputClass} min-h-[72px]`}
+                  value={draft.ai_config.custom_prompt ?? ''}
+                  onChange={(e) => updateAI({ custom_prompt: e.target.value })}
+                />
               </div>
             </section>
 
             {previewText !== null && (
               <section className={sectionClass}>
-                <h2 className="text-base font-semibold text-nofx-text">{text(language, '提示词预览', 'Prompt preview')}</h2>
-                <pre className="max-h-[480px] overflow-auto whitespace-pre-wrap rounded-lg bg-nofx-bg p-4 text-xs text-nofx-text">{previewText}</pre>
+                <h2 className="text-base font-semibold text-nofx-text">
+                  {text(language, '提示词预览', 'Prompt preview')}
+                </h2>
+                <pre className="max-h-[480px] overflow-auto whitespace-pre-wrap rounded-lg bg-nofx-bg p-4 text-xs text-nofx-text">
+                  {previewText}
+                </pre>
               </section>
             )}
           </div>
         ) : (
           <div className="text-sm text-nofx-text-muted">
-            {text(language, '还没有策略，点击「新建」开始。', 'No strategy yet. Click New to start.')}
+            {text(
+              language,
+              '还没有策略，点击「新建」开始。',
+              'No strategy yet. Click New to start.'
+            )}
           </div>
         )}
       </div>

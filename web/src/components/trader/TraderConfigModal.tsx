@@ -316,25 +316,26 @@ export function TraderConfigModal({
                       (language === 'zh' ? 'No description' : 'No description')}
                   </p>
                   {(() => {
-                      const aiConfig = getStrategyAIConfig(selectedStrategy)
-                      if (!aiConfig) return null
-                      return (
-                        <div className="grid grid-cols-2 gap-2 text-xs text-nofx-text-muted">
-                          <div>
-                            {t('coinSource', language)}:{' '}
-                            {(aiConfig.coin_source.static_coins ?? []).join(', ') || '-'}
-                          </div>
-                          <div>
-                            {t('marginLimit', language)}:{' '}
-                            {(
-                              (aiConfig.risk_control?.max_margin_usage || 1) *
-                              100
-                            ).toFixed(0)}
-                            %
-                          </div>
+                    const aiConfig = getStrategyAIConfig(selectedStrategy)
+                    if (!aiConfig) return null
+                    return (
+                      <div className="grid grid-cols-2 gap-2 text-xs text-nofx-text-muted">
+                        <div>
+                          {t('coinSource', language)}:{' '}
+                          {(aiConfig.coin_source.static_coins ?? []).join(
+                            ', '
+                          ) || '-'}
                         </div>
-                      )
-                    })()}
+                        <div>
+                          {t('marginLimit', language)}:{' '}
+                          {(
+                            (aiConfig.risk_control?.max_margin_usage || 1) * 100
+                          ).toFixed(0)}
+                          %
+                        </div>
+                      </div>
+                    )
+                  })()}
                 </div>
               )}
             </div>

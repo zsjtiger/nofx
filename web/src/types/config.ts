@@ -102,4 +102,3 @@ export interface UpdateExchangeConfigRequest {
     }
   }
 }
-
