@@ -16,7 +16,7 @@
     <circle cx="30" cy="26" r="6" fill="#D6433A" opacity="0.9"/>
     <circle cx="54" cy="26" r="6" fill="#B4B2A9"/>
     <circle cx="78" cy="26" r="6" fill="#2E8B57" opacity="0.9"/>
-    <text x="600" y="31" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" letter-spacing="2" fill="#8A8478">nofx — ai trading terminal</text>
+    <text x="600" y="31" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" letter-spacing="2" fill="#8A8478">crux — ai trading terminal</text>
 
     <!-- wordmark -->
     <text x="64" y="182" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="92" font-weight="700" letter-spacing="4" fill="#1A1813">Crux<tspan fill="#E0483B">_</tspan></text>
