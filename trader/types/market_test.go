@@ -119,3 +119,26 @@ func TestValidateSideAllowed(t *testing.T) {
 	assert.NoError(t, ValidateSideAllowed(us, 1, true), "US equities can short")
 	assert.Error(t, ValidateSideAllowed(us, 2, false), "US equities here are unlevered")
 }
+
+func TestResolveMarket(t *testing.T) {
+	m, err := ResolveMarket("")
+	require.NoError(t, err)
+	assert.Equal(t, MarketCrypto, m, "empty market keeps legacy crypto behaviour")
+
+	m, err = ResolveMarket("cn_equity")
+	require.NoError(t, err)
+	assert.Equal(t, MarketCNEquity, m)
+
+	_, err = ResolveMarket("forex")
+	assert.Error(t, err)
+}
+
+func TestFloorToLot(t *testing.T) {
+	cn, _ := CapabilitiesOf(MarketCNEquity)
+	us, _ := CapabilitiesOf(MarketUSEquity)
+
+	assert.Equal(t, 300.0, FloorToLot(cn, 350))
+	assert.Equal(t, 0.0, FloorToLot(cn, 99))
+	assert.Equal(t, 1.5, FloorToLot(us, 1.5), "markets without lots are unchanged")
+	assert.Equal(t, -5.0, FloorToLot(cn, -5), "non-positive input is left for ValidateOrderQuantity to reject")
+}

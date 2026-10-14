@@ -165,3 +165,22 @@ func ValidateSideAllowed(c Capabilities, leverage int, isShort bool) error {
 	}
 	return nil
 }
+
+// ResolveMarket maps a configured market name to a Market. An empty value
+// means the legacy default (crypto), so existing traders keep working.
+func ResolveMarket(s string) (Market, error) {
+	if strings.TrimSpace(s) == "" {
+		return MarketCrypto, nil
+	}
+	return ParseMarket(s)
+}
+
+// FloorToLot rounds a buy quantity down to the market's lot size. Markets
+// without a lot rule are returned unchanged.
+func FloorToLot(c Capabilities, qty float64) float64 {
+	if c.LotSize <= 0 || qty <= 0 {
+		return qty
+	}
+	lot := float64(c.LotSize)
+	return float64(int64(qty/lot)) * lot
+}

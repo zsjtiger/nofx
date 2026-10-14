@@ -19,6 +19,7 @@ import (
 	"nofx/trader/kucoin"
 	"nofx/trader/lighter"
 	"nofx/trader/okx"
+	"nofx/trader/types"
 	"nofx/wallet"
 	"sync"
 	"time"
@@ -80,6 +81,7 @@ type AutoTraderConfig struct {
 	// Trading platform selection
 	Exchange   string // Exchange type: "binance", "bybit", "okx", "bitget", "gate", "hyperliquid", "aster" or "lighter"
 	ExchangeID string // Exchange account UUID (for multi-account support)
+	Market     string // Asset class: "crypto" (default), "us_equity" or "cn_equity"
 
 	// Binance API configuration
 	BinanceAPIKey    string
@@ -165,12 +167,13 @@ type AutoTraderConfig struct {
 
 // AutoTrader automatic trader
 type AutoTrader struct {
-	id                    string // Trader unique identifier
-	name                  string // Trader display name
-	aiModel               string // AI model name
-	exchange              string // Trading platform type (binance/bybit/etc)
-	exchangeID            string // Exchange account UUID
-	showInCompetition     bool   // Whether to show in competition page
+	id                    string             // Trader unique identifier
+	name                  string             // Trader display name
+	aiModel               string             // AI model name
+	exchange              string             // Trading platform type (binance/bybit/etc)
+	exchangeID            string             // Exchange account UUID
+	capabilities          types.Capabilities // Market rules: shorting, leverage, lot size, T+1
+	showInCompetition     bool               // Whether to show in competition page
 	config                AutoTraderConfig
 	trader                Trader // Use Trader interface (supports multiple platforms)
 	mcpClient             mcp.AIClient
@@ -211,6 +214,15 @@ type AutoTrader struct {
 // NewAutoTrader creates an automatic trader
 // st parameter is used to store decision records to database
 func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*AutoTrader, error) {
+	marketName, err := types.ResolveMarket(config.Market)
+	if err != nil {
+		return nil, err
+	}
+	capabilities, err := types.CapabilitiesOf(marketName)
+	if err != nil {
+		return nil, err
+	}
+
 	// Set default values
 	if config.ID == "" {
 		config.ID = "default_trader"
@@ -280,7 +292,6 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 
 	// Create corresponding trader based on configuration
 	var trader Trader
-	var err error
 
 	// Record position mode (general)
 	marginModeStr := "Cross Margin"
@@ -396,6 +407,7 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 		aiModel:               config.AIModel,
 		exchange:              config.Exchange,
 		exchangeID:            config.ExchangeID,
+		capabilities:          capabilities,
 		showInCompetition:     config.ShowInCompetition,
 		config:                config,
 		trader:                trader,

@@ -136,6 +136,13 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 		// Continue execution, doesn't affect trading
 	}
 
+	// [CODE ENFORCED] Market rules: shorting, leverage and lot size
+	quantity, err = at.applyMarketRules(decision, quantity, false)
+	if err != nil {
+		return err
+	}
+	actionRecord.Quantity = quantity
+
 	// Open position
 	order, err := at.trader.OpenLong(decision.Symbol, quantity, decision.Leverage)
 	if err != nil {
@@ -259,6 +266,13 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 		logger.Infof("  ⚠️ Failed to set margin mode: %v", err)
 		// Continue execution, doesn't affect trading
 	}
+
+	// [CODE ENFORCED] Market rules: shorting, leverage and lot size
+	quantity, err = at.applyMarketRules(decision, quantity, true)
+	if err != nil {
+		return err
+	}
+	actionRecord.Quantity = quantity
 
 	// Open position
 	order, err := at.trader.OpenShort(decision.Symbol, quantity, decision.Leverage)

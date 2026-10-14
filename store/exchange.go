@@ -39,6 +39,7 @@ type Exchange struct {
 	LighterPrivateKey          crypto.EncryptedString `gorm:"column:lighter_private_key;default:''" json:"lighterPrivateKey"`
 	LighterAPIKeyPrivateKey    crypto.EncryptedString `gorm:"column:lighter_api_key_private_key;default:''" json:"lighterAPIKeyPrivateKey"`
 	LighterAPIKeyIndex         int                    `gorm:"column:lighter_api_key_index;default:0" json:"lighterAPIKeyIndex"`
+	Market                     string                 `gorm:"column:market;not null;default:'crypto'" json:"market"` // "crypto", "us_equity" or "cn_equity"
 	CreatedAt                  time.Time              `json:"created_at"`
 	UpdatedAt                  time.Time              `json:"updated_at"`
 }
@@ -60,6 +61,9 @@ func (s *ExchangeStore) initTables() error {
 			if err := s.ensureHyperliquidBuilderApprovedColumn(); err != nil {
 				logger.Warnf("Exchange builder approval column migration warning: %v", err)
 			}
+			if err := s.ensureMarketColumn(); err != nil {
+				logger.Warnf("Exchange market column migration warning: %v", err)
+			}
 			s.migrateToMultiAccount()
 			s.db.Model(&Exchange{}).Where("account_name = '' OR account_name IS NULL").Update("account_name", "Default")
 			if err := s.cleanupIncompleteExchangeConfigs(); err != nil {
@@ -76,6 +80,9 @@ func (s *ExchangeStore) initTables() error {
 	// Run migration to multi-account if needed
 	if err := s.ensureHyperliquidBuilderApprovedColumn(); err != nil {
 		logger.Warnf("Exchange builder approval column migration warning: %v", err)
+	}
+	if err := s.ensureMarketColumn(); err != nil {
+		logger.Warnf("Exchange market column migration warning: %v", err)
 	}
 	if err := s.migrateToMultiAccount(); err != nil {
 		logger.Warnf("Multi-account migration warning: %v", err)
@@ -95,6 +102,15 @@ func (s *ExchangeStore) ensureHyperliquidBuilderApprovedColumn() error {
 		return nil
 	}
 	return s.db.Migrator().AddColumn(&Exchange{}, "HyperliquidBuilderApproved")
+}
+
+// ensureMarketColumn adds the market column to databases created before
+// per-market support. Existing rows take the 'crypto' default.
+func (s *ExchangeStore) ensureMarketColumn() error {
+	if s.db.Migrator().HasColumn(&Exchange{}, "Market") {
+		return nil
+	}
+	return s.db.Migrator().AddColumn(&Exchange{}, "Market")
 }
 
 func (s *ExchangeStore) cleanupIncompleteExchangeConfigs() error {
