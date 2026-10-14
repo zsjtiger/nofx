@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"nofx/logger"
+	"nofx/store/position"
 	"sync"
 
 	"gorm.io/gorm"
@@ -23,7 +24,7 @@ type Store struct {
 	exchange       *ExchangeStore
 	trader         *TraderStore
 	decision       *DecisionStore
-	position       *PositionStore
+	position       *position.Store
 	strategy       *StrategyStore
 	equity         *EquityStore
 	order          *OrderStore
@@ -227,11 +228,11 @@ func (s *Store) Decision() *DecisionStore {
 }
 
 // Position gets position storage
-func (s *Store) Position() *PositionStore {
+func (s *Store) Position() *position.Store {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.position == nil {
-		s.position = NewPositionStore(s.gdb)
+		s.position = position.New(s.gdb)
 	}
 	return s.position
 }

@@ -5,6 +5,7 @@ import (
 	"nofx/logger"
 	"nofx/market"
 	"nofx/store"
+	"nofx/store/position"
 	"nofx/trader/types"
 	"time"
 )
@@ -74,7 +75,7 @@ func CreatePositionSnapshot(traderID, exchangeID, exchangeType string, trader Tr
 			entryPrice = markPrice
 		}
 
-		snapshotPosition := &store.TraderPosition{
+		snapshotPosition := &position.TraderPosition{
 			TraderID:           traderID,
 			ExchangeID:         exchangeID,
 			ExchangeType:       exchangeType,

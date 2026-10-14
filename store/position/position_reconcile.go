@@ -1,4 +1,4 @@
-package store
+package position
 
 import (
 	"fmt"
@@ -34,7 +34,7 @@ func LivePositionKey(symbol, side string) string {
 //
 // Scope is by exchange account (all trader IDs), so rows left by prior
 // autopilot incarnations on the same exchange are reconciled too.
-func (s *PositionStore) ReconcileOpenPositionsWithLive(exchangeID string, liveQty map[string]float64) (int, error) {
+func (s *Store) ReconcileOpenPositionsWithLive(exchangeID string, liveQty map[string]float64) (int, error) {
 	openRows, err := s.GetOpenPositionsByExchange(exchangeID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to list open positions: %w", err)

@@ -1,4 +1,4 @@
-package store
+package position
 
 import (
 	"fmt"
@@ -22,7 +22,7 @@ type TraderStats struct {
 }
 
 // GetPositionStats gets position statistics
-func (s *PositionStore) GetPositionStats(traderID string) (map[string]interface{}, error) {
+func (s *Store) GetPositionStats(traderID string) (map[string]interface{}, error) {
 	stats := make(map[string]interface{})
 
 	type result struct {
@@ -56,14 +56,14 @@ func (s *PositionStore) GetPositionStats(traderID string) (map[string]interface{
 
 // GetFullStats gets complete trading statistics. startingEquity is the real
 // account baseline used for the drawdown equity curve; pass 0 when unknown.
-func (s *PositionStore) GetFullStats(traderID string, startingEquity float64) (*TraderStats, error) {
+func (s *Store) GetFullStats(traderID string, startingEquity float64) (*TraderStats, error) {
 	return s.GetFullStatsByTraderFilters([]string{traderID}, nil, startingEquity)
 }
 
 // GetFullStatsByTraderFilters gets complete trading statistics for explicit
 // trader IDs plus optional legacy trader ID patterns. startingEquity is the
 // real account baseline for the drawdown calculation; pass 0 when unknown.
-func (s *PositionStore) GetFullStatsByTraderFilters(traderIDs []string, traderIDPatterns []string, startingEquity float64) (*TraderStats, error) {
+func (s *Store) GetFullStatsByTraderFilters(traderIDs []string, traderIDPatterns []string, startingEquity float64) (*TraderStats, error) {
 	stats := &TraderStats{}
 
 	var positions []TraderPosition
@@ -128,7 +128,7 @@ type RecentTrade struct {
 }
 
 // GetRecentTrades gets recent closed trades
-func (s *PositionStore) GetRecentTrades(traderID string, limit int) ([]RecentTrade, error) {
+func (s *Store) GetRecentTrades(traderID string, limit int) ([]RecentTrade, error) {
 	var positions []TraderPosition
 	err := s.db.Where("trader_id = ? AND status = ?", traderID, "CLOSED").
 		Order("exit_time DESC").
@@ -241,13 +241,13 @@ type SymbolStats struct {
 }
 
 // GetSymbolStats gets per-symbol trading statistics
-func (s *PositionStore) GetSymbolStats(traderID string, limit int) ([]SymbolStats, error) {
+func (s *Store) GetSymbolStats(traderID string, limit int) ([]SymbolStats, error) {
 	return s.GetSymbolStatsByTraderFilters([]string{traderID}, nil, limit)
 }
 
 // GetSymbolStatsByTraderFilters gets per-symbol trading statistics for explicit
 // trader IDs plus optional legacy trader ID patterns.
-func (s *PositionStore) GetSymbolStatsByTraderFilters(traderIDs []string, traderIDPatterns []string, limit int) ([]SymbolStats, error) {
+func (s *Store) GetSymbolStatsByTraderFilters(traderIDs []string, traderIDPatterns []string, limit int) ([]SymbolStats, error) {
 	var positions []TraderPosition
 	err := s.closedPositionsByTraderFilters(traderIDs, traderIDPatterns).Find(&positions).Error
 	if err != nil {
@@ -317,7 +317,7 @@ type HoldingTimeStats struct {
 }
 
 // GetHoldingTimeStats analyzes performance by holding duration
-func (s *PositionStore) GetHoldingTimeStats(traderID string) ([]HoldingTimeStats, error) {
+func (s *Store) GetHoldingTimeStats(traderID string) ([]HoldingTimeStats, error) {
 	var positions []TraderPosition
 	err := s.db.Where("trader_id = ? AND status = ? AND exit_time > 0", traderID, "CLOSED").Find(&positions).Error
 	if err != nil {
@@ -387,13 +387,13 @@ type DirectionStats struct {
 }
 
 // GetDirectionStats analyzes long vs short performance
-func (s *PositionStore) GetDirectionStats(traderID string) ([]DirectionStats, error) {
+func (s *Store) GetDirectionStats(traderID string) ([]DirectionStats, error) {
 	return s.GetDirectionStatsByTraderFilters([]string{traderID}, nil)
 }
 
 // GetDirectionStatsByTraderFilters analyzes long vs short performance for
 // explicit trader IDs plus optional legacy trader ID patterns.
-func (s *PositionStore) GetDirectionStatsByTraderFilters(traderIDs []string, traderIDPatterns []string) ([]DirectionStats, error) {
+func (s *Store) GetDirectionStatsByTraderFilters(traderIDs []string, traderIDPatterns []string) ([]DirectionStats, error) {
 	var positions []TraderPosition
 	err := s.closedPositionsByTraderFilters(traderIDs, traderIDPatterns).Find(&positions).Error
 	if err != nil {

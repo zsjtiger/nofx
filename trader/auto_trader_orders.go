@@ -6,6 +6,7 @@ import (
 	"nofx/logger"
 	"nofx/market"
 	"nofx/store"
+	"nofx/trader/rules"
 	"time"
 )
 
@@ -70,7 +71,7 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 	if err != nil {
 		return fmt.Errorf("failed to get market data for %s: %w", decision.Symbol, err)
 	}
-	if err := validateProtectionPrices(decision.Action, marketData.CurrentPrice, decision.StopLoss, decision.TakeProfit); err != nil {
+	if err := rules.ValidateProtectionPrices(decision.Action, marketData.CurrentPrice, decision.StopLoss, decision.TakeProfit); err != nil {
 		return err
 	}
 
@@ -194,7 +195,7 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 	if err != nil {
 		return fmt.Errorf("failed to get market data for %s: %w", decision.Symbol, err)
 	}
-	if err := validateProtectionPrices(decision.Action, marketData.CurrentPrice, decision.StopLoss, decision.TakeProfit); err != nil {
+	if err := rules.ValidateProtectionPrices(decision.Action, marketData.CurrentPrice, decision.StopLoss, decision.TakeProfit); err != nil {
 		return err
 	}
 

@@ -1,4 +1,4 @@
-package store
+package position
 
 import (
 	"fmt"
@@ -35,7 +35,7 @@ type HistorySummary struct {
 }
 
 // GetHistorySummary generates comprehensive AI context summary
-func (s *PositionStore) GetHistorySummary(traderID string) (*HistorySummary, error) {
+func (s *Store) GetHistorySummary(traderID string) (*HistorySummary, error) {
 	summary := &HistorySummary{}
 
 	// Baseline 0 is fine here: the summary only reads counts/win-rate/PnL, not
@@ -119,7 +119,7 @@ func (s *PositionStore) GetHistorySummary(traderID string) (*HistorySummary, err
 }
 
 // calculateStreaks calculates win/loss streaks
-func (s *PositionStore) calculateStreaks(traderID string, summary *HistorySummary) {
+func (s *Store) calculateStreaks(traderID string, summary *HistorySummary) {
 	var positions []TraderPosition
 	err := s.db.Where("trader_id = ? AND status = ?", traderID, "CLOSED").
 		Order("exit_time DESC").
@@ -192,7 +192,7 @@ type ClosedPnLRecord struct {
 }
 
 // CreateFromClosedPnL creates a closed position record from exchange data
-func (s *PositionStore) CreateFromClosedPnL(traderID, exchangeID, exchangeType string, record *ClosedPnLRecord) (bool, error) {
+func (s *Store) CreateFromClosedPnL(traderID, exchangeID, exchangeType string, record *ClosedPnLRecord) (bool, error) {
 	if record.Symbol == "" {
 		return false, nil
 	}
@@ -275,7 +275,7 @@ func (s *PositionStore) CreateFromClosedPnL(traderID, exchangeID, exchangeType s
 }
 
 // GetLastClosedPositionTime gets the most recent exit time (Unix ms)
-func (s *PositionStore) GetLastClosedPositionTime(traderID string) (int64, error) {
+func (s *Store) GetLastClosedPositionTime(traderID string) (int64, error) {
 	var pos TraderPosition
 	err := s.db.Where("trader_id = ? AND status = ? AND exit_time > 0", traderID, "CLOSED").
 		Order("exit_time DESC").
@@ -292,7 +292,7 @@ func (s *PositionStore) GetLastClosedPositionTime(traderID string) (int64, error
 }
 
 // SyncClosedPositions syncs closed positions from exchange
-func (s *PositionStore) SyncClosedPositions(traderID, exchangeID, exchangeType string, records []ClosedPnLRecord) (int, int, error) {
+func (s *Store) SyncClosedPositions(traderID, exchangeID, exchangeType string, records []ClosedPnLRecord) (int, int, error) {
 	created, skipped := 0, 0
 	for _, record := range records {
 		rec := record

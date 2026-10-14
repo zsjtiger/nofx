@@ -1,7 +1,7 @@
 package trader
 
 import (
-	"nofx/store"
+	"nofx/store/position"
 	"testing"
 	"time"
 
@@ -19,8 +19,8 @@ type TestScenario struct {
 
 // TestTrade represents a single trade in a test scenario
 type TestTrade struct {
-	Action      string  // open_long, close_short, etc.
-	Side        string  // LONG or SHORT
+	Action      string // open_long, close_short, etc.
+	Side        string // LONG or SHORT
 	Symbol      string
 	Quantity    float64
 	Price       float64
@@ -124,12 +124,12 @@ func runStandardTests(t *testing.T, exchangeName string) {
 				t.Fatalf("Failed to create test database: %v", err)
 			}
 
-			positionStore := store.NewPositionStore(db)
+			positionStore := position.New(db)
 			if err := positionStore.InitTables(); err != nil {
 				t.Fatalf("Failed to initialize position tables: %v", err)
 			}
 
-			posBuilder := store.NewPositionBuilder(positionStore)
+			posBuilder := position.NewBuilder(positionStore)
 
 			traderID := "test-trader"
 			exchangeID := "test-exchange-" + exchangeName
@@ -208,12 +208,12 @@ func TestPositionAccumulationBug(t *testing.T) {
 		t.Fatalf("Failed to create test database: %v", err)
 	}
 
-	positionStore := store.NewPositionStore(db)
+	positionStore := position.New(db)
 	if err := positionStore.InitTables(); err != nil {
 		t.Fatalf("Failed to initialize position tables: %v", err)
 	}
 
-	posBuilder := store.NewPositionBuilder(positionStore)
+	posBuilder := position.NewBuilder(positionStore)
 
 	traderID := "test-trader"
 	exchangeID := "test-exchange"
@@ -293,12 +293,12 @@ func TestQuantityPrecision(t *testing.T) {
 		t.Fatalf("Failed to create test database: %v", err)
 	}
 
-	positionStore := store.NewPositionStore(db)
+	positionStore := position.New(db)
 	if err := positionStore.InitTables(); err != nil {
 		t.Fatalf("Failed to initialize position tables: %v", err)
 	}
 
-	posBuilder := store.NewPositionBuilder(positionStore)
+	posBuilder := position.NewBuilder(positionStore)
 
 	traderID := "test-trader"
 	exchangeID := "test-exchange"

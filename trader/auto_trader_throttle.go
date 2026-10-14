@@ -5,6 +5,7 @@ import (
 	"nofx/kernel"
 	"nofx/market"
 	"nofx/store"
+	"nofx/trader/rules"
 	"strings"
 	"time"
 )
@@ -25,64 +26,6 @@ const (
 	noiseCloseProfitCeilingPct    = 3.0
 )
 
-// positionPricePnLPct converts the margin-based UnrealizedPnLPct reported for
-// a position into the underlying price-move percentage.
-func positionPricePnLPct(pos *kernel.PositionInfo) float64 {
-	if pos == nil {
-		return 0
-	}
-	if pos.Leverage > 1 {
-		return pos.UnrealizedPnLPct / float64(pos.Leverage)
-	}
-	return pos.UnrealizedPnLPct
-}
-
-func isOpenAction(action string) bool {
-	switch strings.ToLower(strings.TrimSpace(action)) {
-	case "open_long", "open_short":
-		return true
-	default:
-		return false
-	}
-}
-
-func isCloseAction(action string) bool {
-	switch strings.ToLower(strings.TrimSpace(action)) {
-	case "close_long", "close_short":
-		return true
-	default:
-		return false
-	}
-}
-
-func closeActionSide(action string) string {
-	switch strings.ToLower(strings.TrimSpace(action)) {
-	case "close_long":
-		return "long"
-	case "close_short":
-		return "short"
-	default:
-		return ""
-	}
-}
-
-func openActionSide(action string) string {
-	switch strings.ToLower(strings.TrimSpace(action)) {
-	case "open_long":
-		return "long"
-	case "open_short":
-		return "short"
-	default:
-		return ""
-	}
-}
-
-// canonicalPositionSymbol normalizes a symbol reported by the exchange. Exchange
-// symbols are already canonical, so only case and whitespace are normalised.
-func canonicalPositionSymbol(symbol string) string {
-	return strings.ToUpper(strings.TrimSpace(symbol))
-}
-
 func (at *AutoTrader) normalizedDecisionSymbol(symbol string) string {
 	return market.NormalizeFor(at.marketCapabilities().Market, strings.TrimSpace(symbol))
 }
@@ -93,9 +36,9 @@ func (at *AutoTrader) tradeThrottleReason(decision kernel.Decision, ctx *kernel.
 	}
 
 	switch {
-	case isOpenAction(decision.Action):
+	case rules.IsOpenAction(decision.Action):
 		return at.openThrottleReason(decision, ctx)
-	case isCloseAction(decision.Action):
+	case rules.IsCloseAction(decision.Action):
 		return at.closeThrottleReason(decision, ctx)
 	default:
 		return ""
@@ -108,7 +51,7 @@ func (at *AutoTrader) openThrottleReason(decision kernel.Decision, ctx *kernel.C
 		return ""
 	}
 
-	if pos := findAnyContextPosition(ctx, symbol); pos != nil {
+	if pos := rules.FindAnyContextPosition(ctx, symbol); pos != nil {
 		return fmt.Sprintf("trade throttle: %s already has an open %s position; manage or close it before opening another side", symbol, pos.Side)
 	}
 
@@ -118,7 +61,7 @@ func (at *AutoTrader) openThrottleReason(decision kernel.Decision, ctx *kernel.C
 		if remaining < 0 {
 			remaining = 0
 		}
-		return fmt.Sprintf("trade throttle: %s was closed %s ago; wait %s before re-entry", symbol, roundDuration(age), roundDuration(remaining))
+		return fmt.Sprintf("trade throttle: %s was closed %s ago; wait %s before re-entry", symbol, rules.RoundDuration(age), rules.RoundDuration(remaining))
 	}
 
 	return ""
@@ -126,16 +69,16 @@ func (at *AutoTrader) openThrottleReason(decision kernel.Decision, ctx *kernel.C
 
 func (at *AutoTrader) closeThrottleReason(decision kernel.Decision, ctx *kernel.Context) string {
 	symbol := at.normalizedDecisionSymbol(decision.Symbol)
-	side := closeActionSide(decision.Action)
+	side := rules.CloseActionSide(decision.Action)
 	if symbol == "" || side == "" {
 		return ""
 	}
 
-	pos := findContextPosition(ctx, symbol, side)
+	pos := rules.FindContextPosition(ctx, symbol, side)
 	pnlPct := 0.0
 	entryTime := int64(0)
 	if pos != nil {
-		pnlPct = positionPricePnLPct(pos)
+		pnlPct = rules.PositionPricePnLPct(pos)
 		entryTime = pos.UpdateTime
 	}
 
@@ -162,11 +105,11 @@ func (at *AutoTrader) closeThrottleReason(decision kernel.Decision, ctx *kernel.
 			"trade throttle: %s %s has been held for %s with price PnL %.2f%%; it is still inside the noise band %.1f%% to %.1f%%, so wait about %s before a flat/small close",
 			symbol,
 			side,
-			roundDuration(heldFor),
+			rules.RoundDuration(heldFor),
 			pnlPct,
 			noiseCloseLossFloorPct,
 			noiseCloseProfitCeilingPct,
-			roundDuration(remaining),
+			rules.RoundDuration(remaining),
 		)
 	}
 
@@ -180,38 +123,12 @@ func (at *AutoTrader) closeThrottleReason(decision kernel.Decision, ctx *kernel.
 		"trade throttle: %s %s has only been held for %s with price PnL %.2f%%; min AI-managed hold is %s unless price loss <= %.1f%% or price profit >= %.1f%%",
 		symbol,
 		side,
-		roundDuration(heldFor),
+		rules.RoundDuration(heldFor),
 		pnlPct,
-		roundDuration(autopilotMinHoldDuration),
+		rules.RoundDuration(autopilotMinHoldDuration),
 		earlyCloseStopLossBypassPct,
 		earlyCloseTakeProfitBypassPct,
-	) + fmt.Sprintf("; wait about %s", roundDuration(remaining))
-}
-
-func findContextPosition(ctx *kernel.Context, symbol string, side string) *kernel.PositionInfo {
-	if ctx == nil {
-		return nil
-	}
-	for i := range ctx.Positions {
-		pos := &ctx.Positions[i]
-		if canonicalPositionSymbol(pos.Symbol) == symbol && strings.EqualFold(pos.Side, side) {
-			return pos
-		}
-	}
-	return nil
-}
-
-func findAnyContextPosition(ctx *kernel.Context, symbol string) *kernel.PositionInfo {
-	if ctx == nil {
-		return nil
-	}
-	for i := range ctx.Positions {
-		pos := &ctx.Positions[i]
-		if canonicalPositionSymbol(pos.Symbol) == symbol {
-			return pos
-		}
-	}
-	return nil
+	) + fmt.Sprintf("; wait about %s", rules.RoundDuration(remaining))
 }
 
 func (at *AutoTrader) recentOrders(limit int) ([]*store.TraderOrder, error) {
@@ -232,7 +149,7 @@ func (at *AutoTrader) findRecentCloseOrder(symbol string, since time.Time) *stor
 		if order == nil || order.CreatedAt < sinceMs || isCanceledOrder(order) {
 			continue
 		}
-		if at.normalizedDecisionSymbol(order.Symbol) == symbol && isCloseAction(order.OrderAction) {
+		if at.normalizedDecisionSymbol(order.Symbol) == symbol && rules.IsCloseAction(order.OrderAction) {
 			return order
 		}
 	}
@@ -251,7 +168,7 @@ func (at *AutoTrader) findRecentOpenOrder(symbol string, side string, since time
 			continue
 		}
 		if at.normalizedDecisionSymbol(order.Symbol) == symbol &&
-			strings.EqualFold(openActionSide(order.OrderAction), side) {
+			strings.EqualFold(rules.OpenActionSide(order.OrderAction), side) {
 			return order
 		}
 	}
@@ -261,11 +178,4 @@ func (at *AutoTrader) findRecentOpenOrder(symbol string, side string, since time
 func isCanceledOrder(order *store.TraderOrder) bool {
 	status := strings.ToUpper(strings.TrimSpace(order.Status))
 	return status == "CANCELED" || status == "CANCELLED" || status == "REJECTED" || status == "EXPIRED"
-}
-
-func roundDuration(d time.Duration) string {
-	if d < time.Minute {
-		return "0m"
-	}
-	return d.Round(time.Minute).String()
 }

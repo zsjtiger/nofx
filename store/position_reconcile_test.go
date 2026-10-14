@@ -3,6 +3,8 @@ package store
 import (
 	"testing"
 	"time"
+
+	"nofx/store/position"
 )
 
 func newReconcileTestStore(t *testing.T) *Store {
@@ -17,7 +19,7 @@ func newReconcileTestStore(t *testing.T) *Store {
 
 func openRow(t *testing.T, st *Store, traderID, exchangeID, symbol, side string, qty, pnl float64, entryMs int64) int64 {
 	t.Helper()
-	pos := &TraderPosition{
+	pos := &position.TraderPosition{
 		TraderID:      traderID,
 		ExchangeID:    exchangeID,
 		ExchangeType:  "hyperliquid",
@@ -63,8 +65,8 @@ func TestReconcileClosesZombiesKeepsLiveAndTrims(t *testing.T) {
 	otherExch := openRow(t, st, "trader-now", "ex-other", "ETHUSDT", "LONG", 2.0, 0, base+4000)
 
 	live := map[string]float64{
-		LivePositionKey("xyz:SP500", "long"): 0.057,
-		LivePositionKey("BTCUSDT", "long"):   0.01,
+		position.LivePositionKey("xyz:SP500", "long"): 0.057,
+		position.LivePositionKey("BTCUSDT", "long"):   0.01,
 	}
 
 	closed, err := st.Position().ReconcileOpenPositionsWithLive(exch, live)
@@ -75,10 +77,10 @@ func TestReconcileClosesZombiesKeepsLiveAndTrims(t *testing.T) {
 		t.Fatalf("expected 3 zombies closed (DRAM + legacy SOL + old SP500), got %d", closed)
 	}
 
-	get := func(id int64) *TraderPosition {
+	get := func(id int64) *position.TraderPosition {
 		t.Helper()
-		var pos TraderPosition
-		if err := st.Position().db.First(&pos, id).Error; err != nil {
+		var pos position.TraderPosition
+		if err := st.GormDB().First(&pos, id).Error; err != nil {
 			t.Fatalf("load position %d: %v", id, err)
 		}
 		return &pos

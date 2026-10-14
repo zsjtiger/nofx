@@ -1,4 +1,4 @@
-package store
+package position
 
 import (
 	"fmt"
@@ -125,23 +125,23 @@ func (TraderPosition) TableName() string {
 	return "trader_positions"
 }
 
-// PositionStore position storage
-type PositionStore struct {
+// Store position storage
+type Store struct {
 	db *gorm.DB
 }
 
-// NewPositionStore creates position storage instance
-func NewPositionStore(db *gorm.DB) *PositionStore {
-	return &PositionStore{db: db}
+// New creates position storage instance
+func New(db *gorm.DB) *Store {
+	return &Store{db: db}
 }
 
 // isPostgres checks if the database is PostgreSQL
-func (s *PositionStore) isPostgres() bool {
+func (s *Store) isPostgres() bool {
 	return s.db.Dialector.Name() == "postgres"
 }
 
 // InitTables initializes position tables
-func (s *PositionStore) InitTables() error {
+func (s *Store) InitTables() error {
 	// For PostgreSQL with existing table, skip AutoMigrate
 	if s.isPostgres() {
 		var tableExists int64
@@ -186,7 +186,7 @@ func (s *PositionStore) InitTables() error {
 }
 
 // Create creates position record
-func (s *PositionStore) Create(pos *TraderPosition) error {
+func (s *Store) Create(pos *TraderPosition) error {
 	pos.Status = "OPEN"
 	if pos.EntryQuantity == 0 {
 		pos.EntryQuantity = pos.Quantity
@@ -195,7 +195,7 @@ func (s *PositionStore) Create(pos *TraderPosition) error {
 }
 
 // ClosePosition closes position
-func (s *PositionStore) ClosePosition(id int64, exitPrice float64, exitOrderID string, realizedPnL float64, fee float64, closeReason string) error {
+func (s *Store) ClosePosition(id int64, exitPrice float64, exitOrderID string, realizedPnL float64, fee float64, closeReason string) error {
 	nowMs := time.Now().UTC().UnixMilli()
 	return s.db.Model(&TraderPosition{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"exit_price":    exitPrice,
@@ -210,7 +210,7 @@ func (s *PositionStore) ClosePosition(id int64, exitPrice float64, exitOrderID s
 }
 
 // UpdatePositionQuantityAndPrice updates position quantity and recalculates entry price
-func (s *PositionStore) UpdatePositionQuantityAndPrice(id int64, addQty float64, addPrice float64, addFee float64) error {
+func (s *Store) UpdatePositionQuantityAndPrice(id int64, addQty float64, addPrice float64, addFee float64) error {
 	var pos TraderPosition
 	if err := s.db.First(&pos, id).Error; err != nil {
 		return fmt.Errorf("failed to get current position: %w", err)
@@ -240,7 +240,7 @@ func (s *PositionStore) UpdatePositionQuantityAndPrice(id int64, addQty float64,
 
 // ReducePositionQuantity reduces position quantity for partial close
 // If quantity reaches 0 (or near 0), automatically closes the position
-func (s *PositionStore) ReducePositionQuantity(id int64, reduceQty float64, exitPrice float64, addFee float64, addPnL float64) error {
+func (s *Store) ReducePositionQuantity(id int64, reduceQty float64, exitPrice float64, addFee float64, addPnL float64) error {
 	var pos TraderPosition
 	if err := s.db.First(&pos, id).Error; err != nil {
 		return fmt.Errorf("failed to get current position: %w", err)
@@ -288,7 +288,7 @@ func (s *PositionStore) ReducePositionQuantity(id int64, reduceQty float64, exit
 }
 
 // UpdatePositionExchangeInfo updates exchange_id and exchange_type
-func (s *PositionStore) UpdatePositionExchangeInfo(id int64, exchangeID, exchangeType string) error {
+func (s *Store) UpdatePositionExchangeInfo(id int64, exchangeID, exchangeType string) error {
 	nowMs := time.Now().UTC().UnixMilli()
 	return s.db.Model(&TraderPosition{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"exchange_id":   exchangeID,
@@ -299,7 +299,7 @@ func (s *PositionStore) UpdatePositionExchangeInfo(id int64, exchangeID, exchang
 
 // ClosePositionFully marks position as fully closed
 // exitTimeMs is Unix milliseconds UTC
-func (s *PositionStore) ClosePositionFully(id int64, exitPrice float64, exitOrderID string, exitTimeMs int64, totalRealizedPnL float64, totalFee float64, closeReason string) error {
+func (s *Store) ClosePositionFully(id int64, exitPrice float64, exitOrderID string, exitTimeMs int64, totalRealizedPnL float64, totalFee float64, closeReason string) error {
 	var pos TraderPosition
 	if err := s.db.First(&pos, id).Error; err != nil {
 		return fmt.Errorf("failed to get position: %w", err)
@@ -324,12 +324,12 @@ func (s *PositionStore) ClosePositionFully(id int64, exitPrice float64, exitOrde
 }
 
 // DeleteAllOpenPositions deletes all OPEN positions for a trader
-func (s *PositionStore) DeleteAllOpenPositions(traderID string) error {
+func (s *Store) DeleteAllOpenPositions(traderID string) error {
 	return s.db.Where("trader_id = ? AND status = ?", traderID, "OPEN").Delete(&TraderPosition{}).Error
 }
 
 // GetOpenPositions gets all open positions
-func (s *PositionStore) GetOpenPositions(traderID string) ([]*TraderPosition, error) {
+func (s *Store) GetOpenPositions(traderID string) ([]*TraderPosition, error) {
 	var positions []*TraderPosition
 	err := s.db.Where("trader_id = ? AND status = ?", traderID, "OPEN").
 		Order("entry_time DESC").
@@ -352,7 +352,7 @@ func (s *PositionStore) GetOpenPositions(traderID string) ([]*TraderPosition, er
 // Autopilot" relaunch (each relaunch mints a fresh trader_id), so reconciling
 // must be scoped to the exchange — not the current trader_id — or rows left by
 // prior incarnations become permanent orphans that never close.
-func (s *PositionStore) GetOpenPositionsByExchange(exchangeID string) ([]*TraderPosition, error) {
+func (s *Store) GetOpenPositionsByExchange(exchangeID string) ([]*TraderPosition, error) {
 	var positions []*TraderPosition
 	err := s.db.Where("exchange_id = ? AND status = ?", exchangeID, "OPEN").
 		Order("entry_time DESC").
@@ -369,7 +369,7 @@ func (s *PositionStore) GetOpenPositionsByExchange(exchangeID string) ([]*Trader
 }
 
 // GetOpenPositionBySymbol gets open position for specified symbol and direction
-func (s *PositionStore) GetOpenPositionBySymbol(traderID, symbol, side string) (*TraderPosition, error) {
+func (s *Store) GetOpenPositionBySymbol(traderID, symbol, side string) (*TraderPosition, error) {
 	var pos TraderPosition
 	err := s.db.Where("trader_id = ? AND symbol = ? AND UPPER(side) = UPPER(?) AND status = ?", traderID, symbol, side, "OPEN").
 		Order("entry_time DESC").
@@ -402,11 +402,11 @@ func (s *PositionStore) GetOpenPositionBySymbol(traderID, symbol, side string) (
 }
 
 // GetClosedPositions gets closed positions
-func (s *PositionStore) GetClosedPositions(traderID string, limit int) ([]*TraderPosition, error) {
+func (s *Store) GetClosedPositions(traderID string, limit int) ([]*TraderPosition, error) {
 	return s.GetClosedPositionsByTraderFilters([]string{traderID}, nil, limit)
 }
 
-func (s *PositionStore) closedPositionsByTraderFilters(traderIDs []string, traderIDPatterns []string) *gorm.DB {
+func (s *Store) closedPositionsByTraderFilters(traderIDs []string, traderIDPatterns []string) *gorm.DB {
 	query := s.db.Where("status = ?", "CLOSED")
 
 	conditions := make([]string, 0, len(traderIDs)+len(traderIDPatterns))
@@ -443,7 +443,7 @@ func (s *PositionStore) closedPositionsByTraderFilters(traderIDs []string, trade
 // GetClosedPositionsByTraderFilters gets closed positions for explicit trader IDs
 // and legacy trader ID patterns. Patterns are used only for same-user Autopilot
 // history continuity when an old trader row was deleted but its position records remain.
-func (s *PositionStore) GetClosedPositionsByTraderFilters(traderIDs []string, traderIDPatterns []string, limit int) ([]*TraderPosition, error) {
+func (s *Store) GetClosedPositionsByTraderFilters(traderIDs []string, traderIDPatterns []string, limit int) ([]*TraderPosition, error) {
 	var positions []*TraderPosition
 	query := s.closedPositionsByTraderFilters(traderIDs, traderIDPatterns).Order("exit_time DESC")
 	if limit > 0 {
@@ -464,7 +464,7 @@ func (s *PositionStore) GetClosedPositionsByTraderFilters(traderIDs []string, tr
 }
 
 // GetAllOpenPositions gets all traders' open positions
-func (s *PositionStore) GetAllOpenPositions() ([]*TraderPosition, error) {
+func (s *Store) GetAllOpenPositions() ([]*TraderPosition, error) {
 	var positions []*TraderPosition
 	err := s.db.Where("status = ?", "OPEN").
 		Order("trader_id, entry_time DESC").
@@ -482,7 +482,7 @@ func (s *PositionStore) GetAllOpenPositions() ([]*TraderPosition, error) {
 }
 
 // ExistsWithExchangePositionID checks if a position exists
-func (s *PositionStore) ExistsWithExchangePositionID(exchangeID, exchangePositionID string) (bool, error) {
+func (s *Store) ExistsWithExchangePositionID(exchangeID, exchangePositionID string) (bool, error) {
 	if exchangePositionID == "" {
 		return false, nil
 	}
@@ -498,7 +498,7 @@ func (s *PositionStore) ExistsWithExchangePositionID(exchangeID, exchangePositio
 }
 
 // GetOpenPositionByExchangePositionID gets an OPEN position by exchange_position_id
-func (s *PositionStore) GetOpenPositionByExchangePositionID(exchangeID, exchangePositionID string) (*TraderPosition, error) {
+func (s *Store) GetOpenPositionByExchangePositionID(exchangeID, exchangePositionID string) (*TraderPosition, error) {
 	if exchangePositionID == "" {
 		return nil, nil
 	}
@@ -520,7 +520,7 @@ func (s *PositionStore) GetOpenPositionByExchangePositionID(exchangeID, exchange
 }
 
 // CreateOpenPosition creates an open position
-func (s *PositionStore) CreateOpenPosition(pos *TraderPosition) error {
+func (s *Store) CreateOpenPosition(pos *TraderPosition) error {
 	if pos.ExchangePositionID != "" && pos.ExchangeID != "" {
 		existingPos, err := s.GetOpenPositionByExchangePositionID(pos.ExchangeID, pos.ExchangePositionID)
 		if err != nil {
@@ -568,7 +568,7 @@ func (s *PositionStore) CreateOpenPosition(pos *TraderPosition) error {
 
 // ClosePositionWithAccurateData closes a position with accurate data from exchange
 // exitTimeMs is Unix milliseconds UTC
-func (s *PositionStore) ClosePositionWithAccurateData(id int64, exitPrice float64, exitOrderID string, exitTimeMs int64, realizedPnL float64, fee float64, closeReason string) error {
+func (s *Store) ClosePositionWithAccurateData(id int64, exitPrice float64, exitOrderID string, exitTimeMs int64, realizedPnL float64, fee float64, closeReason string) error {
 	return s.db.Model(&TraderPosition{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"exit_price":    exitPrice,
 		"exit_order_id": exitOrderID,

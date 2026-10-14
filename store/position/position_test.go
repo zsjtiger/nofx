@@ -1,4 +1,4 @@
-package store
+package position
 
 import (
 	"testing"
@@ -14,7 +14,7 @@ func TestGetOpenPositionBySymbolMatchesSideCaseInsensitively(t *testing.T) {
 		t.Fatalf("open in-memory sqlite: %v", err)
 	}
 
-	positions := NewPositionStore(db)
+	positions := New(db)
 	if err := positions.InitTables(); err != nil {
 		t.Fatalf("init position table: %v", err)
 	}
@@ -49,7 +49,7 @@ func TestGetClosedPositionsByTraderFiltersIncludesLegacyAutopilotIDs(t *testing.
 		t.Fatalf("open in-memory sqlite: %v", err)
 	}
 
-	positions := NewPositionStore(db)
+	positions := New(db)
 	if err := positions.InitTables(); err != nil {
 		t.Fatalf("init position table: %v", err)
 	}

@@ -1,4 +1,4 @@
-package store
+package position
 
 import (
 	"fmt"
@@ -8,25 +8,25 @@ import (
 	"time"
 )
 
-// PositionBuilder handles position creation and updates with support for:
+// Builder handles position creation and updates with support for:
 // - Position averaging (merging multiple opens)
 // - Partial closes (reducing quantity)
 // - FIFO matching
 // - Time-ordered processing
-type PositionBuilder struct {
-	positionStore *PositionStore
+type Builder struct {
+	positionStore *Store
 }
 
-// NewPositionBuilder creates a new PositionBuilder
-func NewPositionBuilder(positionStore *PositionStore) *PositionBuilder {
-	return &PositionBuilder{
+// NewBuilder creates a new Builder
+func NewBuilder(positionStore *Store) *Builder {
+	return &Builder{
 		positionStore: positionStore,
 	}
 }
 
 // ProcessTrade processes a single trade and updates position accordingly
 // tradeTimeMs is Unix milliseconds UTC
-func (pb *PositionBuilder) ProcessTrade(
+func (pb *Builder) ProcessTrade(
 	traderID, exchangeID, exchangeType, symbol, side, action string,
 	quantity, price, fee, realizedPnL float64,
 	tradeTimeMs int64,
@@ -42,7 +42,7 @@ func (pb *PositionBuilder) ProcessTrade(
 
 // handleOpen handles opening positions (create new or average into existing)
 // tradeTimeMs is Unix milliseconds UTC
-func (pb *PositionBuilder) handleOpen(
+func (pb *Builder) handleOpen(
 	traderID, exchangeID, exchangeType, symbol, side string,
 	quantity, price, fee float64,
 	tradeTimeMs int64,
@@ -94,7 +94,7 @@ func (pb *PositionBuilder) handleOpen(
 
 // handleClose handles closing positions (partial or full)
 // tradeTimeMs is Unix milliseconds UTC
-func (pb *PositionBuilder) handleClose(
+func (pb *Builder) handleClose(
 	traderID, exchangeID, exchangeType, symbol, side string,
 	quantity, price, fee, realizedPnL float64,
 	tradeTimeMs int64,

@@ -7,6 +7,7 @@ import (
 	"nofx/logger"
 	"nofx/market"
 	"nofx/store"
+	"nofx/store/position"
 	"nofx/telemetry"
 	"time"
 )
@@ -386,7 +387,7 @@ func (at *AutoTrader) recordPositionChange(orderID, symbol, side, action string,
 	case "open_long", "open_short":
 		// Open position: create new position record
 		nowMs := time.Now().UTC().UnixMilli()
-		pos := &store.TraderPosition{
+		pos := &position.TraderPosition{
 			TraderID:     at.id,
 			ExchangeID:   at.exchangeID, // Exchange account UUID
 			ExchangeType: at.exchange,   // Exchange type: binance/bybit/okx/etc
@@ -412,7 +413,7 @@ func (at *AutoTrader) recordPositionChange(orderID, symbol, side, action string,
 		// PositionBuilder will handle both cases:
 		// 1. If open position exists: close it properly
 		// 2. If no open position (e.g., table cleared): create a closed position record
-		posBuilder := store.NewPositionBuilder(at.store.Position())
+		posBuilder := position.NewBuilder(at.store.Position())
 		if err := posBuilder.ProcessTrade(
 			at.id, at.exchangeID, at.exchange,
 			symbol, side, action,
