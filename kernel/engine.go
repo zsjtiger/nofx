@@ -13,6 +13,7 @@ import (
 	"nofx/provider/vergex"
 	"nofx/security"
 	"nofx/store"
+	"nofx/trader/types"
 	"os"
 	"sort"
 	"strings"
@@ -190,6 +191,7 @@ type StrategyEngine struct {
 	nofxosClient       *nofxos.Client
 	vergexClient       *vergex.Client
 	vergexRankingCache map[string]*vergex.DirectionChangeItem
+	market             types.Market // empty or crypto keeps the perpetual rules
 }
 
 // NewStrategyEngine creates strategy execution engine.

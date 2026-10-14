@@ -85,10 +85,13 @@ func GetFullDecisionWithStrategy(ctx *Context, mcpClient mcp.AIClient, engine *S
 		}
 	}
 	pruneCandidateCoinsWithoutMarketData(ctx)
-	enrichVergexDataWithStrategy(ctx, engine)
+	_, equityMarket := engine.equityCapabilities()
+	if !equityMarket {
+		enrichVergexDataWithStrategy(ctx, engine)
+	}
 
-	// Ensure OITopDataMap is initialized
-	if ctx.OITopDataMap == nil {
+	// Open-interest ranking is a perpetual-futures signal and does not apply to stocks.
+	if ctx.OITopDataMap == nil && !equityMarket {
 		ctx.OITopDataMap = make(map[string]*OITopData)
 		oiPositions, err := engine.nofxosClient.GetOITopPositions()
 		if err == nil {
@@ -128,6 +131,13 @@ func GetFullDecisionWithStrategy(ctx *Context, mcpClient mcp.AIClient, engine *S
 		riskConfig.AltcoinMaxPositionValueRatio,
 		engine.usesVergexSignalPrompt(),
 	)
+
+	// Stock markets have their own rules (no shorts on A-shares, no leverage, stops required).
+	if err == nil && decision != nil {
+		if caps, ok := engine.equityCapabilities(); ok {
+			err = ValidateEquityDecisions(decision.Decisions, caps, ctx.Account.TotalEquity, riskConfig)
+		}
+	}
 
 	if decision != nil {
 		decision.Timestamp = time.Now()

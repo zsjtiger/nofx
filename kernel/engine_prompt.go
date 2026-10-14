@@ -16,6 +16,9 @@ import (
 
 // BuildSystemPrompt builds System Prompt according to strategy configuration
 func (e *StrategyEngine) BuildSystemPrompt(accountEquity float64, variant string) string {
+	if caps, ok := e.equityCapabilities(); ok {
+		return BuildEquitySystemPrompt(caps, e.config.RiskControl, accountEquity, e.config.CustomPrompt)
+	}
 	var sb strings.Builder
 	riskControl := e.config.RiskControl
 	promptSections := e.config.PromptSections

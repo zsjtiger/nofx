@@ -414,7 +414,7 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 	if claw402Key == "" && config.AIModel == "claw402" && config.CustomAPIKey != "" {
 		claw402Key = config.CustomAPIKey
 	}
-	strategyEngine := kernel.NewStrategyEngine(config.StrategyConfig, claw402Key)
+	strategyEngine := kernel.NewStrategyEngine(config.StrategyConfig, claw402Key).WithMarket(capabilities.Market)
 	logger.Infof("✓ [%s] Using strategy engine (strategy configuration loaded)", config.Name)
 
 	return &AutoTrader{
@@ -479,7 +479,7 @@ func (at *AutoTrader) reloadStrategyConfigIfChanged() error {
 
 	at.config.StrategyConfig = strategyConfig
 	at.config.StrategyConfigRaw = strategy.Config
-	at.strategyEngine = kernel.NewStrategyEngine(strategyConfig, claw402Key)
+	at.strategyEngine = kernel.NewStrategyEngine(strategyConfig, claw402Key).WithMarket(at.marketCapabilities().Market)
 	at.logInfof("🔄 Strategy config refreshed from DB: %s", strategy.Name)
 	return nil
 }
