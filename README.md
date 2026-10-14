@@ -82,7 +82,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 ```bash
 git clone https://github.com/NoFxAiOS/nofx.git && cd nofx
-go build -o nofx && ./nofx            # backend
+cd server && go build -o nofx && ./nofx  # backend
 cd web && npm install && npm run dev  # frontend, in a second terminal
 ```
 
@@ -92,13 +92,13 @@ cd web && npm install && npm run dev  # frontend, in a second terminal
 
 | Path | Role |
 | :--- | :--- |
-| `trader/types` | Market definitions, capabilities and rules (lots, settlement, price limits, sessions) |
-| `trader/cnpaper`, `trader/alpacapaper` | Paper brokers for A-shares and US stocks |
-| `provider/tushare`, `provider/alpaca` | Market-data clients |
-| `market` | Daily bars and indicators for the AI prompt |
-| `kernel` | Prompt building and fail-closed validation of AI decisions |
-| `store` | Database models (GORM, SQLite or PostgreSQL) |
-| `api` | HTTP API used by the web app |
+| `server/trader/types` | Market definitions, capabilities and rules (lots, settlement, price limits, sessions) |
+| `server/trader/cnpaper`, `server/trader/alpacapaper` | Paper brokers for A-shares and US stocks |
+| `server/provider/tushare`, `server/provider/alpaca` | Market-data clients |
+| `server/market` | Daily bars and indicators for the AI prompt |
+| `server/kernel` | Prompt building and fail-closed validation of AI decisions |
+| `server/store` | Database models (GORM, SQLite or PostgreSQL) |
+| `server/api` | HTTP API used by the web app |
 | `web/src/app` | Front-end entry point, router, header and footer |
 | `web/src/features` | Feature folders: auth, traders, dashboard, strategy, faq, settings |
 | `web/src/shared` | Shared UI, API client, i18n, types and config modals |
@@ -108,7 +108,7 @@ The migration plan and the decisions behind it are in [docs/plans/2026-10-14-cn-
 ## Testing
 
 ```bash
-go test ./...
+cd server && go test ./...
 cd web && npx tsc --noEmit -p . && npx vitest run
 ```
 

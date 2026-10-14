@@ -17,8 +17,8 @@
   - changed-files:
     - any-glob-to-any-file:
       - '**/*.go'
-      - 'go.mod'
-      - 'go.sum'
+      - 'server/go.mod'
+      - 'server/go.sum'
       - 'cmd/**/*'
       - 'internal/**/*'
       - 'pkg/**/*'
@@ -119,8 +119,8 @@
 'dependencies':
   - changed-files:
     - any-glob-to-any-file:
-      - 'go.mod'
-      - 'go.sum'
+      - 'server/go.mod'
+      - 'server/go.sum'
       - 'package.json'
       - 'package-lock.json'
       - 'web/package.json'

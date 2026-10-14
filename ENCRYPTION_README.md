@@ -7,15 +7,15 @@
 ./deploy_encryption.sh
 
 # 2. Restart application
-go run main.go
+cd server && go run main.go
 ```
 
 ## What's Changed?
 
 ### New Files
-- `secrets/` - Core encryption modules
-- `api/encryption_handler.go` - Encryption API endpoints
-- `web/src/lib/crypto.ts` - Frontend encryption module
+- `server/secrets/` - Core encryption modules
+- `server/api/encryption_handler.go` - Encryption API endpoints
+- `web/src/shared/lib/crypto.ts` - Frontend encryption module
 - `scripts/migrate_encryption.go` - Data migration tool
 - `deploy_encryption.sh` - One-click deployment script
 
@@ -95,7 +95,7 @@ await api.post('/api/exchange/config', {
 
 ```bash
 # Run encryption tests
-go test ./crypto -v
+cd server && go test ./secrets -v
 
 # Expected output:
 # ✅ RSA key pair generation
@@ -122,14 +122,14 @@ cp data.db.backup data.db
 # (encryption initialization)
 
 # Restart
-go run main.go
+cd server && go run main.go
 ```
 
 ## Support
 
 - **Documentation**: See inline code comments
 - **Issues**: Report via GitHub issues
-- **Questions**: Check `secrets/` for examples
+- **Questions**: Check `server/secrets/` for examples
 
 ---
 

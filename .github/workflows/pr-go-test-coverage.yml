@@ -59,6 +59,7 @@ jobs:
       - name: Run tests with coverage
         env:
           DATA_ENCRYPTION_KEY: "test-encryption-key-for-ci-only-not-production"
+        working-directory: server
         run: |
           go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
 
@@ -66,7 +67,7 @@ jobs:
         id: coverage
         run: |
           chmod +x .github/workflows/scripts/calculate_coverage.py
-          python .github/workflows/scripts/calculate_coverage.py coverage.out coverage_report.md
+          python .github/workflows/scripts/calculate_coverage.py server/coverage.out coverage_report.md
 
       - name: Comment PR with coverage
         if: github.event_name == 'pull_request'

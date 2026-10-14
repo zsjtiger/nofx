@@ -16,7 +16,6 @@ import (
 	"syscall"
 
 	"github.com/google/uuid"
-	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -29,7 +28,7 @@ func main() {
 	}
 
 	// Load .env environment variables
-	_ = godotenv.Load()
+	_ = config.LoadDotEnv()
 
 	// Initialize logger
 	logger.Init(nil)

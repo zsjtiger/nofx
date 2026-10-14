@@ -32,6 +32,7 @@ jobs:
           go-version: '1.21'
 
       - name: Install dependencies
+        working-directory: server
         run: |
           sudo apt-get update
           sudo apt-get install -y libta-lib-dev || true
@@ -41,7 +42,7 @@ jobs:
         id: go-fmt
         continue-on-error: true
         run: |
-          UNFORMATTED=$(gofmt -l . 2>/dev/null || echo "")
+          UNFORMATTED=$(gofmt -l server 2>/dev/null || echo "")
           if [ -n "$UNFORMATTED" ]; then
             echo "status=⚠️ Needs formatting" >> $GITHUB_OUTPUT
             echo "$UNFORMATTED" | head -10 > fmt-files.txt
@@ -53,6 +54,7 @@ jobs:
       - name: Run go vet
         id: go-vet
         continue-on-error: true
+        working-directory: server
         run: |
           if go vet ./... 2>&1 | tee vet-output.txt; then
             echo "status=✅ Good" >> $GITHUB_OUTPUT
@@ -64,6 +66,7 @@ jobs:
       - name: Run tests
         id: go-test
         continue-on-error: true
+        working-directory: server
         run: |
           if go test ./... -v 2>&1 | tee test-output.txt; then
             echo "status=✅ Passed" >> $GITHUB_OUTPUT

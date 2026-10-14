@@ -285,7 +285,7 @@ func (cs *CryptoService) DecryptPayload(payload *EncryptedPayload) ([]byte, erro
 	// 1. Validate timestamp (prevent replay attacks).
 	// The timestamp is mandatory: a missing/zero ts previously skipped this check
 	// entirely, which let a captured ciphertext be replayed indefinitely. The
-	// client (web/src/lib/crypto.ts) always stamps ts, so requiring it is safe.
+	// client (web/src/shared/lib/crypto.ts) always stamps ts, so requiring it is safe.
 	if payload.TS == 0 {
 		return nil, errors.New("missing timestamp")
 	}

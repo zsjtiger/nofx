@@ -15,7 +15,6 @@ import (
 	"nofx/secrets"
 	"nofx/store"
 
-	"github.com/joho/godotenv"
 	"golang.org/x/term"
 	"gorm.io/gorm"
 )
@@ -55,7 +54,7 @@ func runCLISubcommand(args []string) bool {
 // openStoreForCLI loads config + encryption and opens the same database the
 // server uses, so subcommands operate on the live data.
 func openStoreForCLI(dbPathOverride string) (*store.Store, error) {
-	_ = godotenv.Load()
+	_ = config.LoadDotEnv()
 	logger.Init(nil)
 	config.MustInit()
 	cfg := config.Get()

@@ -114,7 +114,9 @@ git checkout -b fix/your-bug-fix
 
 ```bash
 # Install Go dependencies
+cd server
 go mod download
+cd ..
 
 # Install frontend dependencies
 cd web
@@ -140,10 +142,10 @@ sudo apt-get install libta-lib0-dev
 
 ```bash
 # Run backend tests
-go test ./...
+cd server && go test ./...
 
 # Build backend
-go build -o nofx
+cd server && go build -o nofx
 
 # Run frontend in dev mode
 cd web
@@ -178,8 +180,8 @@ git push origin feature/your-feature-name
 
 ### Before Submitting
 
-- [ ] Code compiles successfully (`go build` and `npm run build`)
-- [ ] All tests pass (`go test ./...`)
+- [ ] Code compiles successfully (`go build` in `server/` and `npm run build` in `web/`)
+- [ ] All tests pass (`go test ./...` in `server/`)
 - [ ] No linting errors (`go fmt`, `go vet`)
 - [ ] Documentation is updated
 - [ ] Commits follow conventional commits format
@@ -313,21 +315,22 @@ const TC = (props) => {
 
 ```
 NOFX/
-├── cmd/               # Main applications
-├── internal/          # Private code
-│   ├── exchange/      # Exchange adapters
-│   ├── trader/        # Trading logic
-│   ├── ai/           # AI integrations
-│   └── api/          # API handlers
-├── pkg/              # Public libraries
-├── web/              # Frontend
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── hooks/
-│   │   └── utils/
-│   └── public/
-└── docs/             # Documentation
+├── server/            # Go backend (module "nofx")
+│   ├── main.go        # Server entry point
+│   ├── api/           # HTTP handlers
+│   ├── trader/        # Trading engine; trader/rules holds pure order rules
+│   ├── store/         # Database access; store/position holds position storage
+│   ├── llm/           # AI model clients
+│   ├── market/        # Market data and indicators
+│   ├── secrets/       # Encryption helpers
+│   └── ...
+├── web/               # React frontend
+│   └── src/
+│       ├── app/       # Entry point, router, app shell
+│       ├── features/  # Feature folders (auth, traders, dashboard, ...)
+│       └── shared/    # Shared UI, API client, i18n, types
+├── deploy/            # Dockerfiles, nginx and Railway configuration
+└── docs/              # Documentation
 ```
 
 ---

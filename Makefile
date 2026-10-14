@@ -26,7 +26,7 @@ help:
 # Run all tests
 test:
 	@echo "🧪 Running backend tests..."
-	go test -v ./...
+	cd server && go test -v ./...
 	@echo ""
 	@echo "🧪 Running frontend tests..."
 	cd web && npm run test
@@ -35,7 +35,7 @@ test:
 # Backend tests only
 test-backend:
 	@echo "🧪 Running backend tests..."
-	go test -v ./...
+	cd server && go test -v ./...
 
 # Frontend tests only
 test-frontend:
@@ -45,8 +45,8 @@ test-frontend:
 # Coverage report
 test-coverage:
 	@echo "📊 Generating coverage..."
-	go test -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out -o coverage.html
+	cd server && go test -coverprofile=coverage.out ./...
+	cd server && go tool cover -html=coverage.out -o coverage.html
 	@echo "✅ Backend coverage: coverage.html"
 
 # =============================================================================
@@ -56,8 +56,8 @@ test-coverage:
 # Build backend binary
 build:
 	@echo "🔨 Building backend..."
-	go build -o nofx
-	@echo "✅ Backend built: ./nofx"
+	cd server && go build -o nofx
+	@echo "✅ Backend built: ./server/nofx"
 
 # Build frontend
 build-frontend:
@@ -72,7 +72,7 @@ build-frontend:
 # Run backend in development mode
 run:
 	@echo "🚀 Starting backend..."
-	go run main.go
+	cd server && go run main.go
 
 # Run frontend in development mode
 run-frontend:
@@ -82,13 +82,13 @@ run-frontend:
 # Format Go code
 fmt:
 	@echo "🎨 Formatting Go code..."
-	go fmt ./...
+	cd server && go fmt ./...
 	@echo "✅ Code formatted"
 
 # Lint Go code (requires golangci-lint)
 lint:
 	@echo "🔍 Linting Go code..."
-	golangci-lint run
+	cd server && golangci-lint run
 	@echo "✅ Linting completed"
 
 # =============================================================================
@@ -97,10 +97,10 @@ lint:
 
 clean:
 	@echo "🧹 Cleaning..."
-	rm -f nofx
-	rm -f coverage.out coverage.html
+	rm -f server/nofx
+	rm -f server/coverage.out server/coverage.html
 	rm -rf web/dist
-	go clean -testcache
+	cd server && go clean -testcache
 	@echo "✅ Cleaned"
 
 # =============================================================================
@@ -136,14 +136,14 @@ docker-logs:
 # Download Go dependencies
 deps:
 	@echo "📦 Downloading Go dependencies..."
-	go mod download
+	cd server && go mod download
 	@echo "✅ Dependencies downloaded"
 
 # Update Go dependencies
 deps-update:
 	@echo "📦 Updating Go dependencies..."
-	go get -u ./...
-	go mod tidy
+	cd server && go get -u ./...
+	cd server && go mod tidy
 	@echo "✅ Dependencies updated"
 
 # Install frontend dependencies

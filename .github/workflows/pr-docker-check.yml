@@ -8,10 +8,10 @@ on:
       - main
       - dev
     paths:
-      - 'docker/**'
+      - 'deploy/**'
       - 'Dockerfile*'
-      - 'go.mod'
-      - 'go.sum'
+      - 'server/go.mod'
+      - 'server/go.sum'
       - '**.go'
       - 'web/**'
       - '.github/workflows/docker-build.yml'

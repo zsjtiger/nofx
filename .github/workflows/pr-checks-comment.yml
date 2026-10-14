@@ -260,9 +260,9 @@ jobs:
 
               comment += '\n**Fix locally:**\n';
               comment += '```bash\n';
-              comment += 'go fmt ./...      # Format code\n';
-              comment += 'go vet ./...      # Check for issues\n';
-              comment += 'go test ./...     # Run tests\n';
+              comment += 'cd server && go fmt ./...      # Format code\n';
+              comment += 'cd server && go vet ./...      # Check for issues\n';
+              comment += 'cd server && go test ./...     # Run tests\n';
               comment += '```\n';
             }
 
@@ -377,10 +377,10 @@ jobs:
             comment += '2. Ensure your code passes local checks:\n';
             comment += '```bash\n';
             comment += '# Backend\n';
-            comment += 'go fmt ./...\n';
-            comment += 'go vet ./...\n';
-            comment += 'go build\n';
-            comment += 'go test ./...\n\n';
+            comment += 'cd server && go fmt ./...\n';
+            comment += 'cd server && go vet ./...\n';
+            comment += 'cd server && go build\n';
+            comment += 'cd server && go test ./...\n\n';
             comment += '# Frontend (if applicable)\n';
             comment += 'cd web\n';
             comment += 'npm run build\n';
