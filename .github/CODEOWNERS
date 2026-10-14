@@ -30,7 +30,8 @@
 # =============================================================================
 
 # Backend / Go Code | 后端 / Go 代码
-# Go files and backend logic
+# Go files and backend logic (the backend lives in server/)
+/server/ @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
 *.go @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
 go.mod @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
 go.sum @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
@@ -41,7 +42,7 @@ go.sum @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
 /web/ @0xEmberZz @hzb1115 @tangmengqiu
 /web/src/ @0xEmberZz @hzb1115 @tangmengqiu
 *.tsx @0xEmberZz @hzb1115 @tangmengqiu
-*.ts @0xEmberZz @hzb1115 @tangmengqiu (frontend TypeScript only)
+*.ts @0xEmberZz @hzb1115 @tangmengqiu
 *.jsx @0xEmberZz @hzb1115 @tangmengqiu
 *.css @0xEmberZz @hzb1115 @tangmengqiu
 *.scss @0xEmberZz @hzb1115 @tangmengqiu
@@ -66,27 +67,23 @@ README.md @hzb1115 @tangmengqiu
 /.github/workflows/*.yml @hzb1115
 
 # Docker | Docker 配置
-Dockerfile @tangmengqiu 
+/deploy/ @tangmengqiu
 docker-compose.yml @tangmengqiu 
 .dockerignore @tangmengqiu
 
 # Database | 数据库
 # Database migrations and schemas
-/migrations/ @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
-/db/ @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
 *.sql @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
 
 # Scripts | 脚本
 /scripts/ @hzb1115 @tangmengqiu
 *.sh @hzb1115 @tangmengqiu
 *.bash @hzb1115 @tangmengqiu
-*.py @hzb1115 @tangmengqiu (if Python scripts exist)
+*.py @hzb1115 @tangmengqiu
 
 # Tests | 测试
 # Test files require review from component owners
 *_test.go @SkywalkerJi @heronsbillC
-/tests/ @SkywalkerJi @Icyoung @heronsbillC
-/web/tests/ @Icyoung @hzb1115 @heronsbillC
 
 # Security & Dependencies | 安全和依赖
 # Security-sensitive files require extra attention
@@ -98,8 +95,6 @@ yarn.lock @Icyoung @hzb1115 @tangmengqiu
 
 # Build Configuration | 构建配置
 Makefile @hzb1115 @tangmengqiu
-/build/ @hzb1115 @tangmengqiu
-/dist/ @hzb1115 @tangmengqiu
 
 # License & Legal | 许可证和法律文件
 LICENSE @hzb1115

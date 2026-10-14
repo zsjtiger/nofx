@@ -32,8 +32,8 @@
 
 What you verified and how:
 
-- [ ] `go build ./...` passes
-- [ ] `go test ./...` passes
+- [ ] `go build ./...` passes (run in `server/`)
+- [ ] `go test ./...` passes (run in `server/`)
 - [ ] Manual testing done (describe below)
 
 ## Security Impact

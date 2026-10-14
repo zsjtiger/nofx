@@ -85,7 +85,7 @@ Test output here
 - [ ] Code follows project style
 - [ ] Self-review completed
 - [ ] Comments added for complex logic
-- [ ] Code compiles successfully (`go build`)
+- [ ] Code compiles successfully (`go build` in `server/`)
 - [ ] Ran `go fmt`
 
 ### Documentation

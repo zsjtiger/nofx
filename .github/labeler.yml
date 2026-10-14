@@ -6,54 +6,33 @@
   - changed-files:
     - any-glob-to-any-file:
       - 'web/**/*'
-      - '*.tsx'
-      - '*.ts'
-      - '*.jsx'
-      - '*.js'
-      - '*.css'
 
 # Area: Backend
 'area: backend':
   - changed-files:
     - any-glob-to-any-file:
-      - '**/*.go'
+      - 'server/**/*.go'
       - 'server/go.mod'
       - 'server/go.sum'
-      - 'cmd/**/*'
-      - 'internal/**/*'
-      - 'pkg/**/*'
 
-# Area: Exchange
+# Area: Exchange (broker adapters and market data providers)
 'area: exchange':
   - changed-files:
     - any-glob-to-any-file:
-      - 'internal/exchange/**/*'
-      - 'pkg/exchange/**/*'
-      - '**/binance*.go'
-      - '**/hyperliquid*.go'
-      - '**/aster*.go'
-      - '**/okx*.go'
-      - '**/bybit*.go'
+      - 'server/trader/**/*'
+      - 'server/provider/**/*'
 
-# Area: AI
+# Area: AI (model clients)
 'area: ai':
   - changed-files:
     - any-glob-to-any-file:
-      - 'internal/ai/**/*'
-      - 'pkg/ai/**/*'
-      - '**/deepseek*.go'
-      - '**/qwen*.go'
-      - '**/openai*.go'
-      - '**/claude*.go'
+      - 'server/llm/**/*'
 
 # Area: API
 'area: api':
   - changed-files:
     - any-glob-to-any-file:
-      - 'internal/api/**/*'
-      - 'pkg/api/**/*'
-      - '**/handler*.go'
-      - '**/router*.go'
+      - 'server/api/**/*'
 
 # Area: Security
 'area: security':
@@ -61,38 +40,36 @@
     - any-glob-to-any-file:
       - '**/auth*.go'
       - '**/jwt*.go'
+      - 'server/secrets/**/*'
       - '**/encryption*.go'
-      - '**/crypto*.go'
       - 'SECURITY.md'
 
 # Area: Database
 'area: database':
   - changed-files:
     - any-glob-to-any-file:
-      - 'internal/database/**/*'
-      - 'internal/db/**/*'
-      - '**/migration*.go'
+      - 'server/store/**/*'
       - '**/*.sql'
-      - '**/schema*.go'
 
 # Area: UI/UX
 'area: ui/ux':
   - changed-files:
     - any-glob-to-any-file:
-      - 'web/src/components/**/*'
-      - 'web/src/pages/**/*'
-      - '**/*.css'
-      - '**/style*.ts'
+      - 'web/src/features/**/*'
+      - 'web/src/shared/ui/**/*'
+      - 'web/src/**/*.css'
 
 # Area: Deployment
 'area: deployment':
   - changed-files:
     - any-glob-to-any-file:
-      - 'Dockerfile'
+      - 'deploy/**/*'
+      - 'Dockerfile.railway'
+      - 'railway.toml'
       - 'docker-compose*.yml'
       - '.github/workflows/**/*'
       - 'start.sh'
-      - '**/*deploy*.md'
+      - 'install*.sh'
 
 # Type: Documentation
 'type: documentation':
@@ -100,20 +77,14 @@
     - any-glob-to-any-file:
       - 'docs/**/*'
       - '*.md'
-      - 'README*'
-      - 'CHANGELOG*'
-      - 'CONTRIBUTING.md'
-      - 'CODE_OF_CONDUCT.md'
 
 # Type: Test
 'type: test':
   - changed-files:
     - any-glob-to-any-file:
       - '**/*_test.go'
-      - 'test/**/*'
       - '**/*.test.ts'
       - '**/*.test.tsx'
-      - '**/*.spec.ts'
 
 # Dependencies
 'dependencies':
@@ -121,7 +92,5 @@
     - any-glob-to-any-file:
       - 'server/go.mod'
       - 'server/go.sum'
-      - 'package.json'
-      - 'package-lock.json'
       - 'web/package.json'
       - 'web/package-lock.json'

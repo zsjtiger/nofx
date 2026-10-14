@@ -271,7 +271,7 @@ git push origin test/frontend-label
 
 # 测试 2：后端变更
 git checkout -b test/backend-label
-touch internal/test.go
+touch server/test.go
 git add . && git commit -m "test: backend labeling"
 git push origin test/backend-label
 # 应该得到 "area: backend" 标签
