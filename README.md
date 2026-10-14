@@ -56,25 +56,16 @@ Paper account state is saved under `data/paper`.
 
 ## Install
 
-**Linux / macOS**
+Clone the repository:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NoFxAiOS/nofx/main/install.sh | bash
+git clone https://github.com/zsjtiger/nofx.git && cd nofx
 ```
 
-Then open `http://127.0.0.1:3000`.
+- **Docker:** see [Docker deployment](#docker-deployment).
+- **From source:** see [Local development](#local-development).
 
-**Docker** — see [Docker deployment](#docker-deployment).
-
-**From source** — Go 1.25+ and Node.js 18+:
-
-```bash
-git clone https://github.com/NoFxAiOS/nofx.git && cd nofx
-cd server && go build -o crux && ./crux  # backend
-cd web && npm install && npm run dev  # frontend, in a second terminal
-```
-
-**Update** — re-run the install script, or pull the new image and restart with `docker compose`.
+**Update:** `git pull`, then `./start.sh start --build` for Docker, or restart the backend and frontend when running from source.
 
 ## Local development
 
