@@ -683,28 +683,24 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 
 	// Build AutoTraderConfig (ai500APIURL/oiTopAPIURL obtained from strategy config, used in StrategyEngine)
 	traderConfig := trader.AutoTraderConfig{
-		ID:                    traderCfg.ID,
-		Name:                  traderCfg.Name,
-		StrategyID:            traderCfg.StrategyID,
-		AIModel:               aiModelCfg.Provider,
-		Exchange:              exchangeCfg.ExchangeType, // Exchange type: binance/bybit/okx/etc
-		ExchangeID:            exchangeCfg.ID,           // Exchange account UUID (for multi-account)
-		Market:                exchangeCfg.Market,       // Asset class: crypto, us_equity or cn_equity
-		BinanceAPIKey:         "",
-		BinanceSecretKey:      "",
-		HyperliquidPrivateKey: "",
-		HyperliquidTestnet:    exchangeCfg.Testnet,
-		UseQwen:               aiModelCfg.Provider == "qwen",
-		DeepSeekKey:           "",
-		QwenKey:               "",
-		CustomAPIURL:          aiModelCfg.CustomAPIURL,
-		CustomModelName:       aiModelCfg.CustomModelName,
-		ScanInterval:          time.Duration(traderCfg.ScanIntervalMinutes) * time.Minute,
-		InitialBalance:        traderCfg.InitialBalance,
-		IsCrossMargin:         traderCfg.IsCrossMargin,
-		ShowInCompetition:     traderCfg.ShowInCompetition,
-		StrategyConfig:        strategyConfig,
-		StrategyConfigRaw:     strategyConfigRaw,
+		ID:                traderCfg.ID,
+		Name:              traderCfg.Name,
+		StrategyID:        traderCfg.StrategyID,
+		AIModel:           aiModelCfg.Provider,
+		Exchange:          exchangeCfg.ExchangeType, // Exchange type: binance/bybit/okx/etc
+		ExchangeID:        exchangeCfg.ID,           // Exchange account UUID (for multi-account)
+		Market:            exchangeCfg.Market,       // Asset class: crypto, us_equity or cn_equity
+		UseQwen:           aiModelCfg.Provider == "qwen",
+		DeepSeekKey:       "",
+		QwenKey:           "",
+		CustomAPIURL:      aiModelCfg.CustomAPIURL,
+		CustomModelName:   aiModelCfg.CustomModelName,
+		ScanInterval:      time.Duration(traderCfg.ScanIntervalMinutes) * time.Minute,
+		InitialBalance:    traderCfg.InitialBalance,
+		IsCrossMargin:     traderCfg.IsCrossMargin,
+		ShowInCompetition: traderCfg.ShowInCompetition,
+		StrategyConfig:    strategyConfig,
+		StrategyConfigRaw: strategyConfigRaw,
 	}
 
 	logger.Infof("📊 Loading trader %s: ScanIntervalMinutes=%d (from DB), ScanInterval=%v",
@@ -712,53 +708,11 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 
 	// Set API keys based on exchange type (convert EncryptedString to string)
 	switch exchangeCfg.ExchangeType {
-	case "binance":
-		traderConfig.BinanceAPIKey = string(exchangeCfg.APIKey)
-		traderConfig.BinanceSecretKey = string(exchangeCfg.SecretKey)
-	case "bybit":
-		traderConfig.BybitAPIKey = string(exchangeCfg.APIKey)
-		traderConfig.BybitSecretKey = string(exchangeCfg.SecretKey)
-	case "okx":
-		traderConfig.OKXAPIKey = string(exchangeCfg.APIKey)
-		traderConfig.OKXSecretKey = string(exchangeCfg.SecretKey)
-		traderConfig.OKXPassphrase = string(exchangeCfg.Passphrase)
-	case "bitget":
-		traderConfig.BitgetAPIKey = string(exchangeCfg.APIKey)
-		traderConfig.BitgetSecretKey = string(exchangeCfg.SecretKey)
-		traderConfig.BitgetPassphrase = string(exchangeCfg.Passphrase)
-	case "gate":
-		traderConfig.GateAPIKey = string(exchangeCfg.APIKey)
-		traderConfig.GateSecretKey = string(exchangeCfg.SecretKey)
-	case "kucoin":
-		traderConfig.KuCoinAPIKey = string(exchangeCfg.APIKey)
-		traderConfig.KuCoinSecretKey = string(exchangeCfg.SecretKey)
-		traderConfig.KuCoinPassphrase = string(exchangeCfg.Passphrase)
-	case "hyperliquid":
-		traderConfig.HyperliquidPrivateKey = string(exchangeCfg.APIKey)
-		traderConfig.HyperliquidWalletAddr = exchangeCfg.HyperliquidWalletAddr
-		traderConfig.HyperliquidUnifiedAcct = exchangeCfg.HyperliquidUnifiedAcct
 	case "alpaca_paper":
 		traderConfig.AlpacaAPIKey = string(exchangeCfg.APIKey)
 		traderConfig.AlpacaSecretKey = string(exchangeCfg.SecretKey)
 	case "cn_paper":
 		traderConfig.TushareToken = string(exchangeCfg.APIKey)
-	case "aster":
-		traderConfig.AsterUser = exchangeCfg.AsterUser
-		traderConfig.AsterSigner = exchangeCfg.AsterSigner
-		traderConfig.AsterPrivateKey = string(exchangeCfg.AsterPrivateKey)
-	case "lighter":
-		traderConfig.LighterPrivateKey = string(exchangeCfg.LighterPrivateKey)
-		traderConfig.LighterWalletAddr = exchangeCfg.LighterWalletAddr
-		traderConfig.LighterAPIKeyPrivateKey = string(exchangeCfg.LighterAPIKeyPrivateKey)
-		traderConfig.LighterAPIKeyIndex = exchangeCfg.LighterAPIKeyIndex
-		traderConfig.LighterTestnet = exchangeCfg.Testnet
-	case "indodax":
-		traderConfig.IndodaxAPIKey = string(exchangeCfg.APIKey)
-		traderConfig.IndodaxSecretKey = string(exchangeCfg.SecretKey)
-	}
-
-	// Set API keys based on AI model (convert EncryptedString to string)
-	switch aiModelCfg.Provider {
 	case "qwen":
 		traderConfig.QwenKey = string(aiModelCfg.APIKey)
 	case "deepseek":

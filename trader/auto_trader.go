@@ -9,16 +9,6 @@ import (
 	_ "nofx/mcp/payment"
 	_ "nofx/mcp/provider"
 	"nofx/store"
-	"nofx/trader/aster"
-	"nofx/trader/binance"
-	"nofx/trader/bitget"
-	"nofx/trader/bybit"
-	"nofx/trader/gate"
-	"nofx/trader/hyperliquid"
-	"nofx/trader/indodax"
-	"nofx/trader/kucoin"
-	"nofx/trader/lighter"
-	"nofx/trader/okx"
 	"nofx/trader/types"
 	"nofx/wallet"
 	"sync"
@@ -83,60 +73,11 @@ type AutoTraderConfig struct {
 	ExchangeID string // Exchange account UUID (for multi-account support)
 	Market     string // Asset class: "crypto" (default), "us_equity" or "cn_equity"
 
-	// Binance API configuration
-	BinanceAPIKey    string
-	BinanceSecretKey string
-
-	// Bybit API configuration
-	BybitAPIKey    string
-	BybitSecretKey string
-
-	// OKX API configuration
-	OKXAPIKey     string
-	OKXSecretKey  string
-	OKXPassphrase string
-
-	// Bitget API configuration
-	BitgetAPIKey     string
-	BitgetSecretKey  string
-	BitgetPassphrase string
-
-	// Gate API configuration
-	GateAPIKey    string
-	GateSecretKey string
-
 	// Equity paper trading (alpaca_paper and cn_paper)
 	AlpacaAPIKey     string
 	AlpacaSecretKey  string
 	TushareToken     string
 	PaperInitialCash float64 // starting CNY for cn_paper; 0 uses the default
-
-	// KuCoin API configuration
-	KuCoinAPIKey     string
-	KuCoinSecretKey  string
-	KuCoinPassphrase string
-
-	// Indodax API configuration
-	IndodaxAPIKey    string
-	IndodaxSecretKey string
-
-	// Hyperliquid configuration
-	HyperliquidPrivateKey  string
-	HyperliquidWalletAddr  string
-	HyperliquidTestnet     bool
-	HyperliquidUnifiedAcct bool // Unified Account mode: Spot USDC as Perp collateral
-
-	// Aster configuration
-	AsterUser       string // Aster main wallet address
-	AsterSigner     string // Aster API wallet address
-	AsterPrivateKey string // Aster API wallet private key
-
-	// LIGHTER configuration
-	LighterWalletAddr       string // LIGHTER wallet address (L1 wallet)
-	LighterPrivateKey       string // LIGHTER L1 private key (for account identification)
-	LighterAPIKeyPrivateKey string // LIGHTER API Key private key (40 bytes, for transaction signing)
-	LighterAPIKeyIndex      int    // LIGHTER API Key index (0-255)
-	LighterTestnet          bool   // Whether to use testnet
 
 	// AI configuration
 	UseQwen     bool
@@ -307,57 +248,6 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 	logger.Infof("📊 [%s] Position mode: %s", config.Name, marginModeStr)
 
 	switch config.Exchange {
-	case "binance":
-		logger.Infof("🏦 [%s] Using Binance Futures trading", config.Name)
-		trader = binance.NewFuturesTrader(config.BinanceAPIKey, config.BinanceSecretKey, userID)
-	case "bybit":
-		logger.Infof("🏦 [%s] Using Bybit Futures trading", config.Name)
-		trader = bybit.NewBybitTrader(config.BybitAPIKey, config.BybitSecretKey)
-	case "okx":
-		logger.Infof("🏦 [%s] Using OKX Futures trading", config.Name)
-		trader = okx.NewOKXTrader(config.OKXAPIKey, config.OKXSecretKey, config.OKXPassphrase)
-	case "bitget":
-		logger.Infof("🏦 [%s] Using Bitget Futures trading", config.Name)
-		trader = bitget.NewBitgetTrader(config.BitgetAPIKey, config.BitgetSecretKey, config.BitgetPassphrase)
-	case "gate":
-		logger.Infof("🏦 [%s] Using Gate.io Futures trading", config.Name)
-		trader = gate.NewGateTrader(config.GateAPIKey, config.GateSecretKey)
-	case "kucoin":
-		logger.Infof("🏦 [%s] Using KuCoin Futures trading", config.Name)
-		trader = kucoin.NewKuCoinTrader(config.KuCoinAPIKey, config.KuCoinSecretKey, config.KuCoinPassphrase)
-	case "hyperliquid":
-		logger.Infof("🏦 [%s] Using Hyperliquid trading", config.Name)
-		trader, err = hyperliquid.NewHyperliquidTrader(config.HyperliquidPrivateKey, config.HyperliquidWalletAddr, config.HyperliquidTestnet, config.HyperliquidUnifiedAcct)
-		if err != nil {
-			return nil, fmt.Errorf("failed to initialize Hyperliquid trader: %w", err)
-		}
-	case "aster":
-		logger.Infof("🏦 [%s] Using Aster trading", config.Name)
-		trader, err = aster.NewAsterTrader(config.AsterUser, config.AsterSigner, config.AsterPrivateKey)
-		if err != nil {
-			return nil, fmt.Errorf("failed to initialize Aster trader: %w", err)
-		}
-	case "lighter":
-		logger.Infof("🏦 [%s] Using LIGHTER trading", config.Name)
-
-		if config.LighterWalletAddr == "" || config.LighterAPIKeyPrivateKey == "" {
-			return nil, fmt.Errorf("Lighter requires wallet address and API Key private key")
-		}
-
-		// Lighter only supports mainnet (testnet disabled)
-		trader, err = lighter.NewLighterTraderV2(
-			config.LighterWalletAddr,
-			config.LighterAPIKeyPrivateKey,
-			config.LighterAPIKeyIndex,
-			false, // Always use mainnet for Lighter
-		)
-		if err != nil {
-			return nil, fmt.Errorf("failed to initialize LIGHTER trader: %w", err)
-		}
-		logger.Infof("✓ LIGHTER trader initialized successfully")
-	case "indodax":
-		logger.Infof("🏦 [%s] Using Indodax Spot trading", config.Name)
-		trader = indodax.NewIndodaxTrader(config.IndodaxAPIKey, config.IndodaxSecretKey)
 	case "alpaca_paper":
 		trader, err = newAlpacaPaperTrader(config)
 		if err != nil {
@@ -507,76 +397,22 @@ func (at *AutoTrader) Run() error {
 	at.startDrawdownMonitor()
 
 	// Start Lighter order sync if using Lighter exchange
-	if at.exchange == "lighter" {
-		if lighterTrader, ok := at.trader.(*lighter.LighterTraderV2); ok && at.store != nil {
-			lighterTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 Lighter order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Start Hyperliquid order sync if using Hyperliquid exchange
-	if at.exchange == "hyperliquid" {
-		if hyperliquidTrader, ok := at.trader.(*hyperliquid.HyperliquidTrader); ok && at.store != nil {
-			hyperliquidTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 Hyperliquid order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Start Bybit order sync if using Bybit exchange
-	if at.exchange == "bybit" {
-		if bybitTrader, ok := at.trader.(*bybit.BybitTrader); ok && at.store != nil {
-			bybitTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 Bybit order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Start OKX order sync if using OKX exchange
-	if at.exchange == "okx" {
-		if okxTrader, ok := at.trader.(*okx.OKXTrader); ok && at.store != nil {
-			okxTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 OKX order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Start Bitget order sync if using Bitget exchange
-	if at.exchange == "bitget" {
-		if bitgetTrader, ok := at.trader.(*bitget.BitgetTrader); ok && at.store != nil {
-			bitgetTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 Bitget order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Start Aster order sync if using Aster exchange
-	if at.exchange == "aster" {
-		if asterTrader, ok := at.trader.(*aster.AsterTrader); ok && at.store != nil {
-			asterTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 Aster order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Start Binance order sync if using Binance exchange
-	if at.exchange == "binance" {
-		if binanceTrader, ok := at.trader.(*binance.FuturesTrader); ok && at.store != nil {
-			binanceTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 Binance order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Start Gate order sync if using Gate exchange
-	if at.exchange == "gate" {
-		if gateTrader, ok := at.trader.(*gate.GateTrader); ok && at.store != nil {
-			gateTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 Gate order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Start KuCoin order sync if using KuCoin exchange
-	if at.exchange == "kucoin" {
-		if kucoinTrader, ok := at.trader.(*kucoin.KuCoinTrader); ok && at.store != nil {
-			kucoinTrader.StartOrderSync(at.id, at.exchangeID, at.exchange, at.store, 30*time.Second, at.stopMonitorCh)
-			at.logInfof("🔄 KuCoin order+position sync enabled (every 30s)")
-		}
-	}
 
 	// Check if this is a grid trading strategy
 	isGridStrategy := at.IsGridStrategy()
