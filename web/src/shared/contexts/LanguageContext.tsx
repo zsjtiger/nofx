@@ -1,5 +1,16 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  ReactNode,
+} from 'react'
 import type { Language } from '../i18n/translations'
+
+export const DEFAULT_LANGUAGE: Language = 'zh'
+export const SWITCHABLE_LANGUAGES: Language[] = ['zh', 'en']
+
+const STORAGE_KEY = 'language'
 
 interface LanguageContextType {
   language: Language
@@ -10,23 +21,33 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
   undefined
 )
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // The product UI is English-only. Normalize legacy browser state left by the
-  // removed language switcher so an old `language=zh|id` value cannot revive a
-  // partially translated, layout-breaking interface.
-  const [language] = useState<Language>(() => {
-    localStorage.setItem('language', 'en')
-    return 'en'
-  })
-
-  const handleSetLanguage = (_lang: Language) => {
-    localStorage.setItem('language', 'en')
+function readStoredLanguage(): Language {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored && SWITCHABLE_LANGUAGES.includes(stored as Language)) {
+      return stored as Language
+    }
+  } catch {
+    // Storage can be unavailable (private mode, blocked site data); use the default.
   }
+  return DEFAULT_LANGUAGE
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguageState] = useState<Language>(readStoredLanguage)
+
+  const setLanguage = useCallback((lang: Language) => {
+    if (!SWITCHABLE_LANGUAGES.includes(lang)) return
+    setLanguageState(lang)
+    try {
+      localStorage.setItem(STORAGE_KEY, lang)
+    } catch {
+      // The choice still applies for this page view.
+    }
+  }, [])
 
   return (
-    <LanguageContext.Provider
-      value={{ language, setLanguage: handleSetLanguage }}
-    >
+    <LanguageContext.Provider value={{ language, setLanguage }}>
       {children}
     </LanguageContext.Provider>
   )

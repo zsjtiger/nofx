@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion'
 import { ShieldAlert, ArrowLeft, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
 
 interface WhitelistFullPageProps {
   onBack?: () => void
 }
 
 export function WhitelistFullPage({ onBack }: WhitelistFullPageProps) {
+  const { language } = useLanguage()
   const navigate = useNavigate()
 
   const handleBackToLogin = () => {
@@ -51,7 +53,13 @@ export function WhitelistFullPage({ onBack }: WhitelistFullPageProps) {
 
             {/* Title */}
             <h1 className="text-2xl font-bold mb-2 tracking-widest text-crux-text uppercase">
-              <span className="text-[#D6433A]">RESTRICTED</span> ACCESS
+              {language === 'zh' ? (
+                <span className="text-[#D6433A]">访问受限</span>
+              ) : (
+                <>
+                  <span className="text-[#D6433A]">RESTRICTED</span> ACCESS
+                </>
+              )}
             </h1>
 
             <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#D6433A]/40 to-transparent my-4"></div>

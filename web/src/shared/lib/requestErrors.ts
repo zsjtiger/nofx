@@ -23,7 +23,7 @@ export function isPaymentOutcomeUnknown(error: unknown): boolean {
 // or an unpaid request, nor modify the stored audit record.
 export function formatRequestError(
   error: unknown,
-  language: Language = 'en'
+  language: Language = DEFAULT_LANGUAGE
 ): string {
   const raw = errorText(error)
   const protocol =
@@ -52,3 +52,4 @@ export function formatRequestError(
   return text.length > 500 ? `${text.slice(0, 500)}…` : text
 }
 import type { Language } from '../i18n/translations'
+import { DEFAULT_LANGUAGE } from '../contexts/LanguageContext'

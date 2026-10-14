@@ -3,6 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown, Settings } from 'lucide-react'
 import { t, type Language } from '../../shared/i18n/translations'
+import {
+  DEFAULT_LANGUAGE,
+  SWITCHABLE_LANGUAGES,
+} from '../../shared/contexts/LanguageContext'
 import { OFFICIAL_LINKS } from '../../shared/constants/branding'
 import {
   getCurrentPageForPath,
@@ -27,7 +31,8 @@ export default function HeaderBar({
   isLoggedIn = false,
   isHomePage = false,
   currentPage,
-  language = 'en' as Language,
+  language = DEFAULT_LANGUAGE,
+  onLanguageChange,
   user,
   onLogout,
   onPageChange,
@@ -179,6 +184,24 @@ export default function HeaderBar({
 
           {/* Right Side - Social Links and User Actions */}
           <div className="flex shrink-0 items-center gap-2">
+            {/* Language switch */}
+            <div className="flex items-center gap-0.5 rounded-lg border border-[rgba(26,24,19,0.14)] p-0.5">
+              {SWITCHABLE_LANGUAGES.map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => onLanguageChange?.(code)}
+                  aria-pressed={language === code}
+                  className={`px-2 py-1 rounded text-xs font-semibold transition-all ${
+                    language === code
+                      ? 'bg-crux-gold/15 text-crux-gold'
+                      : 'text-crux-text-muted hover:text-crux-text'
+                  }`}
+                >
+                  {code === 'zh' ? '中文' : 'EN'}
+                </button>
+              ))}
+            </div>
             {/* Social Links - Always visible */}
             <div className="hidden items-center gap-1 2xl:flex">
               {/* GitHub */}

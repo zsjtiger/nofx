@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import { expect, it } from 'vitest'
+import { beforeEach, expect, it } from 'vitest'
 import { ExecutionLog } from './ExecutionLog'
+import { LanguageProvider } from '../../shared/contexts/LanguageContext'
 import type { DecisionRecord } from '../../shared/types'
+
+beforeEach(() => localStorage.setItem('language', 'en'))
 
 it('marks legacy success=true cycles as faults when their orders failed and shows the date', () => {
   const record = {
@@ -18,7 +21,11 @@ it('marks legacy success=true cycles as faults when their orders failed and show
       },
     ],
   } as DecisionRecord
-  render(<ExecutionLog decisions={[record]} />)
+  render(
+    <LanguageProvider>
+      <ExecutionLog decisions={[record]} />
+    </LanguageProvider>
+  )
   expect(
     screen.getByText('FAULT · 1/1 trades failed/blocked')
   ).toBeInTheDocument()
@@ -37,7 +44,11 @@ it('keeps historical decision faults visible but formats their protocol error', 
     error_message: protocolError,
     execution_log: [protocolError],
   } as DecisionRecord
-  render(<ExecutionLog decisions={[record]} />)
+  render(
+    <LanguageProvider>
+      <ExecutionLog decisions={[record]} />
+    </LanguageProvider>
+  )
   expect(screen.getByText('FAULT')).toBeInTheDocument()
   expect(screen.getAllByText(/Payment result is unconfirmed/)).toHaveLength(2)
   expect(document.body.textContent).not.toContain('\\x00')

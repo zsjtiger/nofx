@@ -143,7 +143,15 @@ export function RegisterPage() {
             </div>
           </div>
           <h1 className="text-3xl font-bold tracking-tighter text-crux-text uppercase mb-2">
-            <span className="text-crux-gold">CREATE</span> YOUR ACCOUNT
+            {language === 'zh' ? (
+              <>
+                创建您的<span className="text-crux-gold">账户</span>
+              </>
+            ) : (
+              <>
+                <span className="text-crux-gold">CREATE</span> YOUR ACCOUNT
+              </>
+            )}
           </h1>
           <p className="text-crux-text-muted text-sm">
             This account owns your Crux instance. Next step: a guided launch —
@@ -157,7 +165,9 @@ export function RegisterPage() {
               <div
                 className="w-2.5 h-2.5 rounded-full bg-crux-danger/50 hover:bg-crux-danger cursor-pointer transition-colors"
                 onClick={() => navigate('/')}
-                title="Close / Return Home"
+                title={
+                  language === 'zh' ? '关闭 / 返回首页' : 'Close / Return Home'
+                }
               ></div>
               <div className="w-2.5 h-2.5 rounded-full bg-crux-gold/50"></div>
               <div className="w-2.5 h-2.5 rounded-full bg-crux-success/50"></div>
@@ -321,10 +331,14 @@ export function RegisterPage() {
                 className="w-full bg-crux-gold text-crux-bg font-bold py-3 px-4 rounded text-sm tracking-wide uppercase hover:bg-crux-gold-highlight transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed font-mono flex items-center justify-center gap-2 group mt-4"
               >
                 {loading ? (
-                  <span className="animate-pulse">INITIALIZING...</span>
+                  <span className="animate-pulse">
+                    {language === 'zh' ? '正在初始化...' : 'INITIALIZING...'}
+                  </span>
                 ) : (
                   <>
-                    <span>CREATE_ACCOUNT</span>
+                    <span>
+                      {language === 'zh' ? '创建账户' : 'CREATE_ACCOUNT'}
+                    </span>
                     <span className="group-hover:translate-x-1 transition-transform">
                       -&gt;
                     </span>

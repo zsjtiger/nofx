@@ -11,12 +11,11 @@ export function t(
   params?: Record<string, string | number>
 ): string {
   // Handle nested keys like 'twoStageKey.title'
-  const keys = key.split('.')
-  let value: any = translations[lang]
+  const lookup = (locale: Language): unknown =>
+    key.split('.').reduce<any>((node, k) => node?.[k], translations[locale])
 
-  for (const k of keys) {
-    value = value?.[k]
-  }
+  // Fall back to English when a translation is missing, instead of showing the raw key.
+  const value = lookup(lang) ?? lookup('en')
 
   let text = typeof value === 'string' ? value : key
 

@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import type { DecisionRecord } from '../../shared/types'
 import { formatRequestError } from '../../shared/lib/requestErrors'
+import { useLanguage } from '../../shared/contexts/LanguageContext'
+import type { Language } from '../../shared/i18n/translations'
 
 /**
  * ExecutionLog renders the AI trading agent's real decisions and order results
@@ -91,7 +93,7 @@ const TONE_GLYPH: Record<LogTone, string> = {
  * own), the symbol (already shown), and collapses the wordy throttle phrasing
  * to "throttle · closed 28m ago, wait 2m". Falls back to the original line.
  */
-function cleanLog(raw: string): string {
+function cleanLog(raw: string, language: Language): string {
   let s = raw.replace(/^[\s└>•·]*[✓✗⚠❌]?\s*/, '').trim()
 
   const throttle = s.match(
@@ -107,7 +109,7 @@ function cleanLog(raw: string): string {
     /^[A-Z0-9:_-]{2,12}\s+(open_long|open_short|close_long|close_short)\s+/i,
     ''
   )
-  return formatRequestError(s)
+  return formatRequestError(s, language)
 }
 
 interface ExecutionLogProps {
@@ -213,6 +215,7 @@ interface CycleProps {
 }
 
 function Cycle({ record }: CycleProps) {
+  const { language } = useLanguage()
   const time = fmtTime(record.timestamp)
   const actions = record.decisions ?? []
   const logs = record.execution_log ?? []
@@ -311,12 +314,16 @@ function Cycle({ record }: CycleProps) {
 
       {/* execution-log result sub-lines */}
       {logs.map((line, i) => (
-        <SubLine key={`log-${i}`} tone={logTone(line)} text={cleanLog(line)} />
+        <SubLine
+          key={`log-${i}`}
+          tone={logTone(line)}
+          text={cleanLog(line, language)}
+        />
       ))}
 
       {/* fault message */}
       {record.error_message ? (
-        <SubLine tone="risk" text={cleanLog(record.error_message)} />
+        <SubLine tone="risk" text={cleanLog(record.error_message, language)} />
       ) : null}
     </div>
   )

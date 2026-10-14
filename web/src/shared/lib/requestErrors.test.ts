@@ -12,7 +12,7 @@ describe('readable payment errors', () => {
       { message: legacyProtocolError },
     ]) {
       expect(isPaymentOutcomeUnknown(error)).toBe(true)
-      const text = formatRequestError(error)
+      const text = formatRequestError(error, 'en')
       expect(text).toContain('network protocol error')
       expect(text).toContain('Payment result is unconfirmed')
       expect(text).toContain('check the original payment')
@@ -25,7 +25,9 @@ describe('readable payment errors', () => {
     const error = new Error(
       'paid request outcome unknown; refusing automatic replay: payment response or settlement receipt could not be verified'
     )
-    expect(formatRequestError(error)).toContain('Payment result is unconfirmed')
+    expect(formatRequestError(error, 'en')).toContain(
+      'Payment result is unconfirmed'
+    )
     expect(formatRequestError(error, 'zh')).toContain('支付结果待核对')
     expect(formatRequestError(error, 'id')).toContain(
       'Payment result is unconfirmed'
@@ -38,21 +40,21 @@ describe('readable payment errors', () => {
   it('does not turn non-payment network failures into payment failures', () => {
     const error = new Error('malformed HTTP response "\\x00\\x04"')
     expect(isPaymentOutcomeUnknown(error)).toBe(false)
-    expect(formatRequestError(error)).toContain('network protocol error')
-    expect(formatRequestError(error)).not.toContain('Payment result')
+    expect(formatRequestError(error, 'en')).toContain('network protocol error')
+    expect(formatRequestError(error, 'en')).not.toContain('Payment result')
   })
 
   it('preserves actionable ordinary errors and bounds unexpected output', () => {
-    expect(formatRequestError(new Error('snapshot expired'))).toBe(
+    expect(formatRequestError(new Error('snapshot expired'), 'en')).toBe(
       'snapshot expired'
     )
-    expect(formatRequestError('missing symbol')).toBe('missing symbol')
-    expect(formatRequestError('long '.repeat(500)).length).toBeLessThanOrEqual(
-      501
-    )
-    expect(formatRequestError(null)).toBe(
+    expect(formatRequestError('missing symbol', 'en')).toBe('missing symbol')
+    expect(
+      formatRequestError('long '.repeat(500), 'en').length
+    ).toBeLessThanOrEqual(501)
+    expect(formatRequestError(null, 'en')).toBe(
       'Request failed. Check the service status.'
     )
-    expect(formatRequestError('bad\u0000response')).toBe('bad response')
+    expect(formatRequestError('bad\u0000response', 'en')).toBe('bad response')
   })
 })

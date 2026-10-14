@@ -1,3 +1,5 @@
+import { useLanguage } from '../../shared/contexts/LanguageContext'
+import { t } from '../../shared/i18n/translations'
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { CSSProperties } from 'react'
@@ -115,17 +117,21 @@ export function TerminalDashboard({
   positions: propPositions,
   decisions: propDecisions,
 }: TerminalDashboardProps) {
+  const { language } = useLanguage()
   const traderId = selectedTrader?.trader_id || selectedTraderId
   useTick(1000)
-  const clock = new Date().toLocaleTimeString('en-GB', { hour12: false })
+  const clock = new Date().toLocaleTimeString(
+    language === 'zh' ? 'zh-CN' : 'en-GB',
+    { hour12: false }
+  )
   const [closing, setClosing] = useState<string | null>(null)
 
   async function closePositionRow(symbol: string, side: 'LONG' | 'SHORT') {
     if (!traderId || closing) return
     const ok = await confirmToast(`Market-close ${symbol} ${side}?`, {
-      title: 'Close position',
-      okText: 'Close',
-      cancelText: 'Cancel',
+      title: t('terminal.closePosition', language),
+      okText: t('terminal.close', language),
+      cancelText: t('terminal.cancel', language),
     })
     if (!ok) return
     setClosing(symbol)
@@ -137,7 +143,9 @@ export function TerminalDashboard({
         mutate(`account-${traderId}`),
       ])
     } catch (err) {
-      notify.error(err instanceof Error ? err.message : 'Close failed')
+      notify.error(
+        err instanceof Error ? err.message : t('terminal.closeFailed', language)
+      )
     } finally {
       setClosing(null)
     }
@@ -147,7 +155,11 @@ export function TerminalDashboard({
     if (!traderId || closing || open.length === 0) return
     const ok = await confirmToast(
       `Market-close ALL ${open.length} open positions?`,
-      { title: 'Flatten book', okText: 'Close all', cancelText: 'Cancel' }
+      {
+        title: t('terminal.flattenBook', language),
+        okText: t('terminal.closeAll', language),
+        cancelText: t('terminal.cancel', language),
+      }
     )
     if (!ok) return
     setClosing('__all__')
@@ -165,7 +177,7 @@ export function TerminalDashboard({
       mutate(`positions-${traderId}`),
       mutate(`account-${traderId}`),
     ])
-    if (failed === 0) notify.success('All positions closed')
+    if (failed === 0) notify.success(t('terminal.allPositionsClosed', language))
     else notify.error(`${failed}/${open.length} closes failed`)
     setClosing(null)
   }
@@ -335,9 +347,9 @@ export function TerminalDashboard({
               background: 'rgba(200,60,40,0.06)',
             }}
           >
-            <strong>Trading blocked / 交易已阻断</strong>
+            <strong>{t('terminal.tradingBlocked', language)}</strong>
             <div className="tm-error">
-              {formatRequestError(status.trading_error)}
+              {formatRequestError(status.trading_error, language)}
             </div>
             <div>
               自动开仓、平仓不可用；请用主钱包重新签名授权。修复前不会为此决策轮次调用付费
@@ -422,7 +434,7 @@ export function TerminalDashboard({
             {selectedTrader?.trader_name ?? 'Crux'}
           </span>
           <span>
-            <span className="tm-sc">model </span>
+            <span className="tm-sc">{t('terminal.model', language)} </span>
             {(() => {
               const raw = config?.ai_model || status?.ai_model || ''
               if (!raw) return '—'
@@ -432,23 +444,23 @@ export function TerminalDashboard({
             })()}
           </span>
           <span>
-            <span className="tm-sc">strategy </span>
+            <span className="tm-sc">{t('terminal.strategy', language)} </span>
             {config?.strategy_name || selectedTrader?.strategy_name || '—'}
           </span>
           <span>
-            <span className="tm-sc">scan </span>
+            <span className="tm-sc">{t('terminal.scan', language)} </span>
             {scanMin}m
           </span>
           <span>
-            <span className="tm-sc">universe </span>
+            <span className="tm-sc">{t('terminal.universe', language)} </span>
             {candidateCoins.length}
           </span>
           <span>
-            <span className="tm-sc">positions </span>
+            <span className="tm-sc">{t('terminal.positions', language)} </span>
             {positions?.length ?? 0}
           </span>
           <span style={{ marginLeft: 'auto' }}>
-            <span className="tm-sc">next cycle </span>
+            <span className="tm-sc">{t('terminal.nextCycle', language)} </span>
             {countdown}
           </span>
         </div>
@@ -460,7 +472,7 @@ export function TerminalDashboard({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
           {[
             {
-              l: 'Equity',
+              l: t('terminal.equity', language),
               v: fmtUsd(account?.total_equity),
               c: 'var(--tm-ink)',
             },
@@ -478,13 +490,13 @@ export function TerminalDashboard({
                   : 'var(--tm-dn)',
             },
             {
-              l: 'Profit factor',
+              l: t('terminal.profitFactor', language),
               v: fullStats != null ? fullStats.profit_factor.toFixed(2) : '—',
               c: 'var(--tm-ink)',
             },
             // max_drawdown_pct is already a percent (18.5 = -18.5%)
             {
-              l: 'Max drawdown',
+              l: t('terminal.maxDrawdown', language),
               v:
                 fullStats != null
                   ? `-${fullStats.max_drawdown_pct.toFixed(1)}%`
@@ -613,7 +625,9 @@ export function TerminalDashboard({
               <span className="tm-px" style={{ fontSize: 11 }}>
                 Positions
               </span>
-              <span className="tm-sc">Current positions · live</span>
+              <span className="tm-sc">
+                {t('terminal.currentPositionsLive', language)}
+              </span>
               <span className="tm-sc" style={{ marginLeft: 'auto' }}>
                 {positions?.length ?? 0} open
               </span>
@@ -649,8 +663,12 @@ export function TerminalDashboard({
               >
                 <thead>
                   <tr className="tm-sc" style={{ fontSize: 9 }}>
-                    <td style={{ padding: '0 0 3px' }}>symbol</td>
-                    <td style={{ padding: '0 0 3px' }}>side·lev</td>
+                    <td style={{ padding: '0 0 3px' }}>
+                      {t('terminal.symbol', language)}
+                    </td>
+                    <td style={{ padding: '0 0 3px' }}>
+                      {t('terminal.sideLev', language)}
+                    </td>
                     <td style={{ padding: '0 0 3px', textAlign: 'right' }}>
                       entry
                     </td>
@@ -790,8 +808,12 @@ export function TerminalDashboard({
               >
                 <thead>
                   <tr className="tm-sc" style={{ fontSize: 9 }}>
-                    <td style={{ padding: '0 0 3px' }}>symbol</td>
-                    <td style={{ padding: '0 0 3px' }}>side</td>
+                    <td style={{ padding: '0 0 3px' }}>
+                      {t('terminal.symbol', language)}
+                    </td>
+                    <td style={{ padding: '0 0 3px' }}>
+                      {t('terminal.side', language)}
+                    </td>
                     <td style={{ padding: '0 0 3px', textAlign: 'right' }}>
                       hold
                     </td>
@@ -878,7 +900,9 @@ export function TerminalDashboard({
               <span className="tm-px" style={{ fontSize: 11 }}>
                 By symbol
               </span>
-              <span className="tm-sc">By-symbol history · trades/win/pnl</span>
+              <span className="tm-sc">
+                {t('terminal.bySymbolHistory', language)}
+              </span>
             </div>
             {symbolStats.length > 0 ? (
               symbolStats.map((s) => (
@@ -913,7 +937,9 @@ export function TerminalDashboard({
                 </div>
               ))
             ) : (
-              <div className="tm-sc">No symbol history.</div>
+              <div className="tm-sc">
+                {t('terminal.noSymbolHistory', language)}
+              </div>
             )}
           </div>
           <div style={sc}>
