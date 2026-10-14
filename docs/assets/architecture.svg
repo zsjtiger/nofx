@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="800" viewBox="0 0 1100 800">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A8478"/></marker></defs>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace">
+<rect x="0" y="0" width="1100" height="800" rx="0" fill="#F7F4EC" stroke="#F7F4EC" stroke-width="0"/>
+<rect x="40" y="30" width="1020" height="110" rx="8" fill="#FFFFFF" stroke="#1A1813" stroke-width="1.2"/>
+<text x="60" y="55" font-size="13" fill="#1A1813" font-weight="bold" text-anchor="start">Web app (React, Vite, TypeScript)</text>
+<rect x="60" y="68" width="150" height="30" rx="6" fill="#F1ECE2" stroke="#E0483B" stroke-width="1"/>
+<text x="135" y="88" font-size="12" fill="#1A1813" font-weight="normal" text-anchor="middle">Traders</text>
+<rect x="226" y="68" width="150" height="30" rx="6" fill="#F1ECE2" stroke="#E0483B" stroke-width="1"/>
+<text x="301" y="88" font-size="12" fill="#1A1813" font-weight="normal" text-anchor="middle">Dashboard</text>
+<rect x="392" y="68" width="150" height="30" rx="6" fill="#F1ECE2" stroke="#E0483B" stroke-width="1"/>
+<text x="467" y="88" font-size="12" fill="#1A1813" font-weight="normal" text-anchor="middle">Strategy Studio</text>
+<rect x="558" y="68" width="150" height="30" rx="6" fill="#F1ECE2" stroke="#E0483B" stroke-width="1"/>
+<text x="633" y="88" font-size="12" fill="#1A1813" font-weight="normal" text-anchor="middle">Settings</text>
+<rect x="724" y="68" width="150" height="30" rx="6" fill="#F1ECE2" stroke="#E0483B" stroke-width="1"/>
+<text x="799" y="88" font-size="12" fill="#1A1813" font-weight="normal" text-anchor="middle">Competition</text>
+<rect x="890" y="68" width="150" height="30" rx="6" fill="#F1ECE2" stroke="#E0483B" stroke-width="1"/>
+<text x="965" y="88" font-size="12" fill="#1A1813" font-weight="normal" text-anchor="middle">FAQ</text>
+<text x="60" y="125" font-size="11" fill="#8A8478" font-weight="normal" text-anchor="start">Shared: API client · i18n (中文 / English) · auth state · trader and strategy forms</text>
+<line x1="300" y1="140" x2="300" y2="180" stroke="#8A8478" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="312" y="166" font-size="11" fill="#8A8478" font-weight="normal" text-anchor="start">HTTPS /api · JWT</text>
+<rect x="40" y="180" width="470" height="140" rx="8" fill="#FFFFFF" stroke="#1A1813" stroke-width="1.2"/>
+<text x="60" y="204" font-size="13" fill="#1A1813" font-weight="bold" text-anchor="start">HTTP API (Gin)</text>
+<text x="60" y="228" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">auth · users · AI models · exchanges</text>
+<text x="60" y="247" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">traders · strategies · orders · equity</text>
+<text x="60" y="266" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">competition · stats · health</text>
+<text x="60" y="292" font-size="11" fill="#8A8478" font-weight="normal" text-anchor="start">Secrets: RSA transport encryption, AES at rest</text>
+<text x="60" y="309" font-size="11" fill="#8A8478" font-weight="normal" text-anchor="start">(DATA_ENCRYPTION_KEY, JWT_SECRET)</text>
+<rect x="590" y="180" width="470" height="140" rx="8" fill="#FFFFFF" stroke="#1A1813" stroke-width="1.2"/>
+<text x="610" y="204" font-size="13" fill="#1A1813" font-weight="bold" text-anchor="start">Trader manager</text>
+<text x="610" y="228" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">creates one AutoTrader per trader</text>
+<text x="610" y="247" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">starts, stops and reloads strategy config</text>
+<text x="610" y="266" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">rebuilds open positions from the store</text>
+<text x="610" y="292" font-size="11" fill="#8A8478" font-weight="normal" text-anchor="start">Account kinds: paper broker per exchange</text>
+<line x1="510" y1="250" x2="590" y2="250" stroke="#8A8478" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="550" y="242" font-size="10" fill="#8A8478" font-weight="normal" text-anchor="middle">start / stop</text>
+<rect x="40" y="345" width="1020" height="200" rx="8" fill="#FFFFFF" stroke="#1A1813" stroke-width="1.2"/>
+<text x="60" y="368" font-size="13" fill="#1A1813" font-weight="bold" text-anchor="start">Trader cycle — repeated for every running trader</text>
+<rect x="60" y="385" width="170" height="140" rx="8" fill="#FFFBF5" stroke="#E0483B" stroke-width="1.2"/>
+<text x="72" y="410" font-size="13" fill="#E0483B" font-weight="bold" text-anchor="start">1  Market data</text>
+<text x="72" y="434" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">candidate symbols,</text>
+<text x="72" y="453" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">daily bars, indicators,</text>
+<text x="72" y="472" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">external data sources</text>
+<rect x="255" y="385" width="170" height="140" rx="8" fill="#FFFBF5" stroke="#E0483B" stroke-width="1.2"/>
+<text x="267" y="410" font-size="13" fill="#E0483B" font-weight="bold" text-anchor="start">2  Decision</text>
+<text x="267" y="434" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">kernel builds prompt;</text>
+<text x="267" y="453" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">LLM returns JSON</text>
+<text x="267" y="472" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">trading decisions</text>
+<rect x="450" y="385" width="170" height="140" rx="8" fill="#FFFBF5" stroke="#E0483B" stroke-width="1.2"/>
+<text x="462" y="410" font-size="13" fill="#E0483B" font-weight="bold" text-anchor="start">3  Rules</text>
+<text x="462" y="434" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">lots of 100, T+1, price</text>
+<text x="462" y="453" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">limits, no shorting for</text>
+<text x="462" y="472" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">A-shares, exposure caps</text>
+<rect x="645" y="385" width="170" height="140" rx="8" fill="#FFFBF5" stroke="#E0483B" stroke-width="1.2"/>
+<text x="657" y="410" font-size="13" fill="#E0483B" font-weight="bold" text-anchor="start">4  Execute</text>
+<text x="657" y="434" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">paper broker fills</text>
+<text x="657" y="453" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">with fees; stop-loss</text>
+<text x="657" y="472" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">and take-profit orders</text>
+<rect x="840" y="385" width="170" height="140" rx="8" fill="#FFFBF5" stroke="#E0483B" stroke-width="1.2"/>
+<text x="852" y="410" font-size="13" fill="#E0483B" font-weight="bold" text-anchor="start">5  Record</text>
+<text x="852" y="434" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">decisions, orders,</text>
+<text x="852" y="453" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">positions and equity</text>
+<text x="852" y="472" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">snapshot saved</text>
+<line x1="230" y1="455" x2="255" y2="455" stroke="#8A8478" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="425" y1="455" x2="450" y2="455" stroke="#8A8478" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="620" y1="455" x2="645" y2="455" stroke="#8A8478" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="815" y1="455" x2="840" y2="455" stroke="#8A8478" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="825" y1="320" x2="825" y2="345" stroke="#8A8478" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="836" y="336" font-size="10" fill="#8A8478" font-weight="normal" text-anchor="start">runs cycle</text>
+<rect x="40" y="600" width="320" height="90" rx="8" fill="#FFFFFF" stroke="#1A1813" stroke-width="1.2" stroke-dasharray="5,4"/>
+<text x="60" y="624" font-size="13" fill="#1A1813" font-weight="bold" text-anchor="start">Market data</text>
+<text x="60" y="646" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">Alpaca (US stocks)</text>
+<text x="60" y="664" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">Tushare Pro (A-shares)</text>
+<rect x="390" y="600" width="320" height="90" rx="8" fill="#FFFFFF" stroke="#1A1813" stroke-width="1.2" stroke-dasharray="5,4"/>
+<text x="410" y="624" font-size="13" fill="#1A1813" font-weight="bold" text-anchor="start">LLM providers</text>
+<text x="410" y="646" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">OpenAI-compatible · Claude · DeepSeek</text>
+<text x="410" y="664" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">Qwen · Gemini · Grok · Kimi · MiniMax</text>
+<rect x="720" y="600" width="240" height="90" rx="8" fill="#FFFFFF" stroke="#1A1813" stroke-width="1.2" stroke-dasharray="5,4"/>
+<text x="740" y="624" font-size="13" fill="#1A1813" font-weight="bold" text-anchor="start">Paper brokers</text>
+<text x="740" y="646" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">alpacapaper (US stocks)</text>
+<text x="740" y="664" font-size="11" fill="#1A1813" font-weight="normal" text-anchor="start">cnpaper (A-shares)</text>
+<line x1="145" y1="545" x2="200" y2="600" stroke="#8A8478" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+<line x1="340" y1="545" x2="520" y2="600" stroke="#8A8478" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+<line x1="730" y1="545" x2="820" y2="600" stroke="#8A8478" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+<rect x="40" y="715" width="1020" height="60" rx="8" fill="#1A1813" stroke="#1A1813" stroke-width="1.2"/>
+<text x="60" y="742" font-size="13" fill="#F1ECE2" font-weight="bold" text-anchor="start">Store (GORM): SQLite by default, PostgreSQL optional</text>
+<text x="60" y="762" font-size="10" fill="#F1ECE2" font-weight="normal" text-anchor="start">users · ai_models · exchanges · strategies · traders · decision_records · trader_equity_snapshots · orders · positions</text>
+<line x1="985" y1="485" x2="985" y2="715" stroke="#1A1813" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="994" y="600" font-size="10" fill="#8A8478" font-weight="normal" text-anchor="start">writes</text>
+</g></svg>
