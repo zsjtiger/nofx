@@ -31,6 +31,13 @@ func NewClient(token string) *Client {
 	}
 }
 
+// NewClientWithBaseURL returns a client for a custom endpoint, such as a proxy or a test server.
+func NewClientWithBaseURL(token, baseURL string) *Client {
+	c := NewClient(token)
+	c.baseURL = baseURL
+	return c
+}
+
 // Table is the tabular payload Tushare returns: named columns and row arrays.
 type Table struct {
 	Fields []string
