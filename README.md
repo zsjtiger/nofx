@@ -123,8 +123,6 @@ The FAQ inside the web app is the most current reference.
 
 ## Community
 
-[Issues](https://github.com/NoFxAiOS/nofx/issues)
-
 ## Contributing
 
 Code, documentation and bug reports are welcome. See the [Contributing Guide](CONTRIBUTING.md), [Code of Conduct](CODE_OF_CONDUCT.md) and [Security Policy](SECURITY.md).
