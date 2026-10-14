@@ -173,6 +173,9 @@ type RiskControlConfig struct {
 	MinPositionSize              float64 `json:"min_position_size"`
 	MinRiskRewardRatio           float64 `json:"min_risk_reward_ratio"`
 	MinConfidence                int     `json:"min_confidence"`
+	// ProfitProtection closes a position that gives back 40% of its peak gain
+	// after a 5% move. It runs outside the model's decisions, so it is off by default.
+	ProfitProtection bool `json:"profit_protection"`
 }
 
 // PromptSectionsConfig overrides sections of the built-in prompt.

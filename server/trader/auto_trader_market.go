@@ -13,6 +13,15 @@ func (at *AutoTrader) marketCapabilities() types.Capabilities {
 	return at.capabilities
 }
 
+// marketCurrency returns the account currency of a market, or "" when unknown.
+func marketCurrency(m types.Market) string {
+	caps, err := types.CapabilitiesOf(m)
+	if err != nil {
+		return ""
+	}
+	return caps.Currency
+}
+
 // applyMarketRules enforces the market's rules before an open order is sent.
 // It returns the quantity to send: buys are floored to the market's lot size.
 func (at *AutoTrader) applyMarketRules(decision *kernel.Decision, quantity float64, isShort bool, now time.Time) (float64, error) {

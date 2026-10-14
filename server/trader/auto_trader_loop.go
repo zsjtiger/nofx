@@ -107,8 +107,8 @@ func (at *AutoTrader) runCycle() error {
 		record.CandidateCoins = append(record.CandidateCoins, coin.Symbol)
 	}
 
-	at.logInfof("📊 Account equity: %.2f USDT | Available: %.2f USDT | Positions: %d",
-		ctx.Account.TotalEquity, ctx.Account.AvailableBalance, ctx.Account.PositionCount)
+	at.logInfof("📊 Account equity: %.2f %s | Available: %.2f %s | Positions: %d",
+		ctx.Account.TotalEquity, at.marketCapabilities().Currency, ctx.Account.AvailableBalance, at.marketCapabilities().Currency, ctx.Account.PositionCount)
 
 	// 5. Use strategy engine to call AI for decision
 	at.logInfof("🤖 Requesting AI analysis and decision... [Strategy Engine]")

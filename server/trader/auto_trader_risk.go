@@ -2,8 +2,10 @@ package trader
 
 import (
 	"fmt"
+	"math"
 	"nofx/logger"
-	"strings"
+	"nofx/store"
+	"nofx/trader/rules"
 	"time"
 )
 
@@ -52,6 +54,9 @@ func (at *AutoTrader) startDrawdownMonitor() {
 
 // checkPositionDrawdown checks position drawdown situation
 func (at *AutoTrader) checkPositionDrawdown() {
+	if !at.profitProtectionEnabled() {
+		return
+	}
 	// Get current positions
 	positions, err := at.trader.GetPositions()
 	if err != nil {
@@ -202,12 +207,6 @@ func (at *AutoTrader) ClearPeakPnLCache(symbol, side string) {
 // Risk Control Helpers
 // ============================================================================
 
-// isBTCETH checks if a symbol is BTC or ETH
-func isBTCETH(symbol string) bool {
-	symbol = strings.ToUpper(symbol)
-	return strings.HasPrefix(symbol, "BTC") || strings.HasPrefix(symbol, "ETH")
-}
-
 // enforcePositionValueRatio checks and enforces position value ratio limits (CODE ENFORCED)
 // Returns the adjusted position size (capped if necessary) and whether the position was capped
 // positionSizeUSD: the original position size in USD
@@ -231,29 +230,68 @@ func (at *AutoTrader) enforcePositionValueRatio(positionSizeUSD float64, equity 
 
 	// Check if position size exceeds limit
 	if positionSizeUSD > maxPositionValue {
-		logger.Infof("  ⚠️ [RISK CONTROL] Position %.2f USDT exceeds limit (equity %.2f × %.1fx = %.2f USDT max for %s), capping",
-			positionSizeUSD, equity, maxPositionValueRatio, maxPositionValue, symbol)
+		logger.Infof("  ⚠️ [RISK CONTROL] Position %.2f %s exceeds limit (equity %.2f × %.1fx = %.2f %s max for %s), capping",
+			positionSizeUSD, at.marketCapabilities().Currency, equity, maxPositionValueRatio, maxPositionValue, at.marketCapabilities().Currency, symbol)
 		return maxPositionValue, true
 	}
 
 	return positionSizeUSD, false
 }
 
+// minPositionSize returns the smallest position the strategy allows.
+func (at *AutoTrader) minPositionSize() float64 {
+	if at.config.StrategyConfig == nil || at.config.StrategyConfig.RiskControl.MinPositionSize <= 0 {
+		return store.MinPositionValue
+	}
+	return at.config.StrategyConfig.RiskControl.MinPositionSize
+}
+
 // enforceMinPositionSize checks minimum position size (CODE ENFORCED)
 func (at *AutoTrader) enforceMinPositionSize(positionSizeUSD float64) error {
-	if at.config.StrategyConfig == nil {
-		return nil
-	}
-
-	minSize := at.config.StrategyConfig.RiskControl.MinPositionSize
-	if minSize <= 0 {
-		minSize = 12 // Default: 12 USDT
-	}
-
+	minSize := at.minPositionSize()
 	if positionSizeUSD < minSize {
-		return fmt.Errorf("❌ [RISK CONTROL] Position %.2f USDT below minimum (%.2f USDT)", positionSizeUSD, minSize)
+		return fmt.Errorf("❌ [RISK CONTROL] Position %.2f %s below minimum (%.2f %s)", positionSizeUSD, at.marketCapabilities().Currency, minSize, at.marketCapabilities().Currency)
 	}
 	return nil
+}
+
+// minRiskReward returns the strategy's minimum take-profit to stop-loss ratio, or 0 when unset.
+func (at *AutoTrader) minRiskReward() float64 {
+	if at.config.StrategyConfig == nil {
+		return 0
+	}
+	return at.config.StrategyConfig.RiskControl.MinRiskRewardRatio
+}
+
+// currentExposure sums the market value of the open positions.
+func currentExposure(positions []map[string]interface{}) float64 {
+	total := 0.0
+	for _, pos := range positions {
+		qty, _ := pos["positionAmt"].(float64)
+		price, _ := pos["markPrice"].(float64)
+		total += math.Abs(qty) * price
+	}
+	return total
+}
+
+// enforceExposureLimit caps a new position so the total open value stays within
+// equity × MaxMarginUsage. It rejects the order when no room is left for the minimum size.
+func (at *AutoTrader) enforceExposureLimit(positions []map[string]interface{}, positionSizeUSD, equity float64) (float64, error) {
+	if at.config.StrategyConfig == nil {
+		return positionSizeUSD, nil
+	}
+	exposure := currentExposure(positions)
+	room := rules.ExposureRoom(exposure, equity, at.config.StrategyConfig.RiskControl.MaxMarginUsage)
+	if positionSizeUSD <= room {
+		return positionSizeUSD, nil
+	}
+	logger.Infof("  ⚠️ [RISK CONTROL] Position %.2f %s exceeds exposure room %.2f %s (open %.2f, equity %.2f), capping",
+		positionSizeUSD, at.marketCapabilities().Currency, room, at.marketCapabilities().Currency, exposure, equity)
+	if room < at.minPositionSize() {
+		return 0, fmt.Errorf("❌ [RISK CONTROL] No exposure room left (open %.2f %s, limit %.2f %s)",
+			exposure, at.marketCapabilities().Currency, equity*at.config.StrategyConfig.RiskControl.MaxMarginUsage, at.marketCapabilities().Currency)
+	}
+	return room, nil
 }
 
 // enforceMaxPositions checks maximum positions count (CODE ENFORCED)
@@ -283,4 +321,9 @@ func getSideFromAction(action string) string {
 	default:
 		return "BUY"
 	}
+}
+
+// profitProtectionEnabled reports whether the strategy turns on profit protection.
+func (at *AutoTrader) profitProtectionEnabled() bool {
+	return at.config.StrategyConfig != nil && at.config.StrategyConfig.RiskControl.ProfitProtection
 }

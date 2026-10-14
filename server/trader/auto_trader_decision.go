@@ -181,7 +181,7 @@ func (at *AutoTrader) GetAccountInfo() (map[string]interface{}, error) {
 	// Verify unrealized P&L consistency (API value vs calculated from positions)
 	// Note: Lighter API may return 0 for unrealized PnL, this is a known limitation
 	diff := math.Abs(totalUnrealizedProfit - totalUnrealizedPnLCalculated)
-	if diff > 5.0 { // Only warn if difference is significant (> 5 USDT)
+	if diff > 5.0 { // Only warn if difference is significant (> 5 account currency units)
 		logger.Infof("⚠️ Unrealized P&L inconsistency (Lighter API limitation): API=%.4f, Calculated=%.4f, Diff=%.4f",
 			totalUnrealizedProfit, totalUnrealizedPnLCalculated, diff)
 	}
@@ -466,7 +466,7 @@ func (at *AutoTrader) createOrderRecord(orderID, symbol, action, positionSide st
 		FilledQuantity:  0,
 		AvgFillPrice:    0,
 		Commission:      0,
-		CommissionAsset: "USDT",
+		CommissionAsset: at.marketCapabilities().Currency,
 		Leverage:        leverage,
 		ReduceOnly:      reduceOnly,
 		ClosePosition:   reduceOnly,
@@ -510,7 +510,7 @@ func (at *AutoTrader) recordOrderFill(orderRecordID int64, exchangeOrderID, symb
 		Quantity:        quantity,
 		QuoteQuantity:   price * quantity,
 		Commission:      fee,
-		CommissionAsset: "USDT",
+		CommissionAsset: at.marketCapabilities().Currency,
 		RealizedPnL:     0,     // Will be calculated for close orders
 		IsMaker:         false, // Market orders are usually taker
 		CreatedAt:       time.Now().UTC().UnixMilli(),

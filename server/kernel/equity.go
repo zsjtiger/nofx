@@ -46,7 +46,16 @@ func BuildEquitySystemPrompt(caps types.Capabilities, riskControl store.RiskCont
 	}
 	sb.WriteString(fmt.Sprintf("- Single position value must not exceed %.2f %s (equity x %.2f).\n", accountEquity*ratio, caps.Currency, ratio))
 	if riskControl.MinConfidence > 0 {
-		sb.WriteString(fmt.Sprintf("- Only open positions with confidence of at least %d.\n", riskControl.MinConfidence))
+		sb.WriteString(fmt.Sprintf("- Only open positions with confidence of at least %d. Lower-confidence opens are turned into wait.\n", riskControl.MinConfidence))
+	}
+	if riskControl.MinRiskRewardRatio > 0 {
+		sb.WriteString(fmt.Sprintf("- Take-profit distance from the market price must be at least %.1f times the stop-loss distance.\n", riskControl.MinRiskRewardRatio))
+	}
+	if riskControl.MaxMarginUsage > 0 {
+		sb.WriteString(fmt.Sprintf("- Total open position value must not exceed %.2f %s (equity x %.2f).\n", accountEquity*riskControl.MaxMarginUsage, caps.Currency, riskControl.MaxMarginUsage))
+	}
+	if riskControl.ProfitProtection {
+		sb.WriteString("- Profit protection is on: the system closes a position that has risen more than 5% and given back 40% of its peak gain.\n")
 	}
 	sb.WriteString("- Every open must include a protective `stop_loss` below the entry for longs; above it for shorts.\n\n")
 
@@ -104,6 +113,11 @@ func ValidateEquityDecisions(decisions []Decision, caps types.Capabilities, acco
 			d.Leverage = 1
 		}
 		if d.Action != "open_long" && d.Action != "open_short" {
+			continue
+		}
+		if riskControl.MinConfidence > 0 && d.Confidence < riskControl.MinConfidence {
+			logger.Infof("⚠️  [Equity] %s %s skipped: confidence %d is below the minimum %d", d.Symbol, d.Action, d.Confidence, riskControl.MinConfidence)
+			d.Action = "wait"
 			continue
 		}
 		if d.StopLoss <= 0 {

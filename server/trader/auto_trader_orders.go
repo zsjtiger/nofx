@@ -74,6 +74,9 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 	if err := rules.ValidateProtectionPrices(decision.Action, marketData.CurrentPrice, decision.StopLoss, decision.TakeProfit); err != nil {
 		return err
 	}
+	if err := rules.ValidateRiskReward(marketData.CurrentPrice, decision.StopLoss, decision.TakeProfit, at.minRiskReward()); err != nil {
+		return err
+	}
 
 	// Get balance (needed for multiple checks)
 	balance, err := at.trader.GetBalance()
@@ -113,6 +116,14 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 		actualPositionSize = adjustedSize
 		decision.PositionSizeUSD = actualPositionSize
 	}
+
+	// [CODE ENFORCED] Total exposure: the new position fits in the room left under equity x MaxMarginUsage
+	cappedSize, err := at.enforceExposureLimit(positions, decision.PositionSizeUSD, equity)
+	if err != nil {
+		return err
+	}
+	decision.PositionSizeUSD = cappedSize
+	actualPositionSize = cappedSize
 
 	// [CODE ENFORCED] Minimum position size check
 	if err := at.enforceMinPositionSize(decision.PositionSizeUSD); err != nil {
@@ -198,6 +209,9 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 	if err := rules.ValidateProtectionPrices(decision.Action, marketData.CurrentPrice, decision.StopLoss, decision.TakeProfit); err != nil {
 		return err
 	}
+	if err := rules.ValidateRiskReward(marketData.CurrentPrice, decision.StopLoss, decision.TakeProfit, at.minRiskReward()); err != nil {
+		return err
+	}
 
 	// Get balance (needed for multiple checks)
 	balance, err := at.trader.GetBalance()
@@ -237,6 +251,14 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 		actualPositionSize = adjustedSize
 		decision.PositionSizeUSD = actualPositionSize
 	}
+
+	// [CODE ENFORCED] Total exposure: the new position fits in the room left under equity x MaxMarginUsage
+	cappedSize, err := at.enforceExposureLimit(positions, decision.PositionSizeUSD, equity)
+	if err != nil {
+		return err
+	}
+	decision.PositionSizeUSD = cappedSize
+	actualPositionSize = cappedSize
 
 	// [CODE ENFORCED] Minimum position size check
 	if err := at.enforceMinPositionSize(decision.PositionSizeUSD); err != nil {

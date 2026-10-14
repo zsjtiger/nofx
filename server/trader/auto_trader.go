@@ -257,7 +257,7 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 		foundBalance := extractInitialBalance(account)
 		if foundBalance > 0 {
 			config.InitialBalance = foundBalance
-			logger.Infof("✓ [%s] Auto-fetched initial balance: %.2f USDT", config.Name, foundBalance)
+			logger.Infof("✓ [%s] Auto-fetched initial balance: %.2f %s", config.Name, foundBalance, marketCurrency(types.Market(config.Market)))
 			// Save to database so it persists across restarts
 			if st != nil {
 				if err := st.Trader().UpdateInitialBalance(userID, config.ID, foundBalance); err != nil {
@@ -357,15 +357,17 @@ func (at *AutoTrader) Run() error {
 	at.startTime = time.Now()
 
 	logger.Info("🚀 AI-driven automatic trading system started")
-	at.logInfof("💰 Initial balance: %.2f USDT", at.initialBalance)
+	at.logInfof("💰 Initial balance: %.2f %s", at.initialBalance, at.marketCapabilities().Currency)
 	at.logInfof("⚙️  Scan interval: %v", at.config.ScanInterval)
 	logger.Info("🤖 AI will make full decisions on leverage, position size, stop loss/take profit, etc.")
 
 	at.monitorWg.Add(1)
 	defer at.monitorWg.Done()
 
-	// Start drawdown monitoring
-	at.startDrawdownMonitor()
+	// Start drawdown monitoring (only when the strategy enables profit protection)
+	if at.profitProtectionEnabled() {
+		at.startDrawdownMonitor()
+	}
 
 	// Start Lighter order sync if using Lighter exchange
 
