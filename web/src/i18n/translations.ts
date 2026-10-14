@@ -501,7 +501,7 @@ export const translations = {
     forgotPassword: 'Forgot password?',
     forgotAccount: 'Forgot account?',
     forgotAccountConfirm:
-      '⚠️ This will permanently delete EVERYTHING: users, traders, strategies, AI model API keys, exchange API keys, and your CLAW402 wallet. Export anything you need to keep (especially wallet private keys) BEFORE continuing. Re-registration will NOT restore them. Continue?',
+      '⚠️ This will permanently delete EVERYTHING: users, traders, strategies, AI model API keys, exchange API keys. Export anything you need to keep BEFORE continuing. Re-registration will NOT restore them. Continue?',
     forgotAccountSuccess:
       'Account reset successful! You can now register a new account.',
     rememberMe: 'Remember me',
@@ -1700,7 +1700,7 @@ export const translations = {
     forgotPassword: '忘记密码？',
     forgotAccount: '忘记账户？',
     forgotAccountConfirm:
-      '⚠️ 这将永久删除全部数据：用户、Trader、策略、AI 模型 API Key、交易所 API Key，以及您的 CLAW402 钱包。请务必在继续前导出需要保留的内容（尤其是钱包私钥）。重新注册不会恢复任何数据。确定要继续吗？',
+      '⚠️ 这将永久删除全部数据：用户、Trader、策略、AI 模型 API Key、交易所 API Key。请务必在继续前导出需要保留的内容。重新注册不会恢复任何数据。确定要继续吗？',
     forgotAccountSuccess: '账户已重置！现在可以注册新账户了。',
     rememberMe: '记住我',
     resetPassword: '重置密码',

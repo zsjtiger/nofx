@@ -50,7 +50,7 @@ export function ModelConfigModal({
   // The configured entry carries the saved details (wallet address, custom
   // model name, has_api_key); the template from supportedModels only describes
   // the provider. When editing, the configured entry must win — both can share
-  // the same id (e.g. "claw402").
+  // the same id.
   const configuredModel = configuredModels?.find((m) => m.id === selectedModelId)
   const templateModel = allModels?.find((m) => m.id === selectedModelId)
   const selectedModel = editingModelId
