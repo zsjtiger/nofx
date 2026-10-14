@@ -4,10 +4,10 @@ import (
 	"nofx/api"
 	"nofx/auth"
 	"nofx/config"
-	"nofx/crypto"
+	_ "nofx/llm/providers"
 	"nofx/logger"
 	"nofx/manager"
-	_ "nofx/mcp/provider"
+	"nofx/secrets"
 	"nofx/store"
 	"nofx/telemetry"
 	"os"
@@ -46,11 +46,11 @@ func main() {
 
 	// Initialize encryption service BEFORE database (so EncryptedString can decrypt on read)
 	logger.Info("🔐 Initializing encryption service...")
-	cryptoService, err := crypto.NewCryptoService()
+	cryptoService, err := secrets.NewCryptoService()
 	if err != nil {
 		logger.Fatalf("❌ Failed to initialize encryption service: %v", err)
 	}
-	crypto.SetGlobalCryptoService(cryptoService)
+	secrets.SetGlobalCryptoService(cryptoService)
 	logger.Info("✅ Encryption service initialized successfully")
 
 	// Initialize database from configuration

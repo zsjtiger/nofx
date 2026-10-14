@@ -12,7 +12,7 @@ This guide is for NOFX maintainers reviewing pull requests.
 
 - [ ] **Check PR alignment with roadmap**
   - Does it fit into our current priorities?
-  - Is it in the [roadmap](../roadmap/README.md)?
+  - Is it in the [roadmap](../archive/roadmap/README.md)?
   - If not, should we accept it anyway?
 
 - [ ] **Verify PR completeness**
@@ -450,7 +450,7 @@ If unsure about a PR:
 - [Contributing Guide](../../CONTRIBUTING.md)
 - [Code of Conduct](../../CODE_OF_CONDUCT.md)
 - [Security Policy](../../SECURITY.md)
-- [Project Roadmap](../roadmap/README.md)
+- [Project Roadmap](../archive/roadmap/README.md)
 
 ---
 

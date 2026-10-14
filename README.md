@@ -116,7 +116,7 @@ cd web && npx tsc --noEmit -p . && npx vitest run
 | :--- | :--- |
 | [Getting Started](docs/getting-started/README.md) | Setup steps and account configuration |
 | [Migration plan](docs/plans/2026-10-14-cn-us-equity-migration.md) | A-share and US equity design |
-| [Troubleshooting](docs/guides/TROUBLESHOOTING.md) | Diagnosing common issues |
+| [Troubleshooting](docs/archive/guides/TROUBLESHOOTING.md) | Diagnosing common issues |
 
 The FAQ inside the web app is the most current reference.
 

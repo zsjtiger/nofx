@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"nofx/auth"
+	"nofx/llm"
 	"nofx/logger"
-	"nofx/mcp"
 	"nofx/telegram/session"
 	"strings"
 )
@@ -15,9 +15,9 @@ const maxIterations = 10
 // apiRequestTool is the single tool exposed to the LLM.
 // Native function calling means the LLM returns EITHER ToolCalls OR Content — never both.
 // This makes narration structurally impossible: text cannot appear alongside a tool call.
-var apiRequestTool = mcp.Tool{
+var apiRequestTool = llm.Tool{
 	Type: "function",
-	Function: mcp.FunctionDef{
+	Function: llm.FunctionDef{
 		Name:        "api_request",
 		Description: "Call the NOFX trading system REST API",
 		Parameters: map[string]any{
@@ -47,14 +47,14 @@ var apiRequestTool = mcp.Tool{
 // returns a plain-text reply (no tool calls).
 type Agent struct {
 	apiTool      *apiCallTool
-	getLLM       func() mcp.AIClient
+	getLLM       func() llm.AIClient
 	memory       *session.Memory
 	systemPrompt string
 	userID       string
 }
 
 // New creates an Agent for one chat session.
-func New(apiPort int, botToken, userID string, getLLM func() mcp.AIClient, systemPrompt string) *Agent {
+func New(apiPort int, botToken, userID string, getLLM func() llm.AIClient, systemPrompt string) *Agent {
 	return &Agent{
 		apiTool:      newAPICallTool(apiPort, botToken),
 		getLLM:       getLLM,
@@ -192,8 +192,8 @@ func (a *Agent) buildAccountContext() string {
 // On the first message of a conversation the live account state is fetched and injected.
 // onChunk is optional; when set it is called once with the complete final reply text.
 func (a *Agent) Run(userMessage string, onChunk func(string)) string {
-	llm := a.getLLM()
-	if llm == nil {
+	client := a.getLLM()
+	if client == nil {
 		return "AI assistant unavailable. Please configure an AI model in the Web UI."
 	}
 
@@ -207,10 +207,10 @@ func (a *Agent) Run(userMessage string, onChunk func(string)) string {
 		firstUserContent = histCtx + "\n---\nUser: " + userMessage
 	}
 
-	turnMsgs := []mcp.Message{mcp.NewUserMessage(firstUserContent)}
+	turnMsgs := []llm.Message{llm.NewUserMessage(firstUserContent)}
 
 	for i := 0; i < maxIterations; i++ {
-		req, err := mcp.NewRequestBuilder().
+		req, err := llm.NewRequestBuilder().
 			WithSystemPrompt(a.systemPrompt).
 			AddConversationHistory(turnMsgs).
 			AddTool(apiRequestTool).
@@ -221,7 +221,7 @@ func (a *Agent) Run(userMessage string, onChunk func(string)) string {
 			break
 		}
 
-		resp, err := llm.CallWithRequestFull(req)
+		resp, err := client.CallWithRequestFull(req)
 		if err != nil {
 			logger.Errorf("Agent: LLM call failed (iteration %d): %v", i+1, err)
 			return "AI assistant temporarily unavailable. Please try again."
@@ -244,7 +244,7 @@ func (a *Agent) Run(userMessage string, onChunk func(string)) string {
 		}
 
 		// Append assistant message carrying the tool calls (no content field).
-		turnMsgs = append(turnMsgs, mcp.Message{
+		turnMsgs = append(turnMsgs, llm.Message{
 			Role:      "assistant",
 			ToolCalls: resp.ToolCalls,
 		})
@@ -254,7 +254,7 @@ func (a *Agent) Run(userMessage string, onChunk func(string)) string {
 			var apiReq apiRequest
 			if err := json.Unmarshal([]byte(tc.Function.Arguments), &apiReq); err != nil {
 				logger.Errorf("Agent: invalid tool args for call %s: %v", tc.ID, err)
-				turnMsgs = append(turnMsgs, mcp.Message{
+				turnMsgs = append(turnMsgs, llm.Message{
 					Role:       "tool",
 					ToolCallID: tc.ID,
 					Content:    fmt.Sprintf(`{"error":"invalid arguments: %s"}`, err.Error()),
@@ -263,7 +263,7 @@ func (a *Agent) Run(userMessage string, onChunk func(string)) string {
 			}
 			logger.Infof("Agent: iter=%d tool=%s %s %s", i+1, tc.ID, apiReq.Method, apiReq.Path)
 			result := a.apiTool.execute(&apiReq)
-			turnMsgs = append(turnMsgs, mcp.Message{
+			turnMsgs = append(turnMsgs, llm.Message{
 				Role:       "tool",
 				ToolCallID: tc.ID,
 				Content:    result,

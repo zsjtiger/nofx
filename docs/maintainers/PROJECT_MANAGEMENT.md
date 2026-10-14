@@ -153,7 +153,7 @@ Use this matrix to decide priority:
 
 ## 📊 Roadmap Alignment
 
-All work should align with our [roadmap](../roadmap/README.md):
+All work should align with our [roadmap](../archive/roadmap/README.md):
 
 ### Phase 1: Core Infrastructure (Current Focus)
 

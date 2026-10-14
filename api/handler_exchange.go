@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"nofx/config"
-	"nofx/crypto"
 	"nofx/logger"
+	"nofx/secrets"
 	"nofx/store"
 
 	"github.com/gin-gonic/gin"
@@ -92,7 +92,7 @@ func (s *Server) decodeSecureBody(c *gin.Context, into interface{}) bool {
 		return true
 	}
 
-	var encryptedPayload crypto.EncryptedPayload
+	var encryptedPayload secrets.EncryptedPayload
 	if err := json.Unmarshal(bodyBytes, &encryptedPayload); err != nil {
 		logger.Infof("❌ Failed to parse encrypted payload: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format, encrypted transmission required"})
@@ -106,7 +106,7 @@ func (s *Server) decodeSecureBody(c *gin.Context, into interface{}) bool {
 		})
 		return false
 	}
-	decrypted, err := s.cryptoHandler.cryptoService.DecryptSensitiveData(&encryptedPayload)
+	decrypted, err := s.encryptionHandler.cryptoService.DecryptSensitiveData(&encryptedPayload)
 	if err != nil {
 		logger.Infof("❌ Failed to decrypt request: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to decrypt data"})

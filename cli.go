@@ -11,8 +11,8 @@ import (
 
 	"nofx/auth"
 	"nofx/config"
-	"nofx/crypto"
 	"nofx/logger"
+	"nofx/secrets"
 	"nofx/store"
 
 	"github.com/joho/godotenv"
@@ -63,11 +63,11 @@ func openStoreForCLI(dbPathOverride string) (*store.Store, error) {
 		cfg.DBPath = dbPathOverride
 	}
 
-	cryptoService, err := crypto.NewCryptoService()
+	cryptoService, err := secrets.NewCryptoService()
 	if err != nil {
 		return nil, fmt.Errorf("initialize encryption service: %w", err)
 	}
-	crypto.SetGlobalCryptoService(cryptoService)
+	secrets.SetGlobalCryptoService(cryptoService)
 
 	if cfg.DBType == "sqlite" {
 		if dir := filepath.Dir(cfg.DBPath); dir != "." {

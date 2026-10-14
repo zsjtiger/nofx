@@ -26,7 +26,7 @@ WORKDIR /app
 RUN mkdir -p /app/data
 
 # Startup script (includes nginx config generation)
-COPY railway/start.sh /app/start.sh
+COPY deploy/railway/start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
 ENV DB_PATH=/app/data/data.db

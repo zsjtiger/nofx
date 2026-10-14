@@ -48,25 +48,25 @@ jobs:
       matrix:
         include:
           - name: backend
-            dockerfile: ./docker/Dockerfile.backend
+            dockerfile: ./deploy/docker/Dockerfile.backend
             image_suffix: backend
             platform: linux/amd64
             arch_tag: amd64
             runner: ubuntu-22.04
           - name: backend
-            dockerfile: ./docker/Dockerfile.backend
+            dockerfile: ./deploy/docker/Dockerfile.backend
             image_suffix: backend
             platform: linux/arm64
             arch_tag: arm64
             runner: ubuntu-22.04-arm
           - name: frontend
-            dockerfile: ./docker/Dockerfile.frontend
+            dockerfile: ./deploy/docker/Dockerfile.frontend
             image_suffix: frontend
             platform: linux/amd64
             arch_tag: amd64
             runner: ubuntu-22.04
           - name: frontend
-            dockerfile: ./docker/Dockerfile.frontend
+            dockerfile: ./deploy/docker/Dockerfile.frontend
             image_suffix: frontend
             platform: linux/arm64
             arch_tag: arm64

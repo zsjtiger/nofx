@@ -13,8 +13,8 @@ go run main.go
 ## What's Changed?
 
 ### New Files
-- `crypto/` - Core encryption modules
-- `api/crypto_handler.go` - Encryption API endpoints
+- `secrets/` - Core encryption modules
+- `api/encryption_handler.go` - Encryption API endpoints
 - `web/src/lib/crypto.ts` - Frontend encryption module
 - `scripts/migrate_encryption.go` - Data migration tool
 - `deploy_encryption.sh` - One-click deployment script
@@ -53,7 +53,7 @@ func main() {
 
     // Register API routes
     cryptoHandler, _ := api.NewCryptoHandler(secureStorage)
-    http.HandleFunc("/api/crypto/public-key", cryptoHandler.HandleGetPublicKey)
+    http.HandleFunc("/api/crypto/public-key", encryptionHandler.HandleGetPublicKey)
 
     // ... rest of your code
 }
@@ -129,7 +129,7 @@ go run main.go
 
 - **Documentation**: See inline code comments
 - **Issues**: Report via GitHub issues
-- **Questions**: Check `crypto/encryption_test.go` for examples
+- **Questions**: Check `secrets/` for examples
 
 ---
 

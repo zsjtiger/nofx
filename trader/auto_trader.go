@@ -3,9 +3,9 @@ package trader
 import (
 	"fmt"
 	"nofx/kernel"
+	"nofx/llm"
+	_ "nofx/llm/providers"
 	"nofx/logger"
-	"nofx/mcp"
-	_ "nofx/mcp/provider"
 	"nofx/store"
 	"nofx/trader/types"
 	"sync"
@@ -119,7 +119,7 @@ type AutoTrader struct {
 	showInCompetition     bool               // Whether to show in competition page
 	config                AutoTraderConfig
 	trader                Trader // Use Trader interface (supports multiple platforms)
-	mcpClient             mcp.AIClient
+	mcpClient             llm.AIClient
 	store                 *store.Store           // Data storage (decision records, etc.)
 	strategyEngine        *kernel.StrategyEngine // Strategy engine (uses strategy configuration)
 	cycleNumber           int                    // Current cycle number
@@ -177,7 +177,7 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 	}
 
 	// Initialize AI client based on provider
-	var mcpClient mcp.AIClient
+	var mcpClient llm.AIClient
 	aiModel := config.AIModel
 	if config.UseQwen && aiModel == "" {
 		aiModel = "qwen"
@@ -199,15 +199,15 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 
 	// Create client via registry (covers all registered providers)
 	if aiModel == "custom" {
-		mcpClient = mcp.New()
+		mcpClient = llm.New()
 	} else if aiModel == "" {
 		aiModel = "deepseek"
-		mcpClient = mcp.NewAIClientByProvider(aiModel)
+		mcpClient = llm.NewAIClientByProvider(aiModel)
 	} else {
-		mcpClient = mcp.NewAIClientByProvider(aiModel)
+		mcpClient = llm.NewAIClientByProvider(aiModel)
 	}
 	if mcpClient == nil {
-		mcpClient = mcp.New()
+		mcpClient = llm.New()
 	}
 
 	mcpClient.SetAPIKey(apiKey, customURL, config.CustomModelName)

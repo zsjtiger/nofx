@@ -1,8 +1,8 @@
 package agent
 
 import (
+	"nofx/llm"
 	"nofx/logger"
-	"nofx/mcp"
 	"sync"
 	"time"
 )
@@ -16,14 +16,14 @@ type Manager struct {
 	apiPort      int
 	botToken     string
 	userID       string
-	getLLM       func() mcp.AIClient
+	getLLM       func() llm.AIClient
 	systemPrompt string
 }
 
 // NewManager creates a Manager. Call api.GetAPIDocs() before this and pass the result as apiDocs.
 // userEmail is the registered email shown to the user when they ask "who am I".
 // userID is the internal DB UUID used for API authentication.
-func NewManager(apiPort int, botToken, userEmail, userID string, getLLM func() mcp.AIClient, apiDocs string) *Manager {
+func NewManager(apiPort int, botToken, userEmail, userID string, getLLM func() llm.AIClient, apiDocs string) *Manager {
 	return &Manager{
 		agents:       make(map[int64]*Agent),
 		lanes:        make(map[int64]chan struct{}),

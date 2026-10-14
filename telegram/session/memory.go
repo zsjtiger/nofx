@@ -2,7 +2,7 @@ package session
 
 import (
 	"fmt"
-	"nofx/mcp"
+	"nofx/llm"
 	"strings"
 )
 
@@ -22,10 +22,10 @@ type Message struct {
 type Memory struct {
 	LongTerm  string    // Durable summary (survives compaction, user never sees this happen)
 	ShortTerm []Message // Recent conversation (cleared on compaction)
-	llm       mcp.AIClient
+	llm       llm.AIClient
 }
 
-func NewMemory(llm mcp.AIClient) *Memory {
+func NewMemory(llm llm.AIClient) *Memory {
 	return &Memory{llm: llm}
 }
 

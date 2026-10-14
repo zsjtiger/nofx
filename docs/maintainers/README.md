@@ -44,7 +44,7 @@ Everything here is transparent and designed to help you contribute successfully!
 
 - **Public questions:** Use [GitHub Discussions](https://github.com/NoFxAiOS/nofx/discussions)
 - **Maintainer questions:** Use the maintainer channel
-- **Migration questions:** See [Migration Announcement](../community/MIGRATION_ANNOUNCEMENT.md)
+- **Migration questions:** See [Migration Announcement](../archive/community/MIGRATION_ANNOUNCEMENT.md)
 
 ---
 

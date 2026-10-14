@@ -153,7 +153,7 @@ Available → Claimed → In Progress → Under Review → Paid
 
 ## 📊 路线图对齐
 
-所有工作应与我们的[路线图](../roadmap/README.zh-CN.md)对齐：
+所有工作应与我们的[路线图](../archive/roadmap/README.zh-CN.md)对齐：
 
 ### Phase 1：核心基础设施（当前重点）
 

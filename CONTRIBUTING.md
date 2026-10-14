@@ -1,6 +1,6 @@
 # 🤝 Contributing to NOFX
 
-**Language:** [English](CONTRIBUTING.md) | [中文](docs/i18n/zh-CN/CONTRIBUTING.md)
+**Language:** [English](CONTRIBUTING.md) | [中文](docs/archive/i18n/zh-CN/CONTRIBUTING.md)
 
 Thank you for your interest in contributing to NOFX! This document provides guidelines and workflows for contributing to the project.
 
@@ -38,7 +38,7 @@ This project adheres to the [Code of Conduct](CODE_OF_CONDUCT.md). By participat
 
 - Use the [Feature Request Template](.github/ISSUE_TEMPLATE/feature_request.md)
 - Explain the use case and benefits
-- Check if it aligns with the [project roadmap](docs/roadmap/README.md)
+- Check if it aligns with the [project roadmap](docs/archive/roadmap/README.md)
 
 ### 3. Submit Pull Requests 🔧
 
@@ -448,7 +448,7 @@ Reviewers will check:
 
 ### Guidelines
 
-- Read [Bounty Guide](docs/community/bounty-guide.md)
+- Read [Bounty Guide](docs/archive/community/bounty-guide.md)
 - Meet all acceptance criteria
 - Include demo video/screenshots
 - Follow all contribution guidelines
@@ -467,9 +467,9 @@ Reviewers will check:
 
 ## 📚 Additional Resources
 
-- [Project Roadmap](docs/roadmap/README.md)
-- [Architecture Documentation](docs/architecture/README.md)
-- [Deployment Guide](docs/getting-started/docker-deploy.en.md)
+- [Project Roadmap](docs/archive/roadmap/README.md)
+- [Architecture Documentation](docs/archive/architecture/README.md)
+- [Deployment Guide](docs/getting-started/README.md)
 
 ---
 

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"nofx/kernel"
+	"nofx/llm"
+	_ "nofx/llm/providers"
 	"nofx/logger"
 	"nofx/market"
-	"nofx/mcp"
-	_ "nofx/mcp/provider"
 	"nofx/store"
 	"nofx/trader/types"
 	"strings"
@@ -671,9 +671,9 @@ func (s *Server) runRealAITest(userID, modelID, systemPrompt, userPrompt string)
 	provider := model.Provider
 	apiKey := string(model.APIKey)
 
-	aiClient := mcp.NewAIClientByProvider(provider)
+	aiClient := llm.NewAIClientByProvider(provider)
 	if aiClient == nil {
-		aiClient = mcp.NewClient()
+		aiClient = llm.NewClient()
 	}
 
 	aiClient.SetAPIKey(apiKey, model.CustomAPIURL, model.CustomModelName)

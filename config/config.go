@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"nofx/mcp"
+	"nofx/llm"
 	"nofx/telemetry"
 	"os"
 	"strconv"
@@ -51,7 +51,6 @@ type Config struct {
 	// Market data provider API keys
 	AlpacaAPIKey    string // Alpaca API key for US stocks
 	AlpacaSecretKey string // Alpaca secret key
-	TwelveDataKey   string // TwelveData API key for forex & metals
 
 }
 
@@ -121,7 +120,6 @@ func initConfig() error {
 	// Market data provider API keys
 	cfg.AlpacaAPIKey = os.Getenv("ALPACA_API_KEY")
 	cfg.AlpacaSecretKey = os.Getenv("ALPACA_SECRET_KEY")
-	cfg.TwelveDataKey = os.Getenv("TWELVEDATA_API_KEY")
 
 	// Database configuration
 	if v := os.Getenv("DB_TYPE"); v != "" {
@@ -157,7 +155,7 @@ func initConfig() error {
 	telemetry.Init(cfg.ExperienceImprovement, "")
 
 	// Set up AI token usage tracking callback
-	mcp.TokenUsageCallback = func(usage mcp.TokenUsage) {
+	llm.TokenUsageCallback = func(usage llm.TokenUsage) {
 		telemetry.TrackAIUsage(telemetry.AIUsageEvent{
 			ModelProvider: usage.Provider,
 			ModelName:     usage.Model,

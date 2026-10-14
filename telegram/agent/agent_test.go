@@ -8,16 +8,16 @@ import (
 	"testing"
 	"time"
 
-	"nofx/mcp"
+	"nofx/llm"
 )
 
-// mockLLM implements mcp.AIClient using pre-programmed LLMResponse objects.
+// mockLLM implements llm.AIClient using pre-programmed LLMResponse objects.
 // Native function calling: CallWithRequestFull is the primary method;
 // CallWithRequest and CallWithRequestStream are stubs kept for interface compliance.
 type mockLLM struct {
-	responses []*mcp.LLMResponse
+	responses []*llm.LLMResponse
 	calls     int
-	lastMsgs  []mcp.Message
+	lastMsgs  []llm.Message
 }
 
 func (m *mockLLM) SetAPIKey(_, _, _ string)   {}
@@ -25,7 +25,7 @@ func (m *mockLLM) SetTimeout(_ time.Duration) {}
 
 func (m *mockLLM) CallWithMessages(_, _ string) (string, error) { return "", nil }
 
-func (m *mockLLM) CallWithRequest(req *mcp.Request) (string, error) {
+func (m *mockLLM) CallWithRequest(req *llm.Request) (string, error) {
 	r, err := m.next()
 	if err != nil {
 		return "", err
@@ -33,7 +33,7 @@ func (m *mockLLM) CallWithRequest(req *mcp.Request) (string, error) {
 	return r.Content, nil
 }
 
-func (m *mockLLM) CallWithRequestStream(req *mcp.Request, onChunk func(string)) (string, error) {
+func (m *mockLLM) CallWithRequestStream(req *llm.Request, onChunk func(string)) (string, error) {
 	r, err := m.next()
 	if err != nil {
 		return "", err
@@ -44,30 +44,30 @@ func (m *mockLLM) CallWithRequestStream(req *mcp.Request, onChunk func(string)) 
 	return r.Content, nil
 }
 
-func (m *mockLLM) CallWithRequestFull(req *mcp.Request) (*mcp.LLMResponse, error) {
+func (m *mockLLM) CallWithRequestFull(req *llm.Request) (*llm.LLMResponse, error) {
 	m.lastMsgs = req.Messages
 	return m.next()
 }
 
-func (m *mockLLM) next() (*mcp.LLMResponse, error) {
+func (m *mockLLM) next() (*llm.LLMResponse, error) {
 	if m.calls < len(m.responses) {
 		r := m.responses[m.calls]
 		m.calls++
 		return r, nil
 	}
-	return &mcp.LLMResponse{Content: "OK"}, nil
+	return &llm.LLMResponse{Content: "OK"}, nil
 }
 
 // toolCall builds a mock LLM response that contains a single tool invocation.
-func toolCall(id, method, path string, body string) *mcp.LLMResponse {
+func toolCall(id, method, path string, body string) *llm.LLMResponse {
 	if body == "" {
 		body = "{}"
 	}
-	return &mcp.LLMResponse{
-		ToolCalls: []mcp.ToolCall{{
+	return &llm.LLMResponse{
+		ToolCalls: []llm.ToolCall{{
 			ID:   id,
 			Type: "function",
-			Function: mcp.ToolCallFunction{
+			Function: llm.ToolCallFunction{
 				Name:      "api_request",
 				Arguments: fmt.Sprintf(`{"method":%q,"path":%q,"body":%s}`, method, path, body),
 			},
@@ -76,12 +76,12 @@ func toolCall(id, method, path string, body string) *mcp.LLMResponse {
 }
 
 // textReply builds a mock LLM response with a plain-text final answer.
-func textReply(content string) *mcp.LLMResponse {
-	return &mcp.LLMResponse{Content: content}
+func textReply(content string) *llm.LLMResponse {
+	return &llm.LLMResponse{Content: content}
 }
 
-func mockGetLLM(llm *mockLLM) func() mcp.AIClient {
-	return func() mcp.AIClient { return llm }
+func mockGetLLM(mock *mockLLM) func() llm.AIClient {
+	return func() llm.AIClient { return mock }
 }
 
 const testPrompt = "You are a test assistant."
@@ -111,16 +111,16 @@ func mockAPIServer(handlers map[string]string) (*httptest.Server, int) {
 
 // TestAgentDirectReply: LLM replies with text (no tool calls) — one LLM call.
 func TestAgentDirectReply(t *testing.T) {
-	llm := &mockLLM{responses: []*mcp.LLMResponse{textReply("Hello! How can I help you?")}}
-	a := New(8080, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	mock := &mockLLM{responses: []*llm.LLMResponse{textReply("Hello! How can I help you?")}}
+	a := New(8080, "tok", "test-user", mockGetLLM(mock), testPrompt)
 
 	reply := a.Run("hello", nil)
 
 	if reply != "Hello! How can I help you?" {
 		t.Fatalf("unexpected reply: %q", reply)
 	}
-	if llm.calls != 1 {
-		t.Fatalf("expected 1 LLM call, got %d", llm.calls)
+	if mock.calls != 1 {
+		t.Fatalf("expected 1 LLM call, got %d", mock.calls)
 	}
 }
 
@@ -131,19 +131,19 @@ func TestAgentAPICall(t *testing.T) {
 	})
 	defer srv.Close()
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		toolCall("c1", "GET", "/api/my-traders", "{}"),
 		textReply("You have one trader: AAPL Trader."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 
 	reply := a.Run("list my traders", nil)
 
 	if reply != "You have one trader: AAPL Trader." {
 		t.Fatalf("unexpected reply: %q", reply)
 	}
-	if llm.calls != 2 {
-		t.Fatalf("expected 2 LLM calls, got %d", llm.calls)
+	if mock.calls != 2 {
+		t.Fatalf("expected 2 LLM calls, got %d", mock.calls)
 	}
 }
 
@@ -155,17 +155,17 @@ func TestAgentMultiStep(t *testing.T) {
 	})
 	defer srv.Close()
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		toolCall("c1", "GET", "/api/account", "{}"),
 		toolCall("c2", "GET", "/api/positions", "{}"),
 		textReply("Account looks healthy and no open positions."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 
 	reply := a.Run("show me account status", nil)
 
-	if llm.calls != 3 {
-		t.Fatalf("expected 3 LLM calls (2 tool + 1 final), got %d", llm.calls)
+	if mock.calls != 3 {
+		t.Fatalf("expected 3 LLM calls (2 tool + 1 final), got %d", mock.calls)
 	}
 	if reply != "Account looks healthy and no open positions." {
 		t.Fatalf("unexpected final reply: %q", reply)
@@ -179,23 +179,23 @@ func TestAgentAPIResultInContext(t *testing.T) {
 	})
 	defer srv.Close()
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		toolCall("c1", "GET", "/api/account", "{}"),
 		textReply("Balance is 1234.56 USD."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 	a.Run("show balance", nil)
 
 	// The last request must contain a tool-result message with the balance data.
 	found := false
-	for _, msg := range llm.lastMsgs {
+	for _, msg := range mock.lastMsgs {
 		if msg.Role == "tool" && strings.Contains(msg.Content, "balance") {
 			found = true
 			break
 		}
 	}
 	if !found {
-		t.Fatalf("tool result message not found in subsequent LLM context; messages: %+v", llm.lastMsgs)
+		t.Fatalf("tool result message not found in subsequent LLM context; messages: %+v", mock.lastMsgs)
 	}
 }
 
@@ -212,23 +212,23 @@ func TestNarrationStructurallyImpossible(t *testing.T) {
 	defer srv.Close()
 
 	// Simulate a (malformed) response that has both Content and ToolCalls.
-	malformed := &mcp.LLMResponse{
+	malformed := &llm.LLMResponse{
 		Content: "Now I will look up your strategies.", // narration — must NOT reach user
-		ToolCalls: []mcp.ToolCall{{
+		ToolCalls: []llm.ToolCall{{
 			ID:   "c1",
 			Type: "function",
-			Function: mcp.ToolCallFunction{
+			Function: llm.ToolCallFunction{
 				Name:      "api_request",
 				Arguments: `{"method":"GET","path":"/api/strategies","body":{}}`,
 			},
 		}},
 	}
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		malformed,
 		textReply("You have 1 strategy: AAPL Trend."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 	reply := a.Run("look up my strategies", nil)
 
 	if strings.Contains(reply, "Now I will") {
@@ -246,11 +246,11 @@ func TestOnChunkCalledWithFinalReply(t *testing.T) {
 	})
 	defer srv.Close()
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		toolCall("c1", "GET", "/api/account", "{}"),
 		textReply("Equity: 500 USD."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 
 	var chunks []string
 	reply := a.Run("show equity", func(chunk string) {
@@ -281,16 +281,16 @@ func TestCreateStrategyWorkflow(t *testing.T) {
 	})
 	defer srv.Close()
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		toolCall("c1", "POST", "/api/strategies", `{"name":"AAPL Trend","config":{}}`),
 		toolCall("c2", "GET", "/api/strategies/s1", "{}"),
 		textReply("Strategy created: AAPL Trend, coin AAPL."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 	reply := a.Run("set up a AAPL trend trading strategy for me", nil)
 
-	if llm.calls != 3 {
-		t.Fatalf("expected 3 LLM calls, got %d", llm.calls)
+	if mock.calls != 3 {
+		t.Fatalf("expected 3 LLM calls, got %d", mock.calls)
 	}
 	if reply == "" {
 		t.Fatalf("empty final reply")
@@ -321,18 +321,18 @@ func TestFullSetupWorkflow(t *testing.T) {
 	var port int
 	fmt.Sscanf(srv.Listener.Addr().String(), "127.0.0.1:%d", &port)
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		toolCall("c1", "POST", "/api/strategies", `{"name":"AAPL Trend"}`),
 		toolCall("c2", "GET", "/api/strategies/s1", "{}"),
 		toolCall("c3", "POST", "/api/traders", `{"name":"AAPL Trend Trader","strategy_id":"s1"}`),
 		toolCall("c4", "POST", "/api/traders/tr1/start", "{}"),
 		textReply("Strategy and trader created and started! AAPL Trend Trader is running."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 	reply := a.Run("set up a AAPL trend trading strategy and start it", nil)
 
-	if llm.calls != 5 {
-		t.Fatalf("expected 5 LLM calls, got %d", llm.calls)
+	if mock.calls != 5 {
+		t.Fatalf("expected 5 LLM calls, got %d", mock.calls)
 	}
 	if calls["POST /api/strategies"] != 1 {
 		t.Errorf("expected 1 POST /api/strategies, got %d", calls["POST /api/strategies"])
@@ -367,12 +367,12 @@ func TestStartExistingTrader(t *testing.T) {
 	var port int
 	fmt.Sscanf(srv.Listener.Addr().String(), "127.0.0.1:%d", &port)
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		toolCall("c1", "GET", "/api/my-traders", "{}"),
 		toolCall("c2", "POST", "/api/traders/tr1/start", "{}"),
 		textReply("Trader AAPL Trader has been started."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 	reply := a.Run("start the trader", nil)
 
 	if calls["POST /api/traders/tr1/start"] != 1 {
@@ -393,21 +393,21 @@ func TestMaxIterations(t *testing.T) {
 	defer srv.Close()
 
 	// Always returns another tool call — should hit max iterations.
-	responses := make([]*mcp.LLMResponse, maxIterations+2)
+	responses := make([]*llm.LLMResponse, maxIterations+2)
 	for i := range responses {
 		responses[i] = toolCall(fmt.Sprintf("c%d", i), "GET", "/api/account", "{}")
 	}
 
-	llm := &mockLLM{responses: responses}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	mock := &mockLLM{responses: responses}
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 	reply := a.Run("loop forever", nil)
 
 	if reply == "" {
 		t.Fatalf("expected a fallback reply, got empty string")
 	}
 	// Agent should have made exactly maxIterations tool-call LLM calls.
-	if llm.calls != maxIterations {
-		t.Fatalf("expected %d LLM calls (max iterations), got %d", maxIterations, llm.calls)
+	if mock.calls != maxIterations {
+		t.Fatalf("expected %d LLM calls (max iterations), got %d", maxIterations, mock.calls)
 	}
 }
 
@@ -418,22 +418,22 @@ func TestToolCallIDPropagated(t *testing.T) {
 	})
 	defer srv.Close()
 
-	llm := &mockLLM{responses: []*mcp.LLMResponse{
+	mock := &mockLLM{responses: []*llm.LLMResponse{
 		toolCall("call-xyz-123", "GET", "/api/account", "{}"),
 		textReply("Balance is 999."),
 	}}
-	a := New(port, "tok", "test-user", mockGetLLM(llm), testPrompt)
+	a := New(port, "tok", "test-user", mockGetLLM(mock), testPrompt)
 	a.Run("check balance", nil)
 
 	// Find the tool result message and verify ToolCallID matches.
 	found := false
-	for _, msg := range llm.lastMsgs {
+	for _, msg := range mock.lastMsgs {
 		if msg.Role == "tool" && msg.ToolCallID == "call-xyz-123" {
 			found = true
 			break
 		}
 	}
 	if !found {
-		t.Fatalf("tool result with ToolCallID='call-xyz-123' not found in messages: %+v", llm.lastMsgs)
+		t.Fatalf("tool result with ToolCallID='call-xyz-123' not found in messages: %+v", mock.lastMsgs)
 	}
 }

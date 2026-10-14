@@ -3,8 +3,8 @@ package store
 import (
 	"errors"
 	"fmt"
-	"nofx/crypto"
 	"nofx/logger"
+	"nofx/secrets"
 	"os"
 	"strings"
 	"time"
@@ -19,16 +19,16 @@ type AIModelStore struct {
 
 // AIModel AI model configuration
 type AIModel struct {
-	ID              string                 `gorm:"primaryKey" json:"id"`
-	UserID          string                 `gorm:"column:user_id;not null;default:default;index" json:"user_id"`
-	Name            string                 `gorm:"not null" json:"name"`
-	Provider        string                 `gorm:"not null" json:"provider"`
-	Enabled         bool                   `gorm:"default:false" json:"enabled"`
-	APIKey          crypto.EncryptedString `gorm:"column:api_key;default:''" json:"apiKey"`
-	CustomAPIURL    string                 `gorm:"column:custom_api_url;default:''" json:"customApiUrl"`
-	CustomModelName string                 `gorm:"column:custom_model_name;default:''" json:"customModelName"`
-	CreatedAt       time.Time              `json:"created_at"`
-	UpdatedAt       time.Time              `json:"updated_at"`
+	ID              string                  `gorm:"primaryKey" json:"id"`
+	UserID          string                  `gorm:"column:user_id;not null;default:default;index" json:"user_id"`
+	Name            string                  `gorm:"not null" json:"name"`
+	Provider        string                  `gorm:"not null" json:"provider"`
+	Enabled         bool                    `gorm:"default:false" json:"enabled"`
+	APIKey          secrets.EncryptedString `gorm:"column:api_key;default:''" json:"apiKey"`
+	CustomAPIURL    string                  `gorm:"column:custom_api_url;default:''" json:"customApiUrl"`
+	CustomModelName string                  `gorm:"column:custom_model_name;default:''" json:"customModelName"`
+	CreatedAt       time.Time               `json:"created_at"`
+	UpdatedAt       time.Time               `json:"updated_at"`
 }
 
 func (AIModel) TableName() string { return "ai_models" }
@@ -206,9 +206,9 @@ func (s *AIModelStore) UpdateWithName(userID, id, name string, enabled bool, api
 		if strings.TrimSpace(name) != "" {
 			updates["name"] = strings.TrimSpace(name)
 		}
-		// If apiKey is not empty, update it (encryption handled by crypto.EncryptedString)
+		// If apiKey is not empty, update it (encryption handled by secrets.EncryptedString)
 		if apiKey != "" {
-			updates["api_key"] = crypto.EncryptedString(apiKey)
+			updates["api_key"] = secrets.EncryptedString(apiKey)
 		}
 		return s.db.Model(&existingModel).Updates(updates).Error
 	}
@@ -228,7 +228,7 @@ func (s *AIModelStore) UpdateWithName(userID, id, name string, enabled bool, api
 			updates["name"] = strings.TrimSpace(name)
 		}
 		if apiKey != "" {
-			updates["api_key"] = crypto.EncryptedString(apiKey)
+			updates["api_key"] = secrets.EncryptedString(apiKey)
 		}
 		return s.db.Model(&existingModel).Updates(updates).Error
 	}
@@ -276,7 +276,7 @@ func (s *AIModelStore) UpdateWithName(userID, id, name string, enabled bool, api
 		Name:            finalName,
 		Provider:        provider,
 		Enabled:         enabled,
-		APIKey:          crypto.EncryptedString(apiKey),
+		APIKey:          secrets.EncryptedString(apiKey),
 		CustomAPIURL:    customAPIURL,
 		CustomModelName: customModelName,
 	}
@@ -292,7 +292,7 @@ func (s *AIModelStore) Create(userID, id, name, provider string, enabled bool, a
 		Name:         name,
 		Provider:     provider,
 		Enabled:      enabled,
-		APIKey:       crypto.EncryptedString(apiKey),
+		APIKey:       secrets.EncryptedString(apiKey),
 		CustomAPIURL: customAPIURL,
 	}
 	// Use FirstOrCreate to ignore if already exists

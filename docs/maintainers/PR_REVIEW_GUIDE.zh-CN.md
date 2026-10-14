@@ -12,7 +12,7 @@
 
 - [ ] **检查 PR 与路线图的一致性**
   - 是否符合我们当前的优先级？
-  - 是否在[路线图](../roadmap/README.zh-CN.md)中？
+  - 是否在[路线图](../archive/roadmap/README.zh-CN.md)中？
   - 如果不在，我们是否应该接受它？
 
 - [ ] **验证 PR 完整性**
@@ -449,7 +449,7 @@ Co-authored-by: 贡献者姓名 <email@example.com>
 - [贡献指南](../../CONTRIBUTING.md)
 - [行为准则](../../CODE_OF_CONDUCT.md)
 - [安全政策](../../SECURITY.md)
-- [项目路线图](../roadmap/README.zh-CN.md)
+- [项目路线图](../archive/roadmap/README.zh-CN.md)
 
 ---
 

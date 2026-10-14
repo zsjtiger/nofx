@@ -8,8 +8,8 @@ on:
       - dev
     paths:
       - 'docker-compose.yml'
-      - 'docker/Dockerfile.backend'
-      - 'docker/Dockerfile.frontend'
+      - 'deploy/docker/Dockerfile.backend'
+      - 'deploy/docker/Dockerfile.frontend'
       - '.github/workflows/pr-docker-compose-healthcheck.yml'
 
 jobs:

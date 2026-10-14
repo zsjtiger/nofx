@@ -3,7 +3,7 @@ services:
   nofx:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.backend
+      dockerfile: ./deploy/docker/Dockerfile.backend
     container_name: nofx-trading
     restart: unless-stopped
     stop_grace_period: 30s  # Allow the app 30 seconds for graceful shutdown
@@ -32,7 +32,7 @@ services:
   nofx-frontend:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.frontend
+      dockerfile: ./deploy/docker/Dockerfile.frontend
     container_name: nofx-frontend
     restart: unless-stopped
     ports:

@@ -2,8 +2,8 @@ package store
 
 import (
 	"fmt"
-	"nofx/crypto"
 	"nofx/logger"
+	"nofx/secrets"
 	"strings"
 	"time"
 
@@ -18,18 +18,18 @@ type ExchangeStore struct {
 
 // Exchange is a brokerage account used for paper trading. The market is fixed by the exchange type.
 type Exchange struct {
-	ID           string                 `gorm:"primaryKey" json:"id"`
-	ExchangeType string                 `gorm:"column:exchange_type;not null;default:''" json:"exchange_type"`
-	AccountName  string                 `gorm:"column:account_name;not null;default:''" json:"account_name"`
-	UserID       string                 `gorm:"column:user_id;not null;default:default;index" json:"user_id"`
-	Name         string                 `gorm:"not null" json:"name"`
-	Type         string                 `gorm:"not null" json:"type"`
-	Enabled      bool                   `gorm:"default:false" json:"enabled"`
-	APIKey       crypto.EncryptedString `gorm:"column:api_key;default:''" json:"apiKey"`
-	SecretKey    crypto.EncryptedString `gorm:"column:secret_key;default:''" json:"secretKey"`
-	Market       string                 `gorm:"column:market;not null;default:''" json:"market"` // "us_equity" or "cn_equity"
-	CreatedAt    time.Time              `json:"created_at"`
-	UpdatedAt    time.Time              `json:"updated_at"`
+	ID           string                  `gorm:"primaryKey" json:"id"`
+	ExchangeType string                  `gorm:"column:exchange_type;not null;default:''" json:"exchange_type"`
+	AccountName  string                  `gorm:"column:account_name;not null;default:''" json:"account_name"`
+	UserID       string                  `gorm:"column:user_id;not null;default:default;index" json:"user_id"`
+	Name         string                  `gorm:"not null" json:"name"`
+	Type         string                  `gorm:"not null" json:"type"`
+	Enabled      bool                    `gorm:"default:false" json:"enabled"`
+	APIKey       secrets.EncryptedString `gorm:"column:api_key;default:''" json:"apiKey"`
+	SecretKey    secrets.EncryptedString `gorm:"column:secret_key;default:''" json:"secretKey"`
+	Market       string                  `gorm:"column:market;not null;default:''" json:"market"` // "us_equity" or "cn_equity"
+	CreatedAt    time.Time               `json:"created_at"`
+	UpdatedAt    time.Time               `json:"updated_at"`
 }
 
 func (Exchange) TableName() string { return "exchanges" }
@@ -167,8 +167,8 @@ func (s *ExchangeStore) Create(userID, exchangeType, accountName string, enabled
 		Name:         name,
 		Type:         typ,
 		Enabled:      true,
-		APIKey:       crypto.EncryptedString(apiKey),
-		SecretKey:    crypto.EncryptedString(secretKey),
+		APIKey:       secrets.EncryptedString(apiKey),
+		SecretKey:    secrets.EncryptedString(secretKey),
 		Market:       MarketForExchangeType(exchangeType),
 	}
 	if err := s.db.Create(exchange).Error; err != nil {
@@ -186,10 +186,10 @@ func (s *ExchangeStore) Update(userID, id string, apiKey, secretKey string) erro
 		"updated_at": time.Now().UTC(),
 	}
 	if apiKey != "" {
-		updates["api_key"] = crypto.EncryptedString(apiKey)
+		updates["api_key"] = secrets.EncryptedString(apiKey)
 	}
 	if secretKey != "" {
-		updates["secret_key"] = crypto.EncryptedString(secretKey)
+		updates["secret_key"] = secrets.EncryptedString(secretKey)
 	}
 
 	result := s.db.Model(&Exchange{}).Where("id = ? AND user_id = ?", id, userID).Updates(updates)

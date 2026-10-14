@@ -30,10 +30,10 @@ jobs:
       matrix:
         include:
           - name: backend
-            dockerfile: ./docker/Dockerfile.backend
+            dockerfile: ./deploy/docker/Dockerfile.backend
             test_run: true  # Needs test run
           - name: frontend
-            dockerfile: ./docker/Dockerfile.frontend
+            dockerfile: ./deploy/docker/Dockerfile.frontend
             test_run: true
 
     steps:
@@ -122,7 +122,7 @@ jobs:
         timeout-minutes: 15  # Native builds are faster!
         with:
           context: .
-          file: ./docker/Dockerfile.backend
+          file: ./deploy/docker/Dockerfile.backend
           platforms: linux/arm64
           push: false
           load: true  # Load locally for testing

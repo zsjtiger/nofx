@@ -6,9 +6,9 @@ import (
 	"net"
 	"net/http"
 	"nofx/auth"
-	"nofx/crypto"
 	"nofx/logger"
 	"nofx/manager"
+	"nofx/secrets"
 	"nofx/store"
 	"os"
 	"strings"
@@ -22,7 +22,7 @@ type Server struct {
 	router                    *gin.Engine
 	traderManager             *manager.TraderManager
 	store                     *store.Store
-	cryptoHandler             *CryptoHandler
+	encryptionHandler         *EncryptionHandler
 	exchangeAccountStateCache *ExchangeAccountStateCache
 	httpServer                *http.Server
 	port                      int
@@ -31,7 +31,7 @@ type Server struct {
 }
 
 // NewServer Creates API server
-func NewServer(traderManager *manager.TraderManager, st *store.Store, cryptoService *crypto.CryptoService, port int) *Server {
+func NewServer(traderManager *manager.TraderManager, st *store.Store, cryptoService *secrets.CryptoService, port int) *Server {
 	// Set to Release mode (reduce log output)
 	gin.SetMode(gin.ReleaseMode)
 
@@ -41,13 +41,13 @@ func NewServer(traderManager *manager.TraderManager, st *store.Store, cryptoServ
 	router.Use(corsMiddleware())
 
 	// Create crypto handler
-	cryptoHandler := NewCryptoHandler(cryptoService)
+	encryptionHandler := NewEncryptionHandler(cryptoService)
 
 	s := &Server{
 		router:                    router,
 		traderManager:             traderManager,
 		store:                     st,
-		cryptoHandler:             cryptoHandler,
+		encryptionHandler:         encryptionHandler,
 		exchangeAccountStateCache: NewExchangeAccountStateCache(),
 		port:                      port,
 		// Auth throttle: allow a small burst (typos / page reloads) then ~1
@@ -152,9 +152,9 @@ func (s *Server) setupRoutes() {
 		// A public POST /crypto/decrypt would be a decryption oracle: any
 		// unauthenticated caller could replay a captured ciphertext and get the
 		// plaintext (exchange/API credentials) back. It is intentionally NOT
-		// registered. See crypto_handler.go.
-		api.GET("/crypto/config", s.cryptoHandler.HandleGetCryptoConfig)
-		api.GET("/crypto/public-key", s.cryptoHandler.HandleGetPublicKey)
+		// registered. See encryption_handler.go.
+		api.GET("/crypto/config", s.encryptionHandler.HandleGetCryptoConfig)
+		api.GET("/crypto/public-key", s.encryptionHandler.HandleGetPublicKey)
 
 		// Public competition data (no authentication required)
 		s.route(api, "GET", "/traders", "Public trader list", s.handlePublicTraderList)

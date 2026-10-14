@@ -3,9 +3,9 @@ package telegram
 import (
 	"nofx/api"
 	"nofx/config"
+	"nofx/llm"
+	_ "nofx/llm/providers"
 	"nofx/logger"
-	"nofx/mcp"
-	_ "nofx/mcp/provider"
 	"nofx/store"
 	"nofx/telegram/agent"
 	"os"
@@ -91,7 +91,7 @@ func runBot(token string, cfg *config.Config, st *store.Store) bool {
 		botUserEmail = u.Email
 		botToken = newToken
 		agents = agent.NewManager(cfg.APIServerPort, botToken, botUserEmail, botUserID,
-			func() mcp.AIClient { return newLLMClient(st, botUserID) },
+			func() llm.AIClient { return newLLMClient(st, botUserID) },
 			api.GetAPIDocs(),
 		)
 		if prev == "" {
@@ -266,7 +266,7 @@ func sendMarkdownMsg(bot *tgbotapi.BotAPI, chatID int64, text string) {
 
 // ── LLM client ───────────────────────────────────────────────────────────────
 
-func newLLMClient(st *store.Store, userID string) mcp.AIClient {
+func newLLMClient(st *store.Store, userID string) llm.AIClient {
 	// 1. Prefer the model explicitly configured for Telegram (Settings → Telegram → AI Model)
 	if tgCfg, err := st.TelegramConfig().Get(); err == nil && tgCfg.ModelID != "" {
 		if model, err := st.AIModel().Get(userID, tgCfg.ModelID); err == nil && model.Enabled {
@@ -293,7 +293,7 @@ func newLLMClient(st *store.Store, userID string) mcp.AIClient {
 
 	// 3. Environment variable fallback
 	for _, pair := range []struct{ provider, key, url string }{
-		{"deepseek", os.Getenv("DEEPSEEK_API_KEY"), mcp.DefaultDeepSeekBaseURL},
+		{"deepseek", os.Getenv("DEEPSEEK_API_KEY"), llm.DefaultDeepSeekBaseURL},
 		{"openai", os.Getenv("OPENAI_API_KEY"), ""},
 		{"claude", os.Getenv("ANTHROPIC_API_KEY"), ""},
 	} {
@@ -306,10 +306,10 @@ func newLLMClient(st *store.Store, userID string) mcp.AIClient {
 	return nil
 }
 
-func clientForProvider(provider string) mcp.AIClient {
-	client := mcp.NewAIClientByProvider(provider)
+func clientForProvider(provider string) llm.AIClient {
+	client := llm.NewAIClientByProvider(provider)
 	if client == nil {
-		client = mcp.NewAIClientByProvider("deepseek")
+		client = llm.NewAIClientByProvider("deepseek")
 	}
 	return client
 }

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"nofx/llm"
 	"nofx/logger"
 	"nofx/market"
-	"nofx/mcp"
 	"nofx/store"
 	"nofx/trader/types"
 )
@@ -20,7 +20,7 @@ import (
 
 // GetFullDecision asks the model for decisions using a default stock strategy.
 // Production code calls GetFullDecisionWithStrategy with the trader's own config.
-func GetFullDecision(ctx *Context, mcpClient mcp.AIClient) (*FullDecision, error) {
+func GetFullDecision(ctx *Context, mcpClient llm.AIClient) (*FullDecision, error) {
 	defaultConfig := store.GetDefaultStrategyConfig("en")
 	engine := NewStrategyEngine(&defaultConfig).WithMarket(types.MarketUSEquity)
 	return GetFullDecisionWithStrategy(ctx, mcpClient, engine, "")
@@ -29,7 +29,7 @@ func GetFullDecision(ctx *Context, mcpClient mcp.AIClient) (*FullDecision, error
 // GetFullDecisionWithStrategy runs one decision cycle: fetch daily bars for the
 // candidate symbols, build the prompts, call the model, and validate the answer
 // against the market rules. Nothing is traded here.
-func GetFullDecisionWithStrategy(ctx *Context, mcpClient mcp.AIClient, engine *StrategyEngine, variant string) (*FullDecision, error) {
+func GetFullDecisionWithStrategy(ctx *Context, mcpClient llm.AIClient, engine *StrategyEngine, variant string) (*FullDecision, error) {
 	if ctx == nil {
 		return nil, fmt.Errorf("context is nil")
 	}
