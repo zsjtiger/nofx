@@ -480,7 +480,7 @@ export function ComparisonChart({ traders }: ComparisonChartProps) {
             letterSpacing: '0.1em',
           }}
         >
-          NOFX
+          Crux
         </div>
 
         <ResponsiveContainer width="100%" height={420}>

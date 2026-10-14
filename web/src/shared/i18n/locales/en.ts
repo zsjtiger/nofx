@@ -5,7 +5,7 @@ const en = {
   loadingError: 'Failed to load data',
   loggingIn: 'Signing in...',
   // Header
-  appTitle: 'NOFX',
+  appTitle: 'Crux',
   subtitle: 'Multi-AI Model Trading Platform',
   aiTraders: 'AI Traders',
   details: 'Details',
@@ -23,7 +23,7 @@ const en = {
   faqNav: 'FAQ',
 
   // Footer
-  footerTitle: 'NOFX - AI Trading System',
+  footerTitle: 'Crux - AI Trading System',
   footerWarning: '⚠️ Trading involves risk. Use at your own discretion.',
 
   // Stats Cards
@@ -270,11 +270,11 @@ const en = {
   newPassword: 'New Password',
   backToLogin: 'Back to Login',
   resetPasswordCliIntro:
-    'For security, password recovery is no longer available from the browser. Run this command on the server where NOFX is installed:',
+    'For security, password recovery is no longer available from the browser. Run this command on the server where Crux is installed:',
   resetPasswordCliSecurityNote:
-    'This requires shell access to the server, which keeps your account safe even when NOFX is exposed to the internet.',
+    'This requires shell access to the server, which keeps your account safe even when Crux is exposed to the internet.',
   resetAccountCliIntro:
-    'To wipe everything and start over, run this command on the server where NOFX is installed:',
+    'To wipe everything and start over, run this command on the server where Crux is installed:',
   copy: 'Copy',
   loginFailed: 'Login failed. Please check your email and password.',
   registrationFailed: 'Registration failed. Please try again.',
@@ -361,7 +361,7 @@ const en = {
       'Avoid embedding the app in insecure HTTP iframes or reverse proxies that strip HTTPS.',
     unsupportedTitle: 'Browser does not expose Web Crypto',
     unsupportedDesc:
-      'Open NOFX over HTTPS (or http://localhost during development) and avoid insecure iframes/reverse proxies so the browser can enable Web Crypto.',
+      'Open Crux over HTTPS (or http://localhost during development) and avoid insecure iframes/reverse proxies so the browser can enable Web Crypto.',
     summary: 'Current origin: {origin} • Protocol: {protocol}',
     disabledTitle: 'Transport encryption disabled',
     disabledDesc:

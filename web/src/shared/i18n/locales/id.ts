@@ -5,7 +5,7 @@ const id = {
   loadingError: 'Gagal memuat data',
   loggingIn: 'Sedang masuk...',
   // Header
-  appTitle: 'NOFX',
+  appTitle: 'Crux',
   subtitle: 'Platform Trading Multi-AI',
   aiTraders: 'Trader AI',
   details: 'Detail',
@@ -23,7 +23,7 @@ const id = {
   faqNav: 'FAQ',
 
   // Footer
-  footerTitle: 'NOFX - Sistem Trading AI',
+  footerTitle: 'Crux - Sistem Trading AI',
   footerWarning: '⚠️ Trading memiliki risiko. Gunakan dengan bijak.',
 
   // Stats Cards
@@ -255,11 +255,11 @@ const id = {
   newPassword: 'Kata Sandi Baru',
   backToLogin: 'Kembali ke Login',
   resetPasswordCliIntro:
-    'Demi keamanan, pemulihan kata sandi tidak lagi tersedia dari browser. Jalankan perintah ini di server tempat NOFX dipasang:',
+    'Demi keamanan, pemulihan kata sandi tidak lagi tersedia dari browser. Jalankan perintah ini di server tempat Crux dipasang:',
   resetPasswordCliSecurityNote:
-    'Ini memerlukan akses shell ke server, sehingga akun Anda tetap aman bahkan saat NOFX terekspos ke internet.',
+    'Ini memerlukan akses shell ke server, sehingga akun Anda tetap aman bahkan saat Crux terekspos ke internet.',
   resetAccountCliIntro:
-    'Untuk menghapus semua data dan memulai dari awal, jalankan perintah ini di server tempat NOFX dipasang:',
+    'Untuk menghapus semua data dan memulai dari awal, jalankan perintah ini di server tempat Crux dipasang:',
   copy: 'Salin',
   loginFailed: 'Gagal masuk. Periksa email dan kata sandi Anda.',
   registrationFailed: 'Gagal mendaftar. Silakan coba lagi.',
@@ -307,7 +307,7 @@ const id = {
       'Hindari menyematkan aplikasi dalam iframe HTTP yang tidak aman.',
     unsupportedTitle: 'Browser tidak mengekspos Web Crypto',
     unsupportedDesc:
-      'Buka NOFX melalui HTTPS (atau http://localhost saat pengembangan).',
+      'Buka Crux melalui HTTPS (atau http://localhost saat pengembangan).',
     summary: 'Origin saat ini: {origin} · Protokol: {protocol}',
     disabledTitle: 'Enkripsi transport dinonaktifkan',
     disabledDesc:

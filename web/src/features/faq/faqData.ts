@@ -55,11 +55,11 @@ export const faqCategories: FAQCategory[] = [
     items: [
       {
         id: 'what-is-nofx',
-        question: 'What is NOFX?',
+        question: 'What is Crux?',
         blocks: [
           {
             type: 'p',
-            text: 'NOFX is a self-hosted platform for AI-driven trading of US stocks and China A-shares. An AI model reads market data each cycle and proposes buy, sell or hold decisions; the platform checks each decision against market rules before it can reach a broker.',
+            text: 'Crux is a self-hosted platform for AI-driven trading of US stocks and China A-shares. An AI model reads market data each cycle and proposes buy, sell or hold decisions; the platform checks each decision against market rules before it can reach a broker.',
           },
         ],
       },
@@ -220,11 +220,11 @@ export const faqCategories: FAQCategory[] = [
       },
       {
         id: 'who-controls-funds',
-        question: 'Can NOFX access my brokerage account?',
+        question: 'Can Crux access my brokerage account?',
         blocks: [
           {
             type: 'p',
-            text: 'NOFX runs on your own server and calls your broker and data provider with the keys you configure. Anonymous usage statistics can be turned off with `EXPERIENCE_IMPROVEMENT=false`.',
+            text: 'Crux runs on your own server and calls your broker and data provider with the keys you configure. Anonymous usage statistics can be turned off with `EXPERIENCE_IMPROVEMENT=false`.',
           },
         ],
       },
@@ -239,7 +239,7 @@ export const faqCategories: FAQCategory[] = [
     items: [
       {
         id: 'how-to-install',
-        question: 'How do I run NOFX?',
+        question: 'How do I run Crux?',
         blocks: [
           {
             type: 'steps',

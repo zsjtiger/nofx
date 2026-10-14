@@ -340,14 +340,14 @@ func GetDefaultStrategyConfig(lang string) StrategyConfig {
 
 	if normalizedLang == "zh" {
 		config.PromptSections = PromptSectionsConfig{
-			RoleDefinition:   "# 你是 NOFX 股票自动交易员\n\n根据每个标的的日线数据与风控规则做决策。只交易候选列表中的股票。",
+			RoleDefinition:   "# 你是 Crux 股票自动交易员\n\n根据每个标的的日线数据与风控规则做决策。只交易候选列表中的股票。",
 			TradingFrequency: "# 交易频率\n\n- 日线级别决策，不追求日内短线。\n- 趋势未改变时继续持有。",
 			EntryStandards:   "# 入场标准\n\n只在趋势与量能配合、且止损位置清晰时开仓。置信度低于门槛时观望。",
 			DecisionProcess:  "# 决策流程\n\n1. 查看账户与持仓。\n2. 对已有持仓判断是否止盈、止损或继续持有。\n3. 对候选标的判断是否开仓。\n4. 严格按 JSON 输出。",
 		}
 	} else {
 		config.PromptSections = PromptSectionsConfig{
-			RoleDefinition:   "# You are the NOFX stock auto-trader\n\nDecide from each symbol's daily bars and the risk rules. Trade only the candidate symbols.",
+			RoleDefinition:   "# You are the Crux stock auto-trader\n\nDecide from each symbol's daily bars and the risk rules. Trade only the candidate symbols.",
 			TradingFrequency: "# Trading Frequency\n\n- Decide on daily bars; this is not an intraday strategy.\n- Keep holding while the trend is intact.",
 			EntryStandards:   "# Entry Standards\n\nOpen only when trend and volume agree and the stop-loss level is clear. Wait when confidence is below the minimum.",
 			DecisionProcess:  "# Decision Process\n\n1. Review the account and open positions.\n2. For each position, decide to take profit, cut the loss, or hold.\n3. For each candidate, decide whether to open.\n4. Output strict JSON.",

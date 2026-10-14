@@ -71,7 +71,7 @@ function LoadingScreen() {
       <div className="text-center">
         <img
           src="/icons/nofx.svg"
-          alt="NoFx Logo"
+          alt="Crux Logo"
           className="w-16 h-16 mx-auto mb-4 animate-pulse"
         />
         <p style={{ color: '#1A1813' }}>{t('loading', language)}</p>

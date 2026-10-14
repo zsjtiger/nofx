@@ -137,7 +137,7 @@ export function RegisterPage() {
             <div className="relative">
               <img
                 src="/icons/nofx.svg"
-                alt="NoFx Logo"
+                alt="Crux Logo"
                 className="w-16 h-16 object-contain relative z-10 opacity-90"
               />
             </div>
@@ -146,7 +146,7 @@ export function RegisterPage() {
             <span className="text-nofx-gold">CREATE</span> YOUR ACCOUNT
           </h1>
           <p className="text-nofx-text-muted text-sm">
-            This account owns your NOFX instance. Next step: a guided launch —
+            This account owns your Crux instance. Next step: a guided launch —
             about $13 and five minutes to your first AI trade.
           </p>
         </div>
@@ -191,7 +191,7 @@ export function RegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-nofx-bg border border-[rgba(26,24,19,0.14)] rounded px-4 py-3 text-sm focus:border-nofx-gold focus:ring-1 focus:ring-nofx-gold/50 outline-none transition-all placeholder-nofx-text-muted text-nofx-text font-mono"
-                  placeholder="user@nofx.os"
+                  placeholder="user@example.com"
                   required
                 />
               </div>

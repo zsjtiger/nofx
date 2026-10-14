@@ -207,7 +207,7 @@ func (s *Server) handleChangePassword(c *gin.Context) {
 // exploitable auth-bypass on any public-facing deployment: the confirm phrase
 // was embedded in the frontend (and echoed back by the API), so it was friction
 // rather than authentication. Recovery now lives in the local CLI
-// (`nofx reset-password` / `nofx reset-account`, see cli.go), which requires
+// (`crux reset-password` / `crux reset-account`, see cli.go), which requires
 // shell access to the host — something a remote attacker does not have.
 
 // initUserDefaultConfigs Initialize default configs for new user
@@ -250,27 +250,27 @@ func (s *Server) createDefaultStrategies(userID string, lang string) error {
 	}
 
 	usStrategy := strategyDef{
-		name:        "NOFX US Stock Strategy",
+		name:        "Crux US Stock Strategy",
 		description: "Daily-bar AI strategy over large-cap US stocks on the Alpaca paper account. Long and short, no leverage.",
 		isActive:    true,
 		applyConfig: setEquityStrategy([]string{"AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA"}),
 	}
 	cnStrategy := strategyDef{
-		name:        "NOFX A-Share Strategy",
+		name:        "Crux A-Share Strategy",
 		description: "Daily-bar AI strategy over large-cap A-shares on the paper account. Long only, whole lots, T+1.",
 		isActive:    false,
 		applyConfig: setEquityStrategy([]string{"600519.SH", "000858.SZ", "601318.SH", "000333.SZ", "300750.SZ"}),
 	}
 	if lang == "zh" {
-		usStrategy.name = "NOFX 美股策略"
+		usStrategy.name = "Crux 美股策略"
 		usStrategy.description = "基于日线的 AI 策略，覆盖纳斯达克与纽交所大盘股，使用 Alpaca 纸上账户，可做多做空，不加杠杆。"
-		cnStrategy.name = "NOFX A 股策略"
+		cnStrategy.name = "Crux A 股策略"
 		cnStrategy.description = "基于日线的 AI 策略，覆盖沪深大盘股，使用纸上账户，只做多，按整手交易，遵守 T+1。"
 	}
 	if lang == "id" {
-		usStrategy.name = "Strategi Saham AS NOFX"
+		usStrategy.name = "Strategi Saham AS Crux"
 		usStrategy.description = "Strategi AI berbasis data harian untuk saham AS berkapitalisasi besar di akun paper Alpaca. Long dan short, tanpa leverage."
-		cnStrategy.name = "Strategi Saham A-Share NOFX"
+		cnStrategy.name = "Strategi Saham A-Share Crux"
 		cnStrategy.description = "Strategi AI berbasis data harian untuk saham A-share berkapitalisasi besar di akun paper. Hanya long, per lot 100 saham, aturan T+1."
 	}
 

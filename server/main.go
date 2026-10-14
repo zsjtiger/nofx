@@ -22,7 +22,7 @@ func main() {
 	// Local admin subcommands (account recovery) run directly against the
 	// database and never start the HTTP server. Recovery therefore requires
 	// shell/file access to the host instead of a network request, which keeps
-	// it safe even when NOFX is exposed to the public internet. See cli.go.
+	// it safe even when Crux is exposed to the public internet. See cli.go.
 	if runCLISubcommand(os.Args[1:]) {
 		return
 	}
@@ -34,7 +34,7 @@ func main() {
 	logger.Init(nil)
 
 	logger.Info("╔════════════════════════════════════════════════════════════╗")
-	logger.Info("║           🚀 NOFX - AI-Powered Trading System              ║")
+	logger.Info("║           🚀 Crux - AI-Powered Trading System              ║")
 	logger.Info("╚════════════════════════════════════════════════════════════╝")
 
 	// Initialize global configuration (loaded from .env).

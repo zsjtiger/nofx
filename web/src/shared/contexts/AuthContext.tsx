@@ -256,7 +256,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   // NOTE: in-browser password reset was removed. Recovery now runs as a local
-  // CLI command on the server (`nofx reset-password`), so it cannot be triggered
+  // CLI command on the server (`crux reset-password`), so it cannot be triggered
   // remotely. The reset-password page shows the operator how to run it.
 
   const logout = () => {

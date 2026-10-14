@@ -1,8 +1,8 @@
-# 🤝 Contributing to NOFX
+# 🤝 Contributing to Crux
 
 **Language:** [English](CONTRIBUTING.md) | [中文](docs/archive/i18n/zh-CN/CONTRIBUTING.md)
 
-Thank you for your interest in contributing to NOFX! This document provides guidelines and workflows for contributing to the project.
+Thank you for your interest in contributing to Crux! This document provides guidelines and workflows for contributing to the project.
 
 ---
 
@@ -145,7 +145,7 @@ sudo apt-get install libta-lib0-dev
 cd server && go test ./...
 
 # Build backend
-cd server && go build -o nofx
+cd server && go build -o crux
 
 # Run frontend in dev mode
 cd web
@@ -478,6 +478,6 @@ Reviewers will check:
 
 ## 🙏 Thank You!
 
-Your contributions make NOFX better for everyone. We appreciate your time and effort!
+Your contributions make Crux better for everyone. We appreciate your time and effort!
 
 **Happy coding! 🚀**

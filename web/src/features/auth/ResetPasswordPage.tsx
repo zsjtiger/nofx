@@ -6,7 +6,7 @@ import { Header } from '../../shared/layout/Header'
 import { ArrowLeft, KeyRound, Copy, Check } from 'lucide-react'
 import { toast } from 'sonner'
 
-const RESET_PASSWORD_COMMAND = 'nofx reset-password --email you@example.com'
+const RESET_PASSWORD_COMMAND = 'crux reset-password --email you@example.com'
 
 export function ResetPasswordPage() {
   const { language } = useLanguage()

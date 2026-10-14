@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# NOFX Stable Release Installation Script
+# Crux Stable Release Installation Script
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/NoFxAiOS/nofx/release/stable/install-stable.sh | bash
@@ -20,7 +20,7 @@ GITHUB_RAW="https://raw.githubusercontent.com/NoFxAiOS/nofx/release/stable"
 
 echo -e "${BLUE}"
 echo "╔════════════════════════════════════════════════════════════╗"
-echo "║                 NOFX Stable Release                        ║"
+echo "║                 Crux Stable Release                        ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 

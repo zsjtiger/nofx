@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# NOFX One-Click Installation Script
+# Crux One-Click Installation Script
 # https://github.com/NoFxAiOS/nofx
 #
 # Usage:
@@ -26,7 +26,7 @@ GITHUB_RAW="https://raw.githubusercontent.com/NoFxAiOS/nofx/main"
 
 echo -e "${BLUE}"
 echo "╔════════════════════════════════════════════════════════════╗"
-echo "║                    NOFX AI Trading OS                      ║"
+echo "║                    Crux AI Trading OS                      ║"
 echo "║                   One-Click Installation                   ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
@@ -98,7 +98,7 @@ generate_env() {
 
     # Create .env file
     cat > .env << EOF
-# NOFX Configuration (Auto-generated)
+# Crux Configuration (Auto-generated)
 # Generated at: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Server ports
@@ -162,7 +162,7 @@ ask_clear_trading_data() {
 
 # Start services
 start_services() {
-    echo -e "${YELLOW}Starting NOFX services...${NC}"
+    echo -e "${YELLOW}Starting Crux services...${NC}"
     $COMPOSE_CMD up -d
     echo -e "${GREEN}✓ Services started${NC}"
 }

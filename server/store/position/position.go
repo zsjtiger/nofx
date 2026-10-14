@@ -348,7 +348,7 @@ func (s *Store) GetOpenPositions(traderID string) ([]*TraderPosition, error) {
 }
 
 // GetOpenPositionsByExchange returns every OPEN row on an exchange account,
-// across all trader IDs. An exchange account is shared by every "NOFX
+// across all trader IDs. An exchange account is shared by every "Crux
 // Autopilot" relaunch (each relaunch mints a fresh trader_id), so reconciling
 // must be scoped to the exchange — not the current trader_id — or rows left by
 // prior incarnations become permanent orphans that never close.

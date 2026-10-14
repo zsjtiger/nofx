@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/nofx-banner.svg" alt="NOFX — AI trading terminal" width="100%"/>
+  <img src="docs/assets/nofx-banner.svg" alt="Crux — AI trading terminal" width="100%"/>
 </p>
 
 <p align="center">
@@ -11,7 +11,7 @@
 
 <br/>
 
-NOFX is a self-hosted trading terminal for **US stocks** and **China A-shares**. A language model reads daily market data on each cycle and proposes buy, sell or hold decisions. Before any order is sent, a Go runtime checks the decision against the market's rules: whole lots, T+1 settlement, daily price limits, no shorting for A-shares, and the trading session.
+Crux is a self-hosted trading terminal for **US stocks** and **China A-shares**. A language model reads daily market data on each cycle and proposes buy, sell or hold decisions. Before any order is sent, a Go runtime checks the decision against the market's rules: whole lots, T+1 settlement, daily price limits, no shorting for A-shares, and the trading session.
 
 **Status:** paper trading only. US orders go to an Alpaca paper account. A-share orders go to a built-in paper account. A live A-share broker is not connected yet.
 
@@ -82,7 +82,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 ```bash
 git clone https://github.com/NoFxAiOS/nofx.git && cd nofx
-cd server && go build -o nofx && ./nofx  # backend
+cd server && go build -o crux && ./crux  # backend
 cd web && npm install && npm run dev  # frontend, in a second terminal
 ```
 
@@ -130,7 +130,7 @@ The FAQ inside the web app is the most current reference.
 
 Code, documentation and bug reports are welcome. See the [Contributing Guide](CONTRIBUTING.md), [Code of Conduct](CODE_OF_CONDUCT.md) and [Security Policy](SECURITY.md).
 
-NOFX tracks meaningful contributions and intends to reward contributors as the ecosystem grows. Priority issues carry higher weight.
+Crux tracks meaningful contributions and intends to reward contributors as the ecosystem grows. Priority issues carry higher weight.
 
 | Contribution      | Weight |
 | :---------------- | :----: |
@@ -163,7 +163,7 @@ NOFX tracks meaningful contributions and intends to reward contributors as the e
 
 <br/>
 
-If NOFX is useful to you, a star helps other traders find it.
+If Crux is useful to you, a star helps other traders find it.
 
 [![Star History Chart](https://star-history.dera.page/svg?repos=NoFxAiOS/nofx&type=Date)](https://star-history.dera.page/#NoFxAiOS/nofx&Date)
 

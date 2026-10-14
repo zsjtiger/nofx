@@ -46,9 +46,9 @@ describe('RegistrationDisabled Component', () => {
       expect(container).toBeTruthy()
     })
 
-    it('should display the NoFx logo', () => {
+    it('should display the Crux logo', () => {
       renderComponent()
-      const logo = screen.getByAltText('NoFx Logo')
+      const logo = screen.getByAltText('Crux Logo')
       expect(logo).toBeTruthy()
       expect(logo.getAttribute('src')).toBe('/icons/nofx.svg')
     })

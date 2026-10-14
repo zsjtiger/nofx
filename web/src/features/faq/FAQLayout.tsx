@@ -110,7 +110,7 @@ export function FAQLayout() {
           </h3>
           <p className="mt-2 text-sm text-nofx-text-muted">
             Ask in the community or open an issue — both are answered by the
-            people building NOFX.
+            people building Crux.
           </p>
           <div className="mt-5 flex items-center justify-center gap-3">
             <a

@@ -2,7 +2,7 @@
 
 **Language:** [English](PROJECT_MANAGEMENT.md) | [中文](PROJECT_MANAGEMENT.zh-CN.md)
 
-This guide explains how we manage the NOFX project, track progress, and prioritize work.
+This guide explains how we manage the Crux project, track progress, and prioritize work.
 
 ---
 
@@ -12,7 +12,7 @@ This guide explains how we manage the NOFX project, track progress, and prioriti
 
 We use **GitHub Projects (Beta)** with these boards:
 
-#### 1. **NOFX Development Board**
+#### 1. **Crux Development Board**
 
 **Columns:**
 ```

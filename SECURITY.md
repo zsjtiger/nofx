@@ -8,7 +8,7 @@
 
 ## 🛡️ Security Overview
 
-NOFX is an AI-powered trading system that handles real funds and API credentials. We take security seriously and appreciate the security community's efforts to responsibly disclose vulnerabilities.
+Crux is an AI-powered trading system that handles real funds and API credentials. We take security seriously and appreciate the security community's efforts to responsibly disclose vulnerabilities.
 
 **Critical Areas:**
 - 🔑 API key storage and handling
@@ -37,7 +37,7 @@ We provide security updates for the following versions:
 
 ### ⚠️ Please DO NOT Publicly Disclose
 
-If you discover a security vulnerability in NOFX, please **DO NOT**:
+If you discover a security vulnerability in Crux, please **DO NOT**:
 - ❌ Open a public GitHub Issue
 - ❌ Discuss it on social media (Twitter, Reddit, etc.)
 - ❌ Share it in Telegram/Discord groups
@@ -138,7 +138,7 @@ We offer rewards for valid security vulnerabilities:
 
 ## 🔐 Security Best Practices (For Users)
 
-To keep your NOFX deployment secure:
+To keep your Crux deployment secure:
 
 ### 1. API Key Management
 ```bash
@@ -185,7 +185,7 @@ iptables -A INPUT -p tcp --dport 8080 -j DROP
 ```bash
 # Check for updates regularly
 git pull origin main
-go build -o nofx
+go build -o crux
 
 # Subscribe to security advisories
 # Watch GitHub releases: https://github.com/NoFxAiOS/nofx/releases
@@ -240,7 +240,7 @@ We thank the following security researchers for responsibly disclosing vulnerabi
 
 ---
 
-**Thank you for helping keep NOFX secure!** 🔒
+**Thank you for helping keep Crux secure!** 🔒
 
 ---
 
@@ -248,7 +248,7 @@ We thank the following security researchers for responsibly disclosing vulnerabi
 
 ## 🛡️ 安全概述
 
-NOFX 是一个处理真实资金和 API 凭证的 AI 交易系统。我们非常重视安全，并感谢安全社区负责任地披露漏洞的努力。
+Crux 是一个处理真实资金和 API 凭证的 AI 交易系统。我们非常重视安全，并感谢安全社区负责任地披露漏洞的努力。
 
 **关键领域：**
 - 🔑 API 密钥存储和处理
@@ -277,7 +277,7 @@ NOFX 是一个处理真实资金和 API 凭证的 AI 交易系统。我们非常
 
 ### ⚠️ 请勿公开披露
 
-如果您在 NOFX 中发现安全漏洞，请**不要**：
+如果您在 Crux 中发现安全漏洞，请**不要**：
 - ❌ 公开创建 GitHub Issue
 - ❌ 在社交媒体上讨论（Twitter、Reddit 等）
 - ❌ 在 Telegram/Discord 群组中分享
@@ -378,7 +378,7 @@ NOFX 是一个处理真实资金和 API 凭证的 AI 交易系统。我们非常
 
 ## 🔐 安全最佳实践（用户指南）
 
-保护您的 NOFX 部署安全：
+保护您的 Crux 部署安全：
 
 ### 1. API 密钥管理
 ```bash
@@ -425,7 +425,7 @@ iptables -A INPUT -p tcp --dport 8080 -j DROP
 ```bash
 # 定期检查更新
 git pull origin main
-go build -o nofx
+go build -o crux
 
 # 订阅安全公告
 # 关注 GitHub 发布：https://github.com/NoFxAiOS/nofx/releases
@@ -466,4 +466,4 @@ go build -o nofx
 
 ---
 
-**感谢您帮助保持 NOFX 的安全！** 🔒
+**感谢您帮助保持 Crux 的安全！** 🔒

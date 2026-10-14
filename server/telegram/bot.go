@@ -359,7 +359,7 @@ func statusMsg(st *store.Store, userID string, apiPort int, lang string) string 
 
 	// All configured — show ready state.
 	if lang == "zh" {
-		return `✅ *NOFX is ready!*
+		return `✅ *Crux is ready!*
 
 Just tell me what you want:
 
@@ -370,7 +370,7 @@ Just tell me what you want:
 
 /help for more · /lang to change language`
 	}
-	return `✅ *NOFX is ready!*
+	return `✅ *Crux is ready!*
 
 Just tell me what you want:
 
@@ -402,7 +402,7 @@ func parseLangChoice(text string) string {
 
 func helpMsg(lang string) string {
 	if lang == "zh" {
-		return `*NOFX Help*
+		return `*Crux Help*
 
 *Query*
 • "Show my positions"
@@ -423,7 +423,7 @@ func helpMsg(lang string) string {
 /lang  — change language
 /help  — show this`
 	}
-	return `*NOFX Help*
+	return `*Crux Help*
 
 *Query*
 • "Show my positions"

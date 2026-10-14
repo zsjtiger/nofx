@@ -1,5 +1,5 @@
 // Package tushare reads A-share market data from the Tushare Pro HTTP API.
-// Ts codes use the same form as NOFX symbols ("600519.SH"), so no mapping is needed.
+// Ts codes use the same form as Crux symbols ("600519.SH"), so no mapping is needed.
 package tushare
 
 import (

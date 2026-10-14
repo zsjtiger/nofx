@@ -181,8 +181,8 @@ func (s *Server) setupRoutes() {
 		// unauthenticated recovery endpoint is a remote auth-bypass on any
 		// public-facing deployment (the confirm phrase is in the frontend and
 		// returned by the API, so it is friction, not authentication). Recovery
-		// is now a local CLI run on the host — `nofx reset-password` /
-		// `nofx reset-account` — which requires shell access the attacker lacks.
+		// is now a local CLI run on the host — `crux reset-password` /
+		// `crux reset-account` — which requires shell access the attacker lacks.
 		// See cli.go.
 
 		// Routes requiring authentication

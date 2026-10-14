@@ -5,7 +5,7 @@ const zh = {
   loadingError: '加载数据失败',
   loggingIn: '登录中...',
   // Header
-  appTitle: 'NOFX',
+  appTitle: 'Crux',
   subtitle: '多AI模型交易平台',
   aiTraders: 'AI交易员',
   details: '详情',
@@ -23,7 +23,7 @@ const zh = {
   faqNav: '常见问题',
 
   // Footer
-  footerTitle: 'NOFX - AI交易系统',
+  footerTitle: 'Crux - AI交易系统',
   footerWarning: '⚠️ 交易有风险，请谨慎使用。',
 
   // Stats Cards
@@ -257,11 +257,11 @@ const zh = {
   newPassword: '新密码',
   backToLogin: '返回登录',
   resetPasswordCliIntro:
-    '出于安全考虑，密码找回不再通过浏览器进行。请在部署 NOFX 的服务器上运行以下命令：',
+    '出于安全考虑，密码找回不再通过浏览器进行。请在部署 Crux 的服务器上运行以下命令：',
   resetPasswordCliSecurityNote:
-    '该操作需要服务器的 shell 访问权限，因此即使 NOFX 暴露在公网上，你的账户依然安全。',
+    '该操作需要服务器的 shell 访问权限，因此即使 Crux 暴露在公网上，你的账户依然安全。',
   resetAccountCliIntro:
-    '如需清空所有数据并重新开始，请在部署 NOFX 的服务器上运行以下命令：',
+    '如需清空所有数据并重新开始，请在部署 Crux 的服务器上运行以下命令：',
   copy: '复制',
   loginFailed: '登录失败，请检查您的邮箱和密码。',
   registrationFailed: '注册失败，请重试。',
@@ -344,7 +344,7 @@ const zh = {
       '避免把应用嵌入在不安全的 HTTP iframe 或会降级协议的反向代理中。',
     unsupportedTitle: '浏览器未提供 Web Crypto',
     unsupportedDesc:
-      '请通过 HTTPS 或本机 localhost 访问 NOFX，并避免嵌入不安全 iframe/反向代理，以符合浏览器的 Web Crypto 规则。',
+      '请通过 HTTPS 或本机 localhost 访问 Crux，并避免嵌入不安全 iframe/反向代理，以符合浏览器的 Web Crypto 规则。',
     summary: '当前来源：{origin} · 协议：{protocol}',
     disabledTitle: '传输加密已禁用',
     disabledDesc:

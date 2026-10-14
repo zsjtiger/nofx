@@ -6,7 +6,7 @@ import { useLanguage } from '../../shared/contexts/LanguageContext'
 
 const labels = {
   zh: {
-    welcome: 'Welcome to NOFX',
+    welcome: 'Welcome to Crux',
     subtitle: 'Create your account to get started',
     email: 'Email',
     emailPlaceholder: 'you@example.com',
@@ -19,7 +19,7 @@ const labels = {
     singleUser: 'Single-user system — this is the only account',
   },
   en: {
-    welcome: 'Welcome to NOFX',
+    welcome: 'Welcome to Crux',
     subtitle: 'Create your account to get started',
     email: 'Email',
     emailPlaceholder: 'you@example.com',
@@ -32,7 +32,7 @@ const labels = {
     singleUser: 'Single-user system — this is the only account',
   },
   id: {
-    welcome: 'Selamat Datang di NOFX',
+    welcome: 'Selamat Datang di Crux',
     subtitle: 'Buat akun untuk memulai',
     email: 'Email',
     emailPlaceholder: 'you@example.com',
@@ -142,7 +142,7 @@ export function SetupPage() {
                 <div className="absolute -inset-4 bg-nofx-gold/20 rounded-full blur-2xl" />
                 <img
                   src="/icons/nofx.svg"
-                  alt="NOFX"
+                  alt="Crux"
                   className="w-14 h-14 relative z-10"
                 />
               </div>

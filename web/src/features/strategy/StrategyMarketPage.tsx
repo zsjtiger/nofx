@@ -3,7 +3,7 @@ import { t } from '../../shared/i18n/translations'
 
 // Strategy Market — embedded vergex.trade/explore.
 //
-// vergex.trade now lists the NOFX origins in its enforced
+// vergex.trade now lists the Crux origins in its enforced
 // `Content-Security-Policy: frame-ancestors 'self' https://nofxos.ai
 // https://www.nofxos.ai http://127.0.0.1:3000 http://localhost:3000` for the
 // /explore path, so cross-origin embedding works. The X-Frame-Options header
@@ -31,7 +31,7 @@ export function StrategyMarketPage() {
         // providers (allow-same-origin), submit search forms, open external
         // links in new tabs. Notably absent:
         //   - allow-top-navigation: prevents the iframe from navigating the
-        //     parent NOFX shell to an arbitrary URL.
+        //     parent Crux shell to an arbitrary URL.
         //   - allow-modals / allow-pointer-lock / allow-orientation-lock:
         //     not needed for a strategy list view.
         //   - allow-storage-access-by-user-activation: keeps any third-party

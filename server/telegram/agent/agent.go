@@ -19,7 +19,7 @@ var apiRequestTool = llm.Tool{
 	Type: "function",
 	Function: llm.FunctionDef{
 		Name:        "api_request",
-		Description: "Call the NOFX trading system REST API",
+		Description: "Call the Crux trading system REST API",
 		Parameters: map[string]any{
 			"type": "object",
 			"properties": map[string]any{

@@ -30,11 +30,11 @@ const minResetPasswordLen = 8
 // which in turn requires shell/file access to the server. A remote attacker on a
 // public-facing deployment has only the network — they can reach the API but not
 // a local process — so recovery cannot be triggered remotely. This is what makes
-// the recovery path safe even when NOFX is deployed on the public internet.
+// the recovery path safe even when Crux is deployed on the public internet.
 //
 // Returns true if a subcommand was recognized and handled (caller should exit).
 // Unknown first args fall through to false to preserve the historical behavior
-// where `nofx <dbpath>` overrides the SQLite path.
+// where `crux <dbpath>` overrides the SQLite path.
 func runCLISubcommand(args []string) bool {
 	if len(args) == 0 {
 		return false
@@ -93,7 +93,7 @@ func openStoreForCLI(dbPathOverride string) (*store.Store, error) {
 }
 
 // runResetPassword resets the password for a single account from the command
-// line. Usage: `nofx reset-password --email you@example.com`.
+// line. Usage: `crux reset-password --email you@example.com`.
 func runResetPassword(args []string) {
 	fs := flag.NewFlagSet("reset-password", flag.ExitOnError)
 	email := fs.String("email", "", "email of the account to reset (required)")
@@ -103,7 +103,7 @@ func runResetPassword(args []string) {
 
 	if strings.TrimSpace(*email) == "" {
 		fmt.Fprintln(os.Stderr, "error: --email is required")
-		fmt.Fprintln(os.Stderr, "usage: nofx reset-password --email you@example.com")
+		fmt.Fprintln(os.Stderr, "usage: crux reset-password --email you@example.com")
 		os.Exit(2)
 	}
 

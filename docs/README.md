@@ -1,6 +1,6 @@
-# NOFX Documentation
+# Crux Documentation
 
-The current documentation for the US stock and A-share paper-trading version of NOFX.
+The current documentation for the US stock and A-share paper-trading version of Crux.
 
 ## Current
 
@@ -16,4 +16,4 @@ The in-app FAQ in the web interface is the most current user reference.
 
 ## Archive
 
-[archive/](archive/) holds documents written for the earlier crypto version of NOFX, including exchange guides, the API reference, architecture notes, the old screenshots and translated READMEs. They are kept for history and may describe features that no longer exist.
+[archive/](archive/) holds documents written for the earlier crypto version of Crux, including exchange guides, the API reference, architecture notes, the old screenshots and translated READMEs. They are kept for history and may describe features that no longer exist.

@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// apiCallTool executes HTTP requests against the NOFX API server.
+// apiCallTool executes HTTP requests against the Crux API server.
 // This is the only tool available to the agent.
 type apiCallTool struct {
 	baseURL string
@@ -48,7 +48,7 @@ type allowedRoute struct {
 //   - PUT  /api/models          (LLM API key + endpoint swap → exfil)
 //   - POST/PUT/DELETE /api/exchanges*  (exchange credential swap → drain)
 //   - account recovery (password reset / account wipe) is intentionally
-//     CLI-only (`nofx reset-password` / `nofx reset-account`) and has no
+//     CLI-only (`crux reset-password` / `crux reset-account`) and has no
 //     HTTP endpoint, so the bot cannot reach it
 //   - POST /api/wallet/generate, /api/wallet/validate
 //   - POST /api/telegram/* (rebind bot)

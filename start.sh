@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ═══════════════════════════════════════════════════════════════
-# NOFX AI Trading System - Docker Management Script
+# Crux AI Trading System - Docker Management Script
 # Usage: ./start.sh [command]
 # ═══════════════════════════════════════════════════════════════
 
@@ -208,7 +208,7 @@ check_database() {
 start() {
     echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║         🚀 NOFX AI Trading Bot — Startup             ║${NC}"
+    echo -e "${CYAN}║         🚀 Crux AI Trading Bot — Startup             ║${NC}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}"
     echo ""
 
@@ -349,7 +349,7 @@ regenerate_keys() {
 # Help: Usage Information
 # ------------------------------------------------------------------------
 show_help() {
-    echo "NOFX AI Trading System - Docker Management Script"
+    echo "Crux AI Trading System - Docker Management Script"
     echo ""
     echo "Usage: ./start.sh [command] [options]"
     echo ""

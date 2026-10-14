@@ -423,7 +423,7 @@ export function TerminalDashboard({
           }}
         >
           <span style={{ fontWeight: 500 }}>
-            {selectedTrader?.trader_name ?? 'NOFX'}
+            {selectedTrader?.trader_name ?? 'Crux'}
           </span>
           <span>
             <span className="tm-sc">model </span>

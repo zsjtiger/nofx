@@ -1,10 +1,10 @@
-# NOFX Makefile for testing and development
+# Crux Makefile for testing and development
 
 .PHONY: help test test-backend test-frontend test-coverage clean
 
 # Default target
 help:
-	@echo "NOFX Testing & Development Commands"
+	@echo "Crux Testing & Development Commands"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test                 - Run all tests (backend + frontend)"
@@ -56,8 +56,8 @@ test-coverage:
 # Build backend binary
 build:
 	@echo "🔨 Building backend..."
-	cd server && go build -o nofx
-	@echo "✅ Backend built: ./server/nofx"
+	cd server && go build -o crux
+	@echo "✅ Backend built: ./server/crux"
 
 # Build frontend
 build-frontend:

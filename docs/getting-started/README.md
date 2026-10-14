@@ -1,6 +1,6 @@
 # Getting Started
 
-NOFX runs on your own server. You add an AI model and a trading account in the web app, then create a strategy and a trader.
+Crux runs on your own server. You add an AI model and a trading account in the web app, then create a strategy and a trader.
 
 ## 1. Install
 
