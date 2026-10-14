@@ -96,4 +96,5 @@ export interface RiskControlConfig {
   min_position_size: number
   min_risk_reward_ratio: number
   min_confidence: number
+  profit_protection: boolean // close a position after a 5% gain gives back 40% of its peak
 }

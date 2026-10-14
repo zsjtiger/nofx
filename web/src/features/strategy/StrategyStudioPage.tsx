@@ -595,6 +595,29 @@ export function StrategyStudioPage() {
                     }
                   />
                 </div>
+                <div className="flex items-start gap-2 pt-6">
+                  <input
+                    id="profit-protection"
+                    type="checkbox"
+                    className="mt-1"
+                    checked={
+                      draft.ai_config.risk_control.profit_protection ?? false
+                    }
+                    onChange={(e) =>
+                      updateRisk({ profit_protection: e.target.checked })
+                    }
+                  />
+                  <label
+                    htmlFor="profit-protection"
+                    className="text-sm text-nofx-text-muted"
+                  >
+                    {text(
+                      language,
+                      '利润保护：盈利超过 5% 后回吐 40% 自动平仓',
+                      'Profit protection: close after a 5% gain gives back 40%'
+                    )}
+                  </label>
+                </div>
               </div>
               <p className="text-xs text-nofx-text-muted">
                 {text(
