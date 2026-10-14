@@ -145,7 +145,6 @@ func (s *Server) setupRoutes() {
 		// System config (no authentication required, for frontend to determine admin mode/registration status)
 		s.route(api, "GET", "/config", "Get system configuration", s.handleGetSystemConfig)
 
-
 		// Crypto related endpoints (no authentication required, not exposed to bot).
 		// SECURITY: only the config + public-key endpoints are exposed. Transport
 		// encryption is one-directional (client encrypts to the server's public key;
@@ -199,7 +198,6 @@ func (s *Server) setupRoutes() {
 
 			// Server IP query (requires authentication, for whitelist configuration)
 			s.route(protected, "GET", "/server-ip", "Get server public IP (for exchange whitelist)", s.handleGetServerIP)
-
 
 			// AI trader management
 			s.routeWithSchema(protected, "GET", "/my-traders", "List user's traders with status",

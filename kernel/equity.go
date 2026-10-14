@@ -9,7 +9,6 @@ import (
 	"nofx/trader/types"
 )
 
-
 // BuildEquitySystemPrompt is the decision prompt for stock markets. It states the
 // market rules the code enforces, so the model does not propose trades that will be rejected.
 func BuildEquitySystemPrompt(caps types.Capabilities, riskControl store.RiskControlConfig, accountEquity float64, customPrompt string) string {

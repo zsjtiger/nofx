@@ -729,7 +729,6 @@ func (s *Server) handleStartTrader(c *gin.Context) {
 		traderName = fullCfg.Trader.Name
 	}
 
-
 	// Check if trader exists in memory and if it's running
 	existingTrader, _ := s.traderManager.GetTrader(traderID)
 	if existingTrader != nil {
