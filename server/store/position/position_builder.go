@@ -115,7 +115,7 @@ func (pb *Builder) handleClose(
 
 	const QUANTITY_TOLERANCE = 0.0001
 
-	// Calculate realized PnL if not provided (some exchanges like Lighter don't return it)
+	// Calculate realized PnL if the broker does not provide it
 	if realizedPnL == 0 && position.EntryPrice > 0 {
 		if side == "LONG" {
 			realizedPnL = (price - position.EntryPrice) * quantity

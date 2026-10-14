@@ -173,23 +173,23 @@ func formatPriceWithDynamicPrecision(price float64) string {
 		// 0.00002070 → "0.00002070" (8 decimal places)
 		return fmt.Sprintf("%.8f", price)
 	case price < 0.001:
-		// Low price meme coins: NEIRO, HMSTR, HOT, NOT
+		// Very low prices: keep six decimal places
 		// 0.00015060 → "0.000151" (6 decimal places)
 		return fmt.Sprintf("%.6f", price)
 	case price < 0.01:
-		// Mid-low price coins: PEPE, SHIB, MEME
+		// Low prices
 		// 0.00556800 → "0.005568" (6 decimal places)
 		return fmt.Sprintf("%.6f", price)
 	case price < 1.0:
-		// Low price coins: ASTER, DOGE, ADA, TRX
+		// Sub-dollar prices
 		// 0.9954 → "0.9954" (4 decimal places)
 		return fmt.Sprintf("%.4f", price)
 	case price < 100:
-		// Mid price coins: SOL, AVAX, LINK, MATIC
+		// Mid-range prices
 		// 23.4567 → "23.4567" (4 decimal places)
 		return fmt.Sprintf("%.4f", price)
 	default:
-		// High price coins: BTC, ETH (save tokens)
+		// High prices: two decimal places keep the prompt short
 		// 45678.9123 → "45678.91" (2 decimal places)
 		return fmt.Sprintf("%.2f", price)
 	}

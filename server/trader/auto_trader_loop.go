@@ -489,7 +489,7 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 				}
 			}
 		}
-		// Priority 2: Get from exchange API (Bybit: createdTime, OKX: createdTime)
+		// Priority 2: Get from the broker API
 		if updateTime == 0 {
 			if createdTime, ok := pos["createdTime"].(int64); ok && createdTime > 0 {
 				updateTime = createdTime

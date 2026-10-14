@@ -179,10 +179,9 @@ func (at *AutoTrader) GetAccountInfo() (map[string]interface{}, error) {
 	}
 
 	// Verify unrealized P&L consistency (API value vs calculated from positions)
-	// Note: Lighter API may return 0 for unrealized PnL, this is a known limitation
 	diff := math.Abs(totalUnrealizedProfit - totalUnrealizedPnLCalculated)
 	if diff > 5.0 { // Only warn if difference is significant (> 5 account currency units)
-		logger.Infof("⚠️ Unrealized P&L inconsistency (Lighter API limitation): API=%.4f, Calculated=%.4f, Diff=%.4f",
+		logger.Infof("⚠️ Unrealized P&L inconsistency: API=%.4f, Calculated=%.4f, Diff=%.4f",
 			totalUnrealizedProfit, totalUnrealizedPnLCalculated, diff)
 	}
 
@@ -390,7 +389,7 @@ func (at *AutoTrader) recordPositionChange(orderID, symbol, side, action string,
 		pos := &position.TraderPosition{
 			TraderID:     at.id,
 			ExchangeID:   at.exchangeID, // Exchange account UUID
-			ExchangeType: at.exchange,   // Exchange type: binance/bybit/okx/etc
+			ExchangeType: at.exchange,   // Broker type (e.g. alpaca_paper, cn_paper)
 			Symbol:       symbol,
 			Side:         side, // LONG or SHORT
 			Quantity:     quantity,

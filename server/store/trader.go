@@ -34,8 +34,6 @@ type Trader struct {
 	UpdatedAt           time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 
 	// Following fields are deprecated, kept for backward compatibility, new traders should use StrategyID
-	BTCETHLeverage       int    `gorm:"column:btc_eth_leverage;default:5" json:"btc_eth_leverage,omitempty"`
-	AltcoinLeverage      int    `gorm:"column:altcoin_leverage;default:5" json:"altcoin_leverage,omitempty"`
 	TradingSymbols       string `gorm:"column:trading_symbols;default:''" json:"trading_symbols,omitempty"`
 	CustomPrompt         string `gorm:"column:custom_prompt;default:''" json:"custom_prompt,omitempty"`
 	OverrideBasePrompt   bool   `gorm:"column:override_base_prompt;default:false" json:"override_base_prompt,omitempty"`
@@ -114,8 +112,6 @@ func (s *TraderStore) Update(trader *Trader) error {
 		"strategy_id":            trader.StrategyID,
 		"is_cross_margin":        trader.IsCrossMargin,
 		"show_in_competition":    trader.ShowInCompetition,
-		"btc_eth_leverage":       trader.BTCETHLeverage,
-		"altcoin_leverage":       trader.AltcoinLeverage,
 		"trading_symbols":        trader.TradingSymbols,
 		"custom_prompt":          trader.CustomPrompt,
 		"override_base_prompt":   trader.OverrideBasePrompt,

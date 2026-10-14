@@ -131,7 +131,7 @@ func (s *Server) handleClosePosition(c *gin.Context) {
 	var tempTrader trader.Trader
 	var createErr error
 
-	// Use ExchangeType (e.g., "binance") instead of ExchangeID (which is now UUID)
+	// Use ExchangeType (e.g. "alpaca_paper") instead of ExchangeID (which is now UUID)
 	// Convert EncryptedString fields to string
 	tempTrader, createErr = buildExchangeProbeTrader(exchangeCfg, userID)
 
@@ -263,10 +263,10 @@ func (s *Server) recordClosePositionOrder(traderID, exchangeID, exchangeType, sy
 		exitPrice = quantity * 100 // Rough estimate if we don't have price
 	}
 
-	// Estimate fee (0.04% for Lighter taker)
+	// Estimate fee
 	fee := exitPrice * quantity * 0.0004
 
-	// Create order record - DIRECTLY as FILLED (Lighter market orders fill immediately)
+	// Create order record - DIRECTLY as FILLED (market orders fill immediately)
 	orderRecord := &store.TraderOrder{
 		TraderID:        traderID,
 		ExchangeID:      exchangeID,
@@ -332,13 +332,7 @@ func (s *Server) pollAndUpdateOrderStatus(orderRecordID int64, traderID, exchang
 	// Wait a bit for order to be filled
 	time.Sleep(500 * time.Millisecond)
 
-	// For Lighter, use GetTrades instead of GetOrderStatus (market orders are filled immediately)
-	if exchangeType == "lighter" {
-		s.pollLighterTradeHistory(orderRecordID, traderID, exchangeID, exchangeType, orderID, symbol, orderAction, tempTrader)
-		return
-	}
-
-	// For other exchanges, poll GetOrderStatus
+	// Poll GetOrderStatus until the order is filled
 	for i := 0; i < 5; i++ {
 		status, err := tempTrader.GetOrderStatus(symbol, orderID)
 		if err != nil {
@@ -408,14 +402,6 @@ func (s *Server) pollAndUpdateOrderStatus(orderRecordID int64, traderID, exchang
 	}
 
 	logger.Infof("  ⚠️ Failed to confirm order fill after polling, order may still be pending")
-}
-
-// pollLighterTradeHistory No longer used - Lighter orders are marked as FILLED immediately
-// Keeping this function stub for compatibility with other exchanges
-func (s *Server) pollLighterTradeHistory(orderRecordID int64, traderID, exchangeID, exchangeType, orderID, symbol, orderAction string, tempTrader trader.Trader) {
-	// For Lighter, orders are now recorded as FILLED immediately in recordClosePositionOrder
-	// This function is no longer called for Lighter exchange
-	logger.Infof("  ℹ️ pollLighterTradeHistory called but not needed (order already marked FILLED)")
 }
 
 // getSideFromAction Get order side (BUY/SELL) from order action

@@ -440,11 +440,6 @@ export function TerminalDashboard({
             {config?.strategy_name || selectedTrader?.strategy_name || '—'}
           </span>
           <span>
-            <span className="tm-sc">lev </span>
-            {config?.btc_eth_leverage ?? '—'}× /{' '}
-            {config?.altcoin_leverage ?? '—'}×
-          </span>
-          <span>
             <span className="tm-sc">scan </span>
             {scanMin}m
           </span>
@@ -606,7 +601,6 @@ export function TerminalDashboard({
             <RiskRadar
               positions={positions}
               account={account}
-              config={config}
               fullStats={fullStats}
             />
           </div>

@@ -11,7 +11,6 @@ type Data struct {
 	CurrentEMA20      float64
 	CurrentMACD       float64
 	CurrentRSI7       float64
-	OpenInterest      *OIData
 	IntradaySeries    *IntradayData
 	LongerTermContext *LongerTermData
 	// Multi-timeframe data (new)
@@ -46,12 +45,6 @@ type TimeframeSeriesData struct {
 	BOLLLower  []float64 `json:"boll_lower"`  // Lower band
 }
 
-// OIData Open Interest data
-type OIData struct {
-	Latest  float64
-	Average float64
-}
-
 // IntradayData intraday data (3-minute interval)
 type IntradayData struct {
 	MidPrices   []float64
@@ -73,21 +66,6 @@ type LongerTermData struct {
 	AverageVolume float64
 	MACDValues    []float64
 	RSI14Values   []float64
-}
-
-// Binance API response structure
-type ExchangeInfo struct {
-	Symbols []SymbolInfo `json:"symbols"`
-}
-
-type SymbolInfo struct {
-	Symbol            string `json:"symbol"`
-	Status            string `json:"status"`
-	BaseAsset         string `json:"baseAsset"`
-	QuoteAsset        string `json:"quoteAsset"`
-	ContractType      string `json:"contractType"`
-	PricePrecision    int    `json:"pricePrecision"`
-	QuantityPrecision int    `json:"quantityPrecision"`
 }
 
 type Kline struct {

@@ -162,8 +162,6 @@ export interface TraderConfigData {
   initial_balance: number
   is_running: boolean
   // Legacy fields below (kept for backward compatibility)
-  btc_eth_leverage?: number
-  altcoin_leverage?: number
   trading_symbols?: string
   custom_prompt?: string
   override_base_prompt?: boolean
@@ -239,37 +237,4 @@ export interface PositionHistoryResponse {
   stats: TraderStats | null
   symbol_stats: SymbolStats[]
   direction_stats: DirectionStats[]
-}
-
-// Grid Risk Information for frontend display
-export interface GridRiskInfo {
-  // Leverage info
-  current_leverage: number
-  effective_leverage: number
-  recommended_leverage: number
-
-  // Position info
-  current_position: number
-  max_position: number
-  position_percent: number
-
-  // Liquidation info
-  liquidation_price: number
-  liquidation_distance: number
-
-  // Market state
-  regime_level: string
-
-  // Box state
-  short_box_upper: number
-  short_box_lower: number
-  mid_box_upper: number
-  mid_box_lower: number
-  long_box_upper: number
-  long_box_lower: number
-  current_price: number
-
-  // Breakout state
-  breakout_level: string
-  breakout_direction: string
 }

@@ -113,7 +113,7 @@ type AutoTrader struct {
 	id                    string             // Trader unique identifier
 	name                  string             // Trader display name
 	aiModel               string             // AI model name
-	exchange              string             // Trading platform type (binance/bybit/etc)
+	exchange              string             // Broker type (e.g. alpaca_paper, cn_paper)
 	exchangeID            string             // Exchange account UUID
 	capabilities          types.Capabilities // Market rules: shorting, leverage, lot size, T+1
 	showInCompetition     bool               // Whether to show in competition page
@@ -368,18 +368,6 @@ func (at *AutoTrader) Run() error {
 	if at.profitProtectionEnabled() {
 		at.startDrawdownMonitor()
 	}
-
-	// Start Lighter order sync if using Lighter exchange
-
-	// Start Bybit order sync if using Bybit exchange
-
-	// Start OKX order sync if using OKX exchange
-
-	// Start Bitget order sync if using Bitget exchange
-
-	// Start Aster order sync if using Aster exchange
-
-	// Start Binance order sync if using Binance exchange
 
 	// Execute immediately on first run
 	at.logInfof("▶️ Running first trading cycle immediately; next cycle starts after %v", at.config.ScanInterval)

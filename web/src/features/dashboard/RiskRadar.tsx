@@ -47,11 +47,8 @@ interface RiskRadarProps {
     unrealized_profit?: number
     margin_used_pct?: number
   } | null
-  config?: {
-    btc_eth_leverage?: number
-    altcoin_leverage?: number
-    max_positions?: number
-  } | null
+  /** Position limit from the strategy's risk control, when it is known. */
+  maxPositions?: number
   /** max_drawdown_pct is a percent (18.5 = -18.5%), not a fraction. */
   fullStats?: {
     max_drawdown_pct?: number
@@ -64,7 +61,7 @@ interface RiskRadarProps {
 export function RiskRadar({
   positions,
   account,
-  config,
+  maxPositions,
   fullStats,
 }: RiskRadarProps) {
   const pos = positions ?? []
@@ -74,9 +71,6 @@ export function RiskRadar({
 
     let longNotional = 0
     let shortNotional = 0
-    let levSum = 0
-    let levCount = 0
-    let maxLev = 0
     let marginSum = 0
     let topNotional = 0
 
@@ -86,12 +80,6 @@ export function RiskRadar({
       if (isLong(p.side)) longNotional += notional
       else shortNotional += notional
 
-      const lev = p.leverage || 0
-      if (lev > 0) {
-        levSum += lev
-        levCount += 1
-        if (lev > maxLev) maxLev = lev
-      }
       marginSum += p.margin_used || 0
       if (notional > topNotional) topNotional = notional
     }
@@ -102,13 +90,6 @@ export function RiskRadar({
       totalNotional > 0 ? (longNotional / totalNotional) * 100 : 0
     const shortShare =
       totalNotional > 0 ? (shortNotional / totalNotional) * 100 : 0
-
-    const avgLev = levCount > 0 ? levSum / levCount : 0
-    const configMax = Math.max(
-      config?.btc_eth_leverage ?? 0,
-      config?.altcoin_leverage ?? 0
-    )
-    const levUse = configMax > 0 ? Math.min(100, (avgLev / configMax) * 100) : 0
 
     const marginPct =
       account?.margin_used_pct != null
@@ -123,9 +104,11 @@ export function RiskRadar({
     const drawdown = fullStats?.max_drawdown_pct ?? 0
 
     const count = pos.length
-    const maxPositions = config?.max_positions ?? 0
+    const maxPositionsLimit = maxPositions ?? 0
     const countUse =
-      maxPositions > 0 ? Math.min(100, (count / maxPositions) * 100) : 0
+      maxPositionsLimit > 0
+        ? Math.min(100, (count / maxPositionsLimit) * 100)
+        : 0
 
     const upnl = account?.unrealized_profit ?? 0
 
@@ -136,19 +119,15 @@ export function RiskRadar({
       longShare,
       shortShare,
       totalNotional,
-      avgLev,
-      maxLev,
-      configMax,
-      levUse,
       marginPct,
       concentration,
       drawdown,
       count,
-      maxPositions,
+      maxPositions: maxPositionsLimit,
       countUse,
       upnl,
     }
-  }, [pos, account, config, fullStats])
+  }, [pos, account, maxPositions, fullStats])
 
   const hasData = pos.length > 0 || account != null
   if (!hasData) {
@@ -172,15 +151,6 @@ export function RiskRadar({
           : { text: 'Balanced', tone: 'ink' }
 
   // Leverage: Safe / High / Risky by avg vs cap.
-  const levTag: Verdict =
-    m.configMax === 0 || m.avgLev === 0
-      ? { text: '—', tone: 'muted' }
-      : m.levUse > 80
-        ? { text: 'Risky', tone: 'dn' }
-        : m.levUse >= 50
-          ? { text: 'High', tone: 'amber' }
-          : { text: 'Safe', tone: 'up' }
-
   // Margin used: Ample / Tight / Risky.
   const marginTag: Verdict =
     m.marginPct > 80
@@ -307,21 +277,6 @@ export function RiskRadar({
       </div>
 
       {/* gauge rows */}
-      <GaugeRow
-        zh="Leverage"
-        en="LEVERAGE"
-        value={`${m.avgLev.toFixed(1)}× avg`}
-        sub={`/ ${m.maxLev > 0 ? `${m.maxLev.toFixed(0)}×` : '—'} peak · ${m.configMax > 0 ? `${m.configMax}×` : '—'} cap`}
-        fill={m.levUse}
-        color={
-          levTag.tone === 'dn'
-            ? 'var(--tm-dn)'
-            : levTag.tone === 'amber'
-              ? C_AMBER
-              : 'var(--tm-up)'
-        }
-        verdict={levTag}
-      />
       <GaugeRow
         zh="Margin used"
         en="MARGIN USED"

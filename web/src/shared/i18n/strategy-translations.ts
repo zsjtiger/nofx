@@ -398,26 +398,6 @@ export const riskControl = {
     en: 'Trading Leverage (Exchange)',
     es: 'Apalancamiento (Exchange)',
   },
-  btcEthLeverage: {
-    zh: 'BTC/ETH 交易杠杆',
-    en: 'BTC/ETH Trading Leverage',
-    es: 'BTC/ETH Apalancamiento',
-  },
-  btcEthLeverageDesc: {
-    zh: '交易所开仓使用的杠杆倍数',
-    en: 'Exchange leverage for opening positions',
-    es: 'Apalancamiento del exchange',
-  },
-  altcoinLeverage: {
-    zh: '山寨币交易杠杆',
-    en: 'Altcoin Trading Leverage',
-    es: 'Apalancamiento Altcoins',
-  },
-  altcoinLeverageDesc: {
-    zh: '交易所开仓使用的杠杆倍数',
-    en: 'Exchange leverage for opening positions',
-    es: 'Apalancamiento del exchange',
-  },
   positionValueRatio: {
     zh: '仓位价值比例（代码强制）',
     en: 'Position Value Ratio (CODE ENFORCED)',

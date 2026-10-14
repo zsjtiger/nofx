@@ -15,11 +15,6 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	maxManualBTCETHLeverage = 20
-	maxManualAltLeverage    = 20
-)
-
 // AI trader management related structures
 type CreateTraderRequest struct {
 	Name                string  `json:"name" binding:"required"`
@@ -31,8 +26,6 @@ type CreateTraderRequest struct {
 	IsCrossMargin       *bool   `json:"is_cross_margin"`     // Pointer type, nil means use default value true
 	ShowInCompetition   *bool   `json:"show_in_competition"` // Pointer type, nil means use default value true
 	// The following fields are kept for backward compatibility, new version uses strategy config
-	BTCETHLeverage       int    `json:"btc_eth_leverage"`
-	AltcoinLeverage      int    `json:"altcoin_leverage"`
 	TradingSymbols       string `json:"trading_symbols"`
 	CustomPrompt         string `json:"custom_prompt"`
 	OverrideBasePrompt   bool   `json:"override_base_prompt"`
@@ -50,8 +43,6 @@ type UpdateTraderRequest struct {
 	IsCrossMargin       *bool   `json:"is_cross_margin"`
 	ShowInCompetition   *bool   `json:"show_in_competition"`
 	// The following fields are kept for backward compatibility, new version uses strategy config
-	BTCETHLeverage       int    `json:"btc_eth_leverage"`
-	AltcoinLeverage      int    `json:"altcoin_leverage"`
 	TradingSymbols       string `json:"trading_symbols"`
 	CustomPrompt         string `json:"custom_prompt"`
 	OverrideBasePrompt   bool   `json:"override_base_prompt"`
@@ -67,16 +58,6 @@ func formatTraderCreationError(reason, nextStep string) string {
 
 func traderCreationRequestError(reason string) string {
 	return formatTraderCreationError(reason, "Please check the information you just entered and submit again")
-}
-
-func validateTraderLeverageRange(btcEthLeverage, altcoinLeverage int) (string, string) {
-	if btcEthLeverage < 0 || btcEthLeverage > maxManualBTCETHLeverage {
-		return traderCreationRequestError("BTC/ETH leverage must be between 1x and 20x"), "trader.create.invalid_btc_eth_leverage"
-	}
-	if altcoinLeverage < 0 || altcoinLeverage > maxManualAltLeverage {
-		return traderCreationRequestError("Altcoin leverage must be between 1x and 20x"), "trader.create.invalid_altcoin_leverage"
-	}
-	return "", ""
 }
 
 // isSupportedTraderSymbol reports whether a symbol is valid for the market.
@@ -271,12 +252,6 @@ func (s *Server) handleCreateTrader(c *gin.Context) {
 		return
 	}
 
-	// Validate leverage values against the same limits exposed by manual user config.
-	if errMsg, errCode := validateTraderLeverageRange(req.BTCETHLeverage, req.AltcoinLeverage); errMsg != "" {
-		SafeBadRequestWithDetails(c, errMsg, errCode, nil)
-		return
-	}
-
 	// Validate trading symbol format against the market of the exchange account.
 	if req.TradingSymbols != "" {
 		m := types.MarketUSEquity
@@ -362,16 +337,6 @@ func (s *Server) handleCreateTrader(c *gin.Context) {
 		showInCompetition = *req.ShowInCompetition
 	}
 
-	// Set leverage default values
-	btcEthLeverage := 10 // Default value
-	altcoinLeverage := 5 // Default value
-	if req.BTCETHLeverage > 0 {
-		btcEthLeverage = req.BTCETHLeverage
-	}
-	if req.AltcoinLeverage > 0 {
-		altcoinLeverage = req.AltcoinLeverage
-	}
-
 	// Set system prompt template default value
 	systemPromptTemplate := "default"
 	if req.SystemPromptTemplate != "" {
@@ -448,8 +413,6 @@ func (s *Server) handleCreateTrader(c *gin.Context) {
 		ExchangeID:           req.ExchangeID,
 		StrategyID:           req.StrategyID, // Associated strategy ID (new version)
 		InitialBalance:       actualBalance,  // Use actual queried balance
-		BTCETHLeverage:       btcEthLeverage,
-		AltcoinLeverage:      altcoinLeverage,
 		TradingSymbols:       req.TradingSymbols,
 		CustomPrompt:         req.CustomPrompt,
 		OverrideBasePrompt:   req.OverrideBasePrompt,
@@ -541,11 +504,6 @@ func (s *Server) handleUpdateTrader(c *gin.Context) {
 		return
 	}
 
-	if errMsg, errCode := validateTraderLeverageRange(req.BTCETHLeverage, req.AltcoinLeverage); errMsg != "" {
-		SafeBadRequestWithDetails(c, errMsg, errCode, nil)
-		return
-	}
-
 	// Set default values
 	isCrossMargin := existingTrader.IsCrossMargin // Keep original value
 	if req.IsCrossMargin != nil {
@@ -555,16 +513,6 @@ func (s *Server) handleUpdateTrader(c *gin.Context) {
 	showInCompetition := existingTrader.ShowInCompetition // Keep original value
 	if req.ShowInCompetition != nil {
 		showInCompetition = *req.ShowInCompetition
-	}
-
-	// Set leverage default values
-	btcEthLeverage := req.BTCETHLeverage
-	altcoinLeverage := req.AltcoinLeverage
-	if btcEthLeverage <= 0 {
-		btcEthLeverage = existingTrader.BTCETHLeverage // Keep original value
-	}
-	if altcoinLeverage <= 0 {
-		altcoinLeverage = existingTrader.AltcoinLeverage // Keep original value
 	}
 
 	// Set scan interval, allow updates
@@ -609,8 +557,6 @@ func (s *Server) handleUpdateTrader(c *gin.Context) {
 		ExchangeID:           req.ExchangeID,
 		StrategyID:           strategyID, // Associated strategy ID
 		InitialBalance:       initialBalance,
-		BTCETHLeverage:       btcEthLeverage,
-		AltcoinLeverage:      altcoinLeverage,
 		TradingSymbols:       req.TradingSymbols,
 		CustomPrompt:         req.CustomPrompt,
 		OverrideBasePrompt:   req.OverrideBasePrompt,

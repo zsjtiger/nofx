@@ -643,7 +643,7 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 		Name:              traderCfg.Name,
 		StrategyID:        traderCfg.StrategyID,
 		AIModel:           aiModelCfg.Provider,
-		Exchange:          exchangeCfg.ExchangeType, // Exchange type: binance/bybit/okx/etc
+		Exchange:          exchangeCfg.ExchangeType, // Broker type (e.g. alpaca_paper, cn_paper)
 		ExchangeID:        exchangeCfg.ID,           // Exchange account UUID (for multi-account)
 		Market:            exchangeCfg.Market,       // Asset class: crypto, us_equity or cn_equity
 		UseQwen:           aiModelCfg.Provider == "qwen",
