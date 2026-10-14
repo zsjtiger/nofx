@@ -12,11 +12,11 @@ html {
 
 :root {
   /* Crux cream-paper + vermilion terminal design system */
-  --nofx-gold: #e0483b;
-  --nofx-bg: #f1ece2;
-  --nofx-accent: #e0483b;
-  --nofx-glass: rgba(247, 244, 236, 0.85);
-  --nofx-border: rgba(26, 24, 19, 0.14);
+  --crux-gold: #e0483b;
+  --crux-bg: #f1ece2;
+  --crux-accent: #e0483b;
+  --crux-glass: rgba(247, 244, 236, 0.85);
+  --crux-border: rgba(26, 24, 19, 0.14);
 
   /* Soft accents (no neon on paper) */
   --glow-primary: none;
@@ -86,7 +86,7 @@ html {
   position: absolute;
   width: 8px;
   height: 8px;
-  border: 1px solid var(--nofx-gold);
+  border: 1px solid var(--crux-gold);
   transition: all 0.3s ease;
 }
 
@@ -165,7 +165,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--nofx-gold);
+  background: var(--crux-gold);
 }
 
 /* Animations */
@@ -285,10 +285,10 @@ body {
 
 /*
  * Cream-paper toasts (matches the terminal theme). The --tm-* tokens are scoped
- * to .nofx-terminal, but sonner renders in a portal at the document root, so we
+ * to .crux-terminal, but sonner renders in a portal at the document root, so we
  * use the literal cream palette here to stay readable everywhere.
  */
-.nofx-toast {
+.crux-toast {
   background: #f1ece2 !important;
   border: 1px solid #d8d2c4 !important;
   color: #1a1813 !important;
@@ -297,52 +297,52 @@ body {
   font-family: 'IBM Plex Mono', 'Courier New', monospace !important;
 }
 
-.nofx-toast .sonner-title {
+.crux-toast .sonner-title {
   color: #1a1813 !important;
   font-weight: 700;
 }
 
-.nofx-toast .sonner-description {
+.crux-toast .sonner-description {
   color: #3a372e !important;
 }
 
 /* Per-type accent: cream background, colored left rail + title. */
-.nofx-toast[data-type='success'] {
+.crux-toast[data-type='success'] {
   border-color: #2e8b57 !important;
   border-left: 3px solid #2e8b57 !important;
 }
 
-.nofx-toast[data-type='success'] .sonner-title {
+.crux-toast[data-type='success'] .sonner-title {
   color: #1f6b41 !important;
 }
 
-.nofx-toast[data-type='error'] {
+.crux-toast[data-type='error'] {
   border-color: #e0483b !important;
   border-left: 3px solid #e0483b !important;
 }
 
-.nofx-toast[data-type='error'] .sonner-title {
+.crux-toast[data-type='error'] .sonner-title {
   color: #c23529 !important;
 }
 
-.nofx-toast[data-type='warning'],
-.nofx-toast[data-type='info'] {
+.crux-toast[data-type='warning'],
+.crux-toast[data-type='info'] {
   border-color: #c8860b !important;
   border-left: 3px solid #c8860b !important;
 }
 
-.nofx-toast[data-type='warning'] .sonner-title,
-.nofx-toast[data-type='info'] .sonner-title {
+.crux-toast[data-type='warning'] .sonner-title,
+.crux-toast[data-type='info'] .sonner-title {
   color: #9a6800 !important;
 }
 
-.nofx-toast .sonner-close-button {
+.crux-toast .sonner-close-button {
   background: #f1ece2 !important;
   border-color: #d8d2c4 !important;
   color: #3a372e !important;
 }
 
-.nofx-toast .sonner-close-button:hover {
+.crux-toast .sonner-close-button:hover {
   color: #1a1813 !important;
 }
 
@@ -435,7 +435,7 @@ button:disabled {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.nofx-glass {
+.crux-glass {
   background: rgba(30, 35, 41, 0.5);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);

@@ -22,7 +22,7 @@ func TestGetOpenPositionBySymbolMatchesSideCaseInsensitively(t *testing.T) {
 	entryTime := time.Now().Add(-5 * time.Minute).UnixMilli()
 	if err := positions.Create(&TraderPosition{
 		TraderID:   "trader-1",
-		Symbol:     "AAVEUSDT",
+		Symbol:     "AMD",
 		Side:       "LONG",
 		Quantity:   0.27,
 		EntryPrice: 88.519,
@@ -31,7 +31,7 @@ func TestGetOpenPositionBySymbolMatchesSideCaseInsensitively(t *testing.T) {
 		t.Fatalf("create position: %v", err)
 	}
 
-	got, err := positions.GetOpenPositionBySymbol("trader-1", "AAVEUSDT", "long")
+	got, err := positions.GetOpenPositionBySymbol("trader-1", "AMD", "long")
 	if err != nil {
 		t.Fatalf("get open position: %v", err)
 	}
@@ -58,7 +58,7 @@ func TestGetClosedPositionsByTraderFiltersIncludesLegacyAutopilotIDs(t *testing.
 	rows := []*TraderPosition{
 		{
 			TraderID:     "current-trader",
-			Symbol:       "xyz:SP500",
+			Symbol:       "SPY",
 			Side:         "LONG",
 			Quantity:     1,
 			EntryPrice:   100,
@@ -70,11 +70,11 @@ func TestGetClosedPositionsByTraderFiltersIncludesLegacyAutopilotIDs(t *testing.
 			CreatedAt:    now - 3000,
 			UpdatedAt:    now - 2000,
 			CloseReason:  "sync",
-			ExchangeType: "hyperliquid",
+			ExchangeType: "alpaca_paper",
 		},
 		{
 			TraderID:     "exchange_user-123_claw402_111",
-			Symbol:       "AAVEUSDT",
+			Symbol:       "AMD",
 			Side:         "LONG",
 			Quantity:     2,
 			EntryPrice:   50,
@@ -86,11 +86,11 @@ func TestGetClosedPositionsByTraderFiltersIncludesLegacyAutopilotIDs(t *testing.
 			CreatedAt:    now - 5000,
 			UpdatedAt:    now - 4000,
 			CloseReason:  "sync",
-			ExchangeType: "hyperliquid",
+			ExchangeType: "alpaca_paper",
 		},
 		{
 			TraderID:     "exchange_other-user_claw402_222",
-			Symbol:       "LITUSDT",
+			Symbol:       "INTC",
 			Side:         "LONG",
 			Quantity:     3,
 			EntryPrice:   10,
@@ -102,7 +102,7 @@ func TestGetClosedPositionsByTraderFiltersIncludesLegacyAutopilotIDs(t *testing.
 			CreatedAt:    now - 7000,
 			UpdatedAt:    now - 6000,
 			CloseReason:  "sync",
-			ExchangeType: "hyperliquid",
+			ExchangeType: "alpaca_paper",
 		},
 	}
 	for _, row := range rows {

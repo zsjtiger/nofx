@@ -117,7 +117,7 @@ func TestTradeThrottleDoesNotCapOpensPerCycle(t *testing.T) {
 	at := usAutoTrader()
 	ctx := &kernel.Context{}
 
-	for _, symbol := range []string{"INTC", "NVDA", "SNDK", "MU", "xyz:SP500"} {
+	for _, symbol := range []string{"INTC", "NVDA", "SNDK", "MU", "SPY"} {
 		if reason := at.tradeThrottleReason(kernel.Decision{Symbol: symbol, Action: "open_long"}, ctx); reason != "" {
 			t.Fatalf("expected %s open to have no per-cycle count cap, got %q", symbol, reason)
 		}

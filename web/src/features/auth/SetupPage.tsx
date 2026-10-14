@@ -84,7 +84,7 @@ export function SetupPage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-nofx-bg">
+    <div className="relative min-h-screen w-full overflow-hidden bg-crux-bg">
       {/* Decorative background - simulates the main app behind a modal */}
 
       {/* Grid */}
@@ -100,37 +100,37 @@ export function SetupPage() {
 
       {/* Glow spots */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[15%] w-[500px] h-[500px] bg-nofx-gold/8 rounded-full blur-[150px]" />
-        <div className="absolute bottom-[5%] right-[10%] w-[400px] h-[400px] bg-nofx-gold/6 rounded-full blur-[140px]" />
-        <div className="absolute top-[40%] right-[30%] w-[300px] h-[300px] bg-nofx-success/4 rounded-full blur-[120px]" />
+        <div className="absolute top-[10%] left-[15%] w-[500px] h-[500px] bg-crux-gold/8 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[5%] right-[10%] w-[400px] h-[400px] bg-crux-gold/6 rounded-full blur-[140px]" />
+        <div className="absolute top-[40%] right-[30%] w-[300px] h-[300px] bg-crux-success/4 rounded-full blur-[120px]" />
       </div>
 
       {/* Faux UI elements in background to simulate the app */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.06]">
         {/* Fake header bar */}
-        <div className="h-14 border-b border-nofx-text/20 flex items-center px-6 gap-4">
-          <div className="w-8 h-8 rounded-lg bg-nofx-text/40" />
-          <div className="h-3 w-20 rounded bg-nofx-text/30" />
-          <div className="h-3 w-16 rounded bg-nofx-text/20 ml-4" />
-          <div className="h-3 w-16 rounded bg-nofx-text/20" />
-          <div className="h-3 w-16 rounded bg-nofx-text/20" />
+        <div className="h-14 border-b border-crux-text/20 flex items-center px-6 gap-4">
+          <div className="w-8 h-8 rounded-lg bg-crux-text/40" />
+          <div className="h-3 w-20 rounded bg-crux-text/30" />
+          <div className="h-3 w-16 rounded bg-crux-text/20 ml-4" />
+          <div className="h-3 w-16 rounded bg-crux-text/20" />
+          <div className="h-3 w-16 rounded bg-crux-text/20" />
         </div>
         {/* Fake content cards */}
         <div className="p-6 grid grid-cols-4 gap-4 mt-2">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="h-24 rounded-xl border border-nofx-text/15 bg-nofx-text/5"
+              className="h-24 rounded-xl border border-crux-text/15 bg-crux-text/5"
             />
           ))}
         </div>
         <div className="px-6 mt-2">
-          <div className="h-64 rounded-xl border border-nofx-text/15 bg-nofx-text/5" />
+          <div className="h-64 rounded-xl border border-crux-text/15 bg-crux-text/5" />
         </div>
       </div>
 
       {/* Blur overlay */}
-      <div className="absolute inset-0 backdrop-blur-md bg-nofx-bg/60" />
+      <div className="absolute inset-0 backdrop-blur-md bg-crux-bg/60" />
 
       {/* Modal card */}
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16">
@@ -139,33 +139,33 @@ export function SetupPage() {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="relative">
-                <div className="absolute -inset-4 bg-nofx-gold/20 rounded-full blur-2xl" />
+                <div className="absolute -inset-4 bg-crux-gold/20 rounded-full blur-2xl" />
                 <img
-                  src="/icons/nofx.svg"
+                  src="/icons/crux.svg"
                   alt="Crux"
                   className="w-14 h-14 relative z-10"
                 />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-nofx-text mb-1.5">
+            <h1 className="text-2xl font-bold text-crux-text mb-1.5">
               {l.welcome}
             </h1>
-            <p className="text-nofx-text-muted text-sm">{l.subtitle}</p>
+            <p className="text-crux-text-muted text-sm">{l.subtitle}</p>
           </div>
 
           {/* Card */}
-          <div className="bg-nofx-bg-lighter backdrop-blur-2xl border border-[rgba(26,24,19,0.14)] rounded-2xl p-8 shadow-lg">
+          <div className="bg-crux-bg-lighter backdrop-blur-2xl border border-[rgba(26,24,19,0.14)] rounded-2xl p-8 shadow-lg">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email */}
               <div>
-                <label className="block text-xs font-medium text-nofx-text-muted mb-2">
+                <label className="block text-xs font-medium text-crux-text-muted mb-2">
                   {l.email}
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-nofx-bg-deeper border border-[rgba(26,24,19,0.14)] rounded-xl px-4 py-3 text-sm text-nofx-text placeholder-nofx-text-muted focus:outline-none focus:border-nofx-gold/60 focus:ring-1 focus:ring-nofx-gold/30 transition-all"
+                  className="w-full bg-crux-bg-deeper border border-[rgba(26,24,19,0.14)] rounded-xl px-4 py-3 text-sm text-crux-text placeholder-crux-text-muted focus:outline-none focus:border-crux-gold/60 focus:ring-1 focus:ring-crux-gold/30 transition-all"
                   placeholder={l.emailPlaceholder}
                   required
                   autoFocus
@@ -174,7 +174,7 @@ export function SetupPage() {
 
               {/* Password */}
               <div>
-                <label className="block text-xs font-medium text-nofx-text-muted mb-2">
+                <label className="block text-xs font-medium text-crux-text-muted mb-2">
                   {l.password}
                 </label>
                 <div className="relative">
@@ -182,14 +182,14 @@ export function SetupPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-nofx-bg-deeper border border-[rgba(26,24,19,0.14)] rounded-xl px-4 py-3 pr-11 text-sm text-nofx-text placeholder-nofx-text-muted focus:outline-none focus:border-nofx-gold/60 focus:ring-1 focus:ring-nofx-gold/30 transition-all"
+                    className="w-full bg-crux-bg-deeper border border-[rgba(26,24,19,0.14)] rounded-xl px-4 py-3 pr-11 text-sm text-crux-text placeholder-crux-text-muted focus:outline-none focus:border-crux-gold/60 focus:ring-1 focus:ring-crux-gold/30 transition-all"
                     placeholder={l.passwordPlaceholder}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-nofx-text-muted hover:text-nofx-text transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-crux-text-muted hover:text-crux-text transition-colors"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -198,7 +198,7 @@ export function SetupPage() {
 
               {/* Error */}
               {error && (
-                <p className="text-xs text-nofx-danger bg-nofx-danger/10 border border-nofx-danger/20 rounded-lg px-3 py-2">
+                <p className="text-xs text-crux-danger bg-crux-danger/10 border border-crux-danger/20 rounded-lg px-3 py-2">
                   {error}
                 </p>
               )}
@@ -207,14 +207,14 @@ export function SetupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-nofx-gold hover:bg-nofx-gold-highlight active:scale-[0.98] text-nofx-bg font-semibold py-3 rounded-xl text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                className="w-full bg-crux-gold hover:bg-crux-gold-highlight active:scale-[0.98] text-crux-bg font-semibold py-3 rounded-xl text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
                 {loading ? l.submitting : l.submit}
               </button>
             </form>
           </div>
 
-          <p className="text-center text-xs text-nofx-text-muted mt-6">
+          <p className="text-center text-xs text-crux-text-muted mt-6">
             {l.singleUser}
           </p>
         </div>

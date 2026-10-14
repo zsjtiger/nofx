@@ -49,8 +49,8 @@ Before submitting a PR, please check the following:
 **High Priority** (aligned with roadmap):
 - 🔒 Security enhancements (encryption, authentication, RBAC)
 - 🧠 AI model integrations (GPT-4, Claude, Gemini Pro)
-- 🔗 Exchange integrations (OKX, Bybit, Lighter, EdgeX)
-- 📊 Trading data APIs (AI500, OI analysis, NetFlow)
+- 🔗 Broker integrations (Alpaca, A-share paper trading)
+- 📊 Market data APIs (bars, quotes, fundamentals)
 - 🎨 UI/UX improvements (mobile responsiveness, charts)
 - ⚡ Performance optimizations
 - 🐛 Bug fixes
@@ -161,7 +161,7 @@ Follow the [commit message guidelines](#commit-message-guidelines):
 
 ```bash
 git add .
-git commit -m "feat: add support for OKX exchange integration"
+git commit -m "feat: add support for Interactive Brokers paper trading"
 ```
 
 ### 7. Push and Create PR
@@ -195,7 +195,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) format:
 <type>(<scope>): <subject>
 
 Examples:
-feat(exchange): add OKX exchange integration
+feat(broker): add Interactive Brokers paper trading
 fix(trader): resolve position tracking bug
 docs(readme): update installation instructions
 perf(ai): optimize prompt generation
@@ -275,7 +275,7 @@ func ce(a, s string) *Exchange {
 // ✅ Good: Type-safe, clear naming
 interface TraderConfig {
   id: string;
-  exchange: 'binance' | 'hyperliquid' | 'aster';
+  exchange: 'alpaca_paper' | 'cn_paper';
   aiModel: string;
   enabled: boolean;
 }
@@ -350,11 +350,11 @@ NOFX/
 ### Examples
 
 ```
-feat(exchange): add OKX futures API integration
+feat(broker): add Interactive Brokers order routing
 
 - Implement order placement and cancellation
 - Add balance and position retrieval
-- Support leverage configuration
+- Support limit and market order types
 
 Closes #123
 ```

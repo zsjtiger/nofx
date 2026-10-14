@@ -44,15 +44,9 @@ Trading cryptocurrencies, stocks, futures, options, and other financial instrume
 #### Market Risks
 - 💸 You can lose **all or more than** your initial investment
 - 📉 Markets are highly volatile and unpredictable
-- 🌊 Sudden market movements can cause liquidation
+- 🌊 Sudden market movements can cause large, fast losses
 - ⚡ "Flash crashes" can wipe out positions instantly
 - 🌍 Global events can cause extreme volatility
-
-#### Leverage Risks
-- 🔥 Leverage amplifies both **gains and losses**
-- ⚠️ Using high leverage can result in **rapid liquidation**
-- 💥 Losses can exceed your initial deposit
-- 🎲 Even small market moves can trigger margin calls
 
 #### AI/Algorithm Risks
 - 🤖 AI decisions are based on historical data and patterns

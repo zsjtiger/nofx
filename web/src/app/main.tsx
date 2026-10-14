@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         position="top-center"
         duration={2200}
         toastOptions={{
-          className: 'nofx-toast',
+          className: 'crux-toast',
         }}
       />
       <App />

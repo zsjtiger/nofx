@@ -105,7 +105,7 @@ export function ModelConfigModal({
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto backdrop-blur-sm">
       <div
-        className="rounded-2xl w-full max-w-[52rem] relative my-8 shadow-2xl bg-nofx-bg-lighter"
+        className="rounded-2xl w-full max-w-[52rem] relative my-8 shadow-2xl bg-crux-bg-lighter"
         style={{
           maxHeight: 'calc(100vh - 4rem)',
         }}
@@ -117,7 +117,7 @@ export function ModelConfigModal({
               <button
                 type="button"
                 onClick={handleBack}
-                className="p-2 rounded-lg hover:bg-nofx-bg-deeper transition-colors"
+                className="p-2 rounded-lg hover:bg-crux-bg-deeper transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -146,7 +146,7 @@ export function ModelConfigModal({
               <button
                 type="button"
                 onClick={() => onDelete(editingModelId)}
-                className="p-2 rounded-lg hover:bg-nofx-danger/20 transition-colors"
+                className="p-2 rounded-lg hover:bg-crux-danger/20 transition-colors"
                 style={{ color: '#D6433A' }}
               >
                 <Trash2 className="w-4 h-4" />
@@ -155,7 +155,7 @@ export function ModelConfigModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-nofx-bg-deeper transition-colors"
+              className="p-2 rounded-lg hover:bg-crux-bg-deeper transition-colors"
               style={{ color: '#8A8478' }}
             >
               ✕
@@ -284,7 +284,7 @@ function StandardProviderConfigForm({
           border: '1px solid rgba(26,24,19,0.14)',
         }}
       >
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-nofx-bg-deeper border border-nofx-gold/20">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-crux-bg-deeper border border-crux-gold/20">
           {getModelIcon(selectedModel.provider || selectedModel.id, {
             width: 32,
             height: 32,
@@ -503,7 +503,7 @@ function StandardProviderConfigForm({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all hover:bg-nofx-bg-deeper"
+          className="flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all hover:bg-crux-bg-deeper"
           style={{ background: '#E8E2D5', color: '#8A8478' }}
         >
           {editingModelId

@@ -255,24 +255,24 @@ export function StrategyStudioPage() {
   if (loading) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
-        <Loader2 className="h-7 w-7 animate-spin text-nofx-gold" />
+        <Loader2 className="h-7 w-7 animate-spin text-crux-gold" />
       </div>
     )
   }
 
   const inputClass =
-    'w-full rounded-lg border border-[rgba(26,24,19,0.2)] bg-nofx-bg px-3 py-2 text-sm text-nofx-text'
-  const labelClass = 'mb-1 block text-sm text-nofx-text-muted'
+    'w-full rounded-lg border border-[rgba(26,24,19,0.2)] bg-crux-bg px-3 py-2 text-sm text-crux-text'
+  const labelClass = 'mb-1 block text-sm text-crux-text-muted'
   const sectionClass =
-    'rounded-xl border border-[rgba(26,24,19,0.14)] bg-nofx-bg-deeper p-5 space-y-4'
+    'rounded-xl border border-[rgba(26,24,19,0.14)] bg-crux-bg-deeper p-5 space-y-4'
 
   return (
-    <DeepVoidBackground className="min-h-[calc(100vh-64px)] bg-nofx-bg">
-      <div className="border-b border-[rgba(26,24,19,0.14)] bg-nofx-bg/75 px-5 py-4 backdrop-blur">
-        <h1 className="text-xl font-semibold text-nofx-text">
+    <DeepVoidBackground className="min-h-[calc(100vh-64px)] bg-crux-bg">
+      <div className="border-b border-[rgba(26,24,19,0.14)] bg-crux-bg/75 px-5 py-4 backdrop-blur">
+        <h1 className="text-xl font-semibold text-crux-text">
           {text(language, '策略工作室', 'Strategy Studio')}
         </h1>
-        <p className="mt-1 text-sm text-nofx-text-muted">
+        <p className="mt-1 text-sm text-crux-text-muted">
           {text(
             language,
             '基于日线数据的 AI 股票策略。风控规则由代码强制执行。',
@@ -287,7 +287,7 @@ export function StrategyStudioPage() {
             <button
               type="button"
               onClick={handleNew}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-nofx-gold px-3 py-2 text-sm font-semibold text-nofx-bg"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-crux-gold px-3 py-2 text-sm font-semibold text-crux-bg"
             >
               <Plus className="h-4 w-4" /> {text(language, '新建', 'New')}
             </button>
@@ -300,13 +300,13 @@ export function StrategyStudioPage() {
                   onClick={() => setSelectedId(s.id)}
                   className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${
                     s.id === selectedId
-                      ? 'border-nofx-gold bg-nofx-gold/10 text-nofx-text'
-                      : 'border-[rgba(26,24,19,0.14)] text-nofx-text-muted hover:text-nofx-text'
+                      ? 'border-crux-gold bg-crux-gold/10 text-crux-text'
+                      : 'border-[rgba(26,24,19,0.14)] text-crux-text-muted hover:text-crux-text'
                   }`}
                 >
                   <span className="block font-medium">{s.name}</span>
                   {s.is_active && (
-                    <span className="mt-1 inline-block rounded bg-nofx-gold/20 px-1.5 py-0.5 text-xs text-nofx-gold">
+                    <span className="mt-1 inline-block rounded bg-crux-gold/20 px-1.5 py-0.5 text-xs text-crux-gold">
                       {text(language, '当前', 'Active')}
                     </span>
                   )}
@@ -323,7 +323,7 @@ export function StrategyStudioPage() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="inline-flex items-center gap-2 rounded-lg bg-nofx-gold px-4 py-2 text-sm font-semibold text-nofx-bg disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-lg bg-crux-gold px-4 py-2 text-sm font-semibold text-crux-bg disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -336,7 +336,7 @@ export function StrategyStudioPage() {
                 type="button"
                 onClick={handleActivate}
                 disabled={selected.is_active}
-                className="inline-flex items-center gap-2 rounded-lg border border-nofx-gold px-4 py-2 text-sm text-nofx-gold disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-lg border border-crux-gold px-4 py-2 text-sm text-crux-gold disabled:opacity-40"
               >
                 <Zap className="h-4 w-4" />{' '}
                 {text(language, '设为当前', 'Set active')}
@@ -344,14 +344,14 @@ export function StrategyStudioPage() {
               <button
                 type="button"
                 onClick={handlePreview}
-                className="inline-flex items-center gap-2 rounded-lg border border-[rgba(26,24,19,0.2)] px-4 py-2 text-sm text-nofx-text"
+                className="inline-flex items-center gap-2 rounded-lg border border-[rgba(26,24,19,0.2)] px-4 py-2 text-sm text-crux-text"
               >
                 {text(language, '预览提示词', 'Preview prompt')}
               </button>
               <button
                 type="button"
                 onClick={handleDuplicate}
-                className="inline-flex items-center gap-2 rounded-lg border border-[rgba(26,24,19,0.2)] px-4 py-2 text-sm text-nofx-text"
+                className="inline-flex items-center gap-2 rounded-lg border border-[rgba(26,24,19,0.2)] px-4 py-2 text-sm text-crux-text"
               >
                 <Copy className="h-4 w-4" />{' '}
                 {text(language, '复制', 'Duplicate')}
@@ -367,7 +367,7 @@ export function StrategyStudioPage() {
             </div>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">
+              <h2 className="text-base font-semibold text-crux-text">
                 {text(language, '基本信息', 'Basics')}
               </h2>
               <div>
@@ -408,7 +408,7 @@ export function StrategyStudioPage() {
             </section>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">
+              <h2 className="text-base font-semibold text-crux-text">
                 {text(language, '股票池', 'Universe')}
               </h2>
               <div>
@@ -421,7 +421,7 @@ export function StrategyStudioPage() {
                   onChange={(e) => setSymbolsText(e.target.value)}
                   placeholder={SYMBOL_HINT[market].example}
                 />
-                <p className="mt-1 text-xs text-nofx-text-muted">
+                <p className="mt-1 text-xs text-crux-text-muted">
                   {text(
                     language,
                     SYMBOL_HINT[market].zh,
@@ -449,7 +449,7 @@ export function StrategyStudioPage() {
             </section>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">
+              <h2 className="text-base font-semibold text-crux-text">
                 {text(language, '数据', 'Data')}
               </h2>
               <div className="grid grid-cols-2 gap-4">
@@ -482,7 +482,7 @@ export function StrategyStudioPage() {
                 {INDICATOR_TOGGLES.map((item) => (
                   <label
                     key={item.key}
-                    className="flex items-center gap-2 text-sm text-nofx-text"
+                    className="flex items-center gap-2 text-sm text-crux-text"
                   >
                     <input
                       type="checkbox"
@@ -498,7 +498,7 @@ export function StrategyStudioPage() {
             </section>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">
+              <h2 className="text-base font-semibold text-crux-text">
                 {text(language, '风控', 'Risk')}
               </h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -608,7 +608,7 @@ export function StrategyStudioPage() {
                   />
                   <label
                     htmlFor="profit-protection"
-                    className="text-sm text-nofx-text-muted"
+                    className="text-sm text-crux-text-muted"
                   >
                     {text(
                       language,
@@ -618,7 +618,7 @@ export function StrategyStudioPage() {
                   </label>
                 </div>
               </div>
-              <p className="text-xs text-nofx-text-muted">
+              <p className="text-xs text-crux-text-muted">
                 {text(
                   language,
                   '股票不使用杠杆。A 股不做空，按整手（100 股）交易，遵守 T+1。',
@@ -628,7 +628,7 @@ export function StrategyStudioPage() {
             </section>
 
             <section className={sectionClass}>
-              <h2 className="text-base font-semibold text-nofx-text">
+              <h2 className="text-base font-semibold text-crux-text">
                 {text(language, '提示词', 'Prompt')}
               </h2>
               {(
@@ -671,17 +671,17 @@ export function StrategyStudioPage() {
 
             {previewText !== null && (
               <section className={sectionClass}>
-                <h2 className="text-base font-semibold text-nofx-text">
+                <h2 className="text-base font-semibold text-crux-text">
                   {text(language, '提示词预览', 'Prompt preview')}
                 </h2>
-                <pre className="max-h-[480px] overflow-auto whitespace-pre-wrap rounded-lg bg-nofx-bg p-4 text-xs text-nofx-text">
+                <pre className="max-h-[480px] overflow-auto whitespace-pre-wrap rounded-lg bg-crux-bg p-4 text-xs text-crux-text">
                   {previewText}
                 </pre>
               </section>
             )}
           </div>
         ) : (
-          <div className="text-sm text-nofx-text-muted">
+          <div className="text-sm text-crux-text-muted">
             {text(
               language,
               '还没有策略，点击「新建」开始。',

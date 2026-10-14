@@ -48,20 +48,20 @@ export function CompetitionPage() {
       <DeepVoidBackground className="py-8" disableAnimation>
         <div className="container mx-auto max-w-7xl px-4 md:px-8">
           <div className="space-y-6">
-            <div className="animate-pulse bg-nofx-bg-lighter border border-nofx-gold/20 rounded-xl p-8">
+            <div className="animate-pulse bg-crux-bg-lighter border border-crux-gold/20 rounded-xl p-8">
               <div className="flex items-center justify-between mb-6">
                 <div className="space-y-3 flex-1">
-                  <div className="h-8 w-64 bg-nofx-bg-deeper rounded"></div>
-                  <div className="h-4 w-48 bg-nofx-bg-deeper rounded"></div>
+                  <div className="h-8 w-64 bg-crux-bg-deeper rounded"></div>
+                  <div className="h-4 w-48 bg-crux-bg-deeper rounded"></div>
                 </div>
-                <div className="h-12 w-32 bg-nofx-bg-deeper rounded"></div>
+                <div className="h-12 w-32 bg-crux-bg-deeper rounded"></div>
               </div>
             </div>
-            <div className="bg-nofx-bg-lighter border border-nofx-gold/20 rounded-xl p-6">
-              <div className="h-6 w-40 mb-4 bg-nofx-bg-deeper rounded"></div>
+            <div className="bg-crux-bg-lighter border border-crux-gold/20 rounded-xl p-6">
+              <div className="h-6 w-40 mb-4 bg-crux-bg-deeper rounded"></div>
               <div className="space-y-3">
-                <div className="h-20 w-full bg-nofx-bg-deeper rounded"></div>
-                <div className="h-20 w-full bg-nofx-bg-deeper rounded"></div>
+                <div className="h-20 w-full bg-crux-bg-deeper rounded"></div>
+                <div className="h-20 w-full bg-crux-bg-deeper rounded"></div>
               </div>
             </div>
           </div>
@@ -78,17 +78,17 @@ export function CompetitionPage() {
           {/* Competition Header - compact */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-0">
             <div className="flex items-center gap-3 md:gap-4">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center bg-nofx-bg-lighter border border-nofx-gold/30">
-                <Trophy className="w-6 h-6 md:w-7 md:h-7 text-nofx-gold" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center bg-crux-bg-lighter border border-crux-gold/30">
+                <Trophy className="w-6 h-6 md:w-7 md:h-7 text-crux-gold" />
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-nofx-text">
+                <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-crux-text">
                   {t('aiCompetition', language)}
-                  <span className="text-xs font-normal px-2 py-1 rounded bg-nofx-gold/10 text-nofx-gold border border-nofx-gold/20">
+                  <span className="text-xs font-normal px-2 py-1 rounded bg-crux-gold/10 text-crux-gold border border-crux-gold/20">
                     0 {t('traders', language)}
                   </span>
                 </h1>
-                <p className="text-xs text-nofx-text-muted">
+                <p className="text-xs text-crux-text-muted">
                   {t('liveBattle', language)}
                 </p>
               </div>
@@ -96,12 +96,12 @@ export function CompetitionPage() {
           </div>
 
           {/* Empty State */}
-          <div className="bg-nofx-bg-lighter border border-nofx-gold/20 rounded-xl p-16 text-center">
-            <Trophy className="w-16 h-16 mx-auto mb-4 text-nofx-text-muted" />
-            <h3 className="text-lg font-bold mb-2 text-nofx-text">
+          <div className="bg-crux-bg-lighter border border-crux-gold/20 rounded-xl p-16 text-center">
+            <Trophy className="w-16 h-16 mx-auto mb-4 text-crux-text-muted" />
+            <h3 className="text-lg font-bold mb-2 text-crux-text">
               {t('noTraders', language)}
             </h3>
-            <p className="text-sm text-nofx-text-muted">
+            <p className="text-sm text-crux-text-muted">
               {t('createFirstTrader', language)}
             </p>
           </div>
@@ -124,26 +124,26 @@ export function CompetitionPage() {
         {/* Competition Header - compact */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-0">
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center bg-nofx-bg-lighter border border-nofx-gold/30">
-              <Trophy className="w-6 h-6 md:w-7 md:h-7 text-nofx-gold" />
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center bg-crux-bg-lighter border border-crux-gold/30">
+              <Trophy className="w-6 h-6 md:w-7 md:h-7 text-crux-gold" />
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-nofx-text">
+              <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-crux-text">
                 {t('aiCompetition', language)}
-                <span className="text-xs font-normal px-2 py-1 rounded bg-nofx-gold/10 text-nofx-gold border border-nofx-gold/20">
+                <span className="text-xs font-normal px-2 py-1 rounded bg-crux-gold/10 text-crux-gold border border-crux-gold/20">
                   {competition.count} {t('traders', language)}
                 </span>
               </h1>
-              <p className="text-xs text-nofx-text-muted">
+              <p className="text-xs text-crux-text-muted">
                 {t('liveBattle', language)}
               </p>
             </div>
           </div>
           <div className="text-left md:text-right w-full md:w-auto">
-            <div className="text-xs mb-1 text-nofx-text-muted">
+            <div className="text-xs mb-1 text-crux-text-muted">
               {t('leader', language)}
             </div>
-            <div className="text-base md:text-lg font-bold text-nofx-gold">
+            <div className="text-base md:text-lg font-bold text-crux-gold">
               {leader?.trader_name}
             </div>
             <div
@@ -162,14 +162,14 @@ export function CompetitionPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Performance Comparison Chart */}
           <div
-            className="bg-nofx-bg-lighter border border-nofx-gold/20 rounded-xl p-6 animate-slide-in hover:border-nofx-gold/40 transition-colors"
+            className="bg-crux-bg-lighter border border-crux-gold/20 rounded-xl p-6 animate-slide-in hover:border-crux-gold/40 transition-colors"
             style={{ animationDelay: '0.1s' }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold flex items-center gap-2 text-nofx-text">
+              <h2 className="text-lg font-bold flex items-center gap-2 text-crux-text">
                 {t('performanceComparison', language)}
               </h2>
-              <div className="text-xs text-nofx-text-muted">
+              <div className="text-xs text-crux-text-muted">
                 {t('realTimePnL', language)}
               </div>
             </div>
@@ -178,14 +178,14 @@ export function CompetitionPage() {
 
           {/* Right: Leaderboard */}
           <div
-            className="bg-nofx-bg-lighter border border-nofx-gold/20 rounded-xl p-6 animate-slide-in hover:border-nofx-gold/40 transition-colors"
+            className="bg-crux-bg-lighter border border-crux-gold/20 rounded-xl p-6 animate-slide-in hover:border-crux-gold/40 transition-colors"
             style={{ animationDelay: '0.1s' }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold flex items-center gap-2 text-nofx-text">
+              <h2 className="text-lg font-bold flex items-center gap-2 text-crux-text">
                 {t('leaderboard', language)}
               </h2>
-              <div className="text-xs px-2 py-1 rounded bg-nofx-gold/10 text-nofx-gold border border-nofx-gold/20">
+              <div className="text-xs px-2 py-1 rounded bg-crux-gold/10 text-crux-gold border border-crux-gold/20">
                 {t('live', language)}
               </div>
             </div>
@@ -351,10 +351,10 @@ export function CompetitionPage() {
         {/* Head-to-Head Stats */}
         {competition.traders.length === 2 && (
           <div
-            className="bg-nofx-bg-lighter border border-nofx-gold/20 rounded-xl p-6 animate-slide-in"
+            className="bg-crux-bg-lighter border border-crux-gold/20 rounded-xl p-6 animate-slide-in"
             style={{ animationDelay: '0.3s' }}
           >
-            <h2 className="text-lg font-bold mb-6 flex items-center gap-2 text-nofx-text">
+            <h2 className="text-lg font-bold mb-6 flex items-center gap-2 text-crux-text">
               {t('headToHead', language)}
             </h2>
             <div className="grid grid-cols-2 gap-4">

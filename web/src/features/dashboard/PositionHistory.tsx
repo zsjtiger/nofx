@@ -4,7 +4,7 @@ import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { t, type Language } from '../../shared/i18n/translations'
 import { MetricTooltip } from '../../shared/ui/MetricTooltip'
 import { formatPrice, formatQuantity } from '../../shared/utils/format'
-import { NofxSelect } from '../../shared/ui/select'
+import { CruxSelect } from '../../shared/ui/select'
 import type {
   HistoricalPosition,
   TraderStats,
@@ -117,7 +117,7 @@ function SymbolStatsRow({ stat }: { stat: SymbolStats }) {
 
   return (
     <div
-      className="flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-nofx-gold/10"
+      className="flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-crux-gold/10"
       style={{ borderBottom: '1px solid rgba(26,24,19,0.14)' }}
     >
       <div className="flex items-center gap-3">
@@ -275,7 +275,7 @@ function PositionRow({ position }: { position: HistoricalPosition }) {
 
   return (
     <tr
-      className="transition-all duration-200 hover:bg-nofx-gold/10"
+      className="transition-all duration-200 hover:bg-crux-gold/10"
       style={{ borderBottom: '1px solid rgba(26,24,19,0.14)' }}
     >
       {/* Symbol */}
@@ -755,7 +755,7 @@ export function PositionHistory({ traderId }: PositionHistoryProps) {
             <span className="text-sm" style={{ color: '#8A8478' }}>
               {t('positionHistory.symbol', language)}:
             </span>
-            <NofxSelect
+            <CruxSelect
               value={filterSymbol}
               onChange={(val) => setFilterSymbol(val)}
               options={[
@@ -805,7 +805,7 @@ export function PositionHistory({ traderId }: PositionHistoryProps) {
             <span className="text-sm" style={{ color: '#8A8478' }}>
               {t('positionHistory.sort', language)}:
             </span>
-            <NofxSelect
+            <CruxSelect
               value={`${sortBy}-${sortOrder}`}
               onChange={(val) => {
                 const [by, order] = val.split('-') as [
@@ -966,7 +966,7 @@ export function PositionHistory({ traderId }: PositionHistoryProps) {
               <span className="text-xs" style={{ color: '#8A8478' }}>
                 {language === 'zh' ? 'Per page' : 'Per page'}:
               </span>
-              <NofxSelect
+              <CruxSelect
                 value={pageSize}
                 onChange={(val) => setPageSize(Number(val))}
                 options={[

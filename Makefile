@@ -97,7 +97,7 @@ lint:
 
 clean:
 	@echo "🧹 Cleaning..."
-	rm -f server/nofx
+	rm -f server/crux server/nofx
 	rm -f server/coverage.out server/coverage.html
 	rm -rf web/dist
 	cd server && go clean -testcache

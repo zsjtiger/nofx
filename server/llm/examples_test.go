@@ -278,7 +278,7 @@ func Example_real_world_usage() {
 
 	// Use client
 	systemPrompt := "You are a professional quantitative trading advisor"
-	userPrompt := "Analyze current BTC trend"
+	userPrompt := "Analyze current AAPL trend"
 
 	result, err := client.CallWithMessages(systemPrompt, userPrompt)
 	if err != nil {

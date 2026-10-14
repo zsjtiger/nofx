@@ -8,7 +8,7 @@ export interface SelectOption {
   label: string
 }
 
-interface NofxSelectProps {
+interface CruxSelectProps {
   value: string | number
   onChange: (value: string) => void
   options: SelectOption[]
@@ -17,14 +17,14 @@ interface NofxSelectProps {
   style?: React.CSSProperties
 }
 
-export function NofxSelect({
+export function CruxSelect({
   value,
   onChange,
   options,
   disabled,
   className,
   style,
-}: NofxSelectProps) {
+}: CruxSelectProps) {
   const [open, setOpen] = useState(false)
   const triggerRef = useRef<HTMLDivElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -82,7 +82,7 @@ export function NofxSelect({
         createPortal(
           <div
             ref={dropdownRef}
-            className="fixed z-[9999] rounded border border-[rgba(26,24,19,0.14)] bg-nofx-bg-lighter shadow-xl shadow-[rgba(26,24,19,0.18)] max-h-60 overflow-y-auto"
+            className="fixed z-[9999] rounded border border-[rgba(26,24,19,0.14)] bg-crux-bg-lighter shadow-xl shadow-[rgba(26,24,19,0.18)] max-h-60 overflow-y-auto"
             style={{ top: pos.top, left: pos.left, minWidth: pos.width }}
           >
             {options.map((opt) => (

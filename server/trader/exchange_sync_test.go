@@ -42,69 +42,69 @@ func getStandardTestScenarios() []TestScenario {
 		{
 			Name: "Simple Open and Close Long",
 			Trades: []TestTrade{
-				{Action: "open_long", Side: "LONG", Symbol: "ETHUSDT", Quantity: 0.1, Price: 3500, Fee: 0.5, RealizedPnL: 0},
-				{Action: "close_long", Side: "LONG", Symbol: "ETHUSDT", Quantity: 0.1, Price: 3600, Fee: 0.5, RealizedPnL: 10},
+				{Action: "open_long", Side: "LONG", Symbol: "MSFT", Quantity: 0.1, Price: 3500, Fee: 0.5, RealizedPnL: 0},
+				{Action: "close_long", Side: "LONG", Symbol: "MSFT", Quantity: 0.1, Price: 3600, Fee: 0.5, RealizedPnL: 10},
 			},
 			ExpectedPos: []ExpectedPosition{}, // Should be fully closed
 		},
 		{
 			Name: "Simple Open and Close Short",
 			Trades: []TestTrade{
-				{Action: "open_short", Side: "SHORT", Symbol: "ETHUSDT", Quantity: 0.1, Price: 3500, Fee: 0.5, RealizedPnL: 0},
-				{Action: "close_short", Side: "SHORT", Symbol: "ETHUSDT", Quantity: 0.1, Price: 3400, Fee: 0.5, RealizedPnL: 10},
+				{Action: "open_short", Side: "SHORT", Symbol: "MSFT", Quantity: 0.1, Price: 3500, Fee: 0.5, RealizedPnL: 0},
+				{Action: "close_short", Side: "SHORT", Symbol: "MSFT", Quantity: 0.1, Price: 3400, Fee: 0.5, RealizedPnL: 10},
 			},
 			ExpectedPos: []ExpectedPosition{},
 		},
 		{
 			Name: "Position Averaging",
 			Trades: []TestTrade{
-				{Action: "open_long", Side: "LONG", Symbol: "BTCUSDT", Quantity: 0.01, Price: 50000, Fee: 1.0, RealizedPnL: 0},
-				{Action: "open_long", Side: "LONG", Symbol: "BTCUSDT", Quantity: 0.01, Price: 51000, Fee: 1.0, RealizedPnL: 0},
-				{Action: "close_long", Side: "LONG", Symbol: "BTCUSDT", Quantity: 0.02, Price: 52000, Fee: 2.0, RealizedPnL: 30},
+				{Action: "open_long", Side: "LONG", Symbol: "AAPL", Quantity: 0.01, Price: 50000, Fee: 1.0, RealizedPnL: 0},
+				{Action: "open_long", Side: "LONG", Symbol: "AAPL", Quantity: 0.01, Price: 51000, Fee: 1.0, RealizedPnL: 0},
+				{Action: "close_long", Side: "LONG", Symbol: "AAPL", Quantity: 0.02, Price: 52000, Fee: 2.0, RealizedPnL: 30},
 			},
 			ExpectedPos: []ExpectedPosition{},
 		},
 		{
 			Name: "Partial Close",
 			Trades: []TestTrade{
-				{Action: "open_long", Side: "LONG", Symbol: "SOLUSDT", Quantity: 10, Price: 100, Fee: 2.0, RealizedPnL: 0},
-				{Action: "close_long", Side: "LONG", Symbol: "SOLUSDT", Quantity: 3, Price: 105, Fee: 0.6, RealizedPnL: 15},
+				{Action: "open_long", Side: "LONG", Symbol: "NVDA", Quantity: 10, Price: 100, Fee: 2.0, RealizedPnL: 0},
+				{Action: "close_long", Side: "LONG", Symbol: "NVDA", Quantity: 3, Price: 105, Fee: 0.6, RealizedPnL: 15},
 			},
 			ExpectedPos: []ExpectedPosition{
-				{Symbol: "SOLUSDT", Side: "LONG", Quantity: 7, Status: "OPEN"},
+				{Symbol: "NVDA", Side: "LONG", Quantity: 7, Status: "OPEN"},
 			},
 		},
 		{
 			Name: "Multiple Symbols",
 			Trades: []TestTrade{
-				{Action: "open_long", Side: "LONG", Symbol: "ETHUSDT", Quantity: 0.1, Price: 3500, Fee: 0.5, RealizedPnL: 0},
-				{Action: "open_short", Side: "SHORT", Symbol: "BTCUSDT", Quantity: 0.01, Price: 50000, Fee: 1.0, RealizedPnL: 0},
-				{Action: "close_long", Side: "LONG", Symbol: "ETHUSDT", Quantity: 0.1, Price: 3600, Fee: 0.5, RealizedPnL: 10},
+				{Action: "open_long", Side: "LONG", Symbol: "MSFT", Quantity: 0.1, Price: 3500, Fee: 0.5, RealizedPnL: 0},
+				{Action: "open_short", Side: "SHORT", Symbol: "AAPL", Quantity: 0.01, Price: 50000, Fee: 1.0, RealizedPnL: 0},
+				{Action: "close_long", Side: "LONG", Symbol: "MSFT", Quantity: 0.1, Price: 3600, Fee: 0.5, RealizedPnL: 10},
 			},
 			ExpectedPos: []ExpectedPosition{
-				{Symbol: "BTCUSDT", Side: "SHORT", Quantity: 0.01, Status: "OPEN"},
+				{Symbol: "AAPL", Side: "SHORT", Quantity: 0.01, Status: "OPEN"},
 			},
 		},
 		{
 			Name: "Bug Scenario - Short then BUY to Close",
 			Trades: []TestTrade{
 				// This tests the exact bug we fixed
-				{Action: "open_short", Side: "SHORT", Symbol: "ETHUSDT", Quantity: 0.0472, Price: 3500, Fee: 0.2, RealizedPnL: 0},
-				{Action: "close_short", Side: "SHORT", Symbol: "ETHUSDT", Quantity: 0.0472, Price: 3400, Fee: 0.2, RealizedPnL: 4.72},
+				{Action: "open_short", Side: "SHORT", Symbol: "MSFT", Quantity: 0.0472, Price: 3500, Fee: 0.2, RealizedPnL: 0},
+				{Action: "close_short", Side: "SHORT", Symbol: "MSFT", Quantity: 0.0472, Price: 3400, Fee: 0.2, RealizedPnL: 4.72},
 			},
 			ExpectedPos: []ExpectedPosition{}, // Must be fully closed!
 		},
 		{
 			Name: "Multiple Opens and Closes",
 			Trades: []TestTrade{
-				{Action: "open_long", Side: "LONG", Symbol: "ETHUSDT", Quantity: 0.1, Price: 3500, Fee: 0.5, RealizedPnL: 0},
-				{Action: "close_long", Side: "LONG", Symbol: "ETHUSDT", Quantity: 0.1, Price: 3600, Fee: 0.5, RealizedPnL: 10},
-				{Action: "open_short", Side: "SHORT", Symbol: "ETHUSDT", Quantity: 0.05, Price: 3600, Fee: 0.3, RealizedPnL: 0},
-				{Action: "close_short", Side: "SHORT", Symbol: "ETHUSDT", Quantity: 0.05, Price: 3500, Fee: 0.3, RealizedPnL: 5},
-				{Action: "open_long", Side: "LONG", Symbol: "ETHUSDT", Quantity: 0.2, Price: 3550, Fee: 1.0, RealizedPnL: 0},
+				{Action: "open_long", Side: "LONG", Symbol: "MSFT", Quantity: 0.1, Price: 3500, Fee: 0.5, RealizedPnL: 0},
+				{Action: "close_long", Side: "LONG", Symbol: "MSFT", Quantity: 0.1, Price: 3600, Fee: 0.5, RealizedPnL: 10},
+				{Action: "open_short", Side: "SHORT", Symbol: "MSFT", Quantity: 0.05, Price: 3600, Fee: 0.3, RealizedPnL: 0},
+				{Action: "close_short", Side: "SHORT", Symbol: "MSFT", Quantity: 0.05, Price: 3500, Fee: 0.3, RealizedPnL: 5},
+				{Action: "open_long", Side: "LONG", Symbol: "MSFT", Quantity: 0.2, Price: 3550, Fee: 1.0, RealizedPnL: 0},
 			},
 			ExpectedPos: []ExpectedPosition{
-				{Symbol: "ETHUSDT", Side: "LONG", Quantity: 0.2, Status: "OPEN"},
+				{Symbol: "MSFT", Side: "LONG", Quantity: 0.2, Status: "OPEN"},
 			},
 		},
 	}
@@ -190,7 +190,7 @@ func runStandardTests(t *testing.T, exchangeName string) {
 
 // TestAllExchangesStandardScenarios runs standard scenarios for all exchanges
 func TestAllExchangesStandardScenarios(t *testing.T) {
-	exchanges := []string{"hyperliquid", "binance", "bybit", "okx", "bitget", "aster", "lighter"}
+	exchanges := []string{"alpaca_paper", "cn_paper"}
 
 	for _, exchange := range exchanges {
 		t.Run(exchange, func(t *testing.T) {
@@ -217,7 +217,7 @@ func TestPositionAccumulationBug(t *testing.T) {
 
 	traderID := "test-trader"
 	exchangeID := "test-exchange"
-	exchangeType := "hyperliquid"
+	exchangeType := "alpaca_paper"
 
 	// Simulate many trades that should cancel out
 	// This tests that we don't accumulate positions incorrectly
@@ -225,7 +225,7 @@ func TestPositionAccumulationBug(t *testing.T) {
 		// Open Long
 		err := posBuilder.ProcessTrade(
 			traderID, exchangeID, exchangeType,
-			"ETHUSDT", "LONG", "open_long",
+			"MSFT", "LONG", "open_long",
 			0.1, 3500+float64(i*10), 0.5, 0,
 			time.Now().Add(time.Duration(i*2)*time.Second).UnixMilli(),
 			"",
@@ -237,7 +237,7 @@ func TestPositionAccumulationBug(t *testing.T) {
 		// Close Long
 		err = posBuilder.ProcessTrade(
 			traderID, exchangeID, exchangeType,
-			"ETHUSDT", "LONG", "close_long",
+			"MSFT", "LONG", "close_long",
 			0.1, 3600+float64(i*10), 0.5, 10,
 			time.Now().Add(time.Duration(i*2+1)*time.Second).UnixMilli(),
 			"",
@@ -307,7 +307,7 @@ func TestQuantityPrecision(t *testing.T) {
 	// Open position
 	err = posBuilder.ProcessTrade(
 		traderID, exchangeID, exchangeType,
-		"BTCUSDT", "LONG", "open_long",
+		"AAPL", "LONG", "open_long",
 		0.01, 50000, 1.0, 0,
 		time.Now().UnixMilli(),
 		"",
@@ -320,7 +320,7 @@ func TestQuantityPrecision(t *testing.T) {
 	// Should still close fully within tolerance
 	err = posBuilder.ProcessTrade(
 		traderID, exchangeID, exchangeType,
-		"BTCUSDT", "LONG", "close_long",
+		"AAPL", "LONG", "close_long",
 		0.00999999, 51000, 1.0, 10,
 		time.Now().Add(time.Second).UnixMilli(),
 		"",

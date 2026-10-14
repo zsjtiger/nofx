@@ -73,8 +73,8 @@ export function WebCryptoEnvironmentCheck({
 
   const isCompact = variant === 'compact'
   const containerClass = isCompact
-    ? 'p-3 rounded border border-[rgba(26,24,19,0.14)] bg-nofx-bg-lighter space-y-3'
-    : 'p-4 rounded border border-[rgba(26,24,19,0.14)] bg-nofx-bg-lighter space-y-4'
+    ? 'p-3 rounded border border-[rgba(26,24,19,0.14)] bg-crux-bg-lighter space-y-3'
+    : 'p-4 rounded border border-[rgba(26,24,19,0.14)] bg-crux-bg-lighter space-y-4'
 
   const descriptionColor = isCompact ? '#8A8478' : '#8A8478'
   const showInfo = status !== 'idle'
@@ -122,7 +122,7 @@ export function WebCryptoEnvironmentCheck({
       </div>
     ),
     disabled: () => (
-      <div className="flex items-start gap-2 text-nofx-text-muted text-xs">
+      <div className="flex items-start gap-2 text-crux-text-muted text-xs">
         <ShieldMinus className="w-4 h-4 flex-shrink-0" />
         <div>
           <div className="font-semibold">

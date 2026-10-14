@@ -465,8 +465,8 @@ func TestClient_CallWithRequest_MultiRound(t *testing.T) {
 	// Build multi-round conversation
 	request := NewRequestBuilder().
 		AddSystemMessage("You are a trading advisor").
-		AddUserMessage("Analyze BTC").
-		AddAssistantMessage("BTC is bullish").
+		AddUserMessage("Analyze AAPL").
+		AddAssistantMessage("AAPL is bullish").
 		AddUserMessage("What about entry point?").
 		WithTemperature(0.3).
 		MustBuild()

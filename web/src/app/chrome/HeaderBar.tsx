@@ -80,9 +80,9 @@ export default function HeaderBar({
               border: '1px solid rgba(26,24,19,0.12)',
             }}
           >
-            <img src="/icons/nofx.svg" alt="Crux Logo" className="w-8 h-8" />
+            <img src="/icons/crux.svg" alt="Crux Logo" className="w-8 h-8" />
           </span>
-          <span className="text-lg font-bold text-nofx-gold tracking-wide">
+          <span className="text-lg font-bold text-crux-gold tracking-wide">
             Crux
           </span>
         </div>
@@ -155,14 +155,14 @@ export default function HeaderBar({
                       key={tab.page}
                       onClick={() => handleNavClick(tab)}
                       className={`shrink-0 whitespace-nowrap text-xs 2xl:text-sm font-bold transition-all duration-300 relative focus:outline-2 focus:outline-yellow-500 px-1.5 xl:px-2 2xl:px-3 py-2 rounded-lg
-                    ${resolvedCurrentPage === tab.page ? 'text-nofx-gold' : 'text-nofx-text-muted hover:text-nofx-gold'}`}
+                    ${resolvedCurrentPage === tab.page ? 'text-crux-gold' : 'text-crux-text-muted hover:text-crux-gold'}`}
                     >
                       {resolvedCurrentPage === tab.page && (
-                        <span className="absolute inset-0 rounded-lg bg-nofx-gold/15 -z-10" />
+                        <span className="absolute inset-0 rounded-lg bg-crux-gold/15 -z-10" />
                       )}
                       {tab.label}
                       {tab.badge && (
-                        <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-nofx-gold/20 text-nofx-gold font-semibold uppercase align-top relative -top-1">
+                        <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-crux-gold/20 text-crux-gold font-semibold uppercase align-top relative -top-1">
                           {tab.badge}
                         </span>
                       )}
@@ -186,7 +186,7 @@ export default function HeaderBar({
                 href={OFFICIAL_LINKS.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg transition-all hover:scale-110 text-nofx-text-muted hover:text-nofx-text hover:bg-[rgba(26,24,19,0.06)]"
+                className="p-2 rounded-lg transition-all hover:scale-110 text-crux-text-muted hover:text-crux-text hover:bg-[rgba(26,24,19,0.06)]"
                 title="GitHub"
               >
                 <svg
@@ -213,24 +213,24 @@ export default function HeaderBar({
                 <div className="relative" ref={userDropdownRef}>
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center gap-2 px-3 py-2 rounded transition-colors bg-nofx-bg-lighter border border-nofx-gold/20 hover:bg-[rgba(26,24,19,0.06)]"
+                    className="flex items-center gap-2 px-3 py-2 rounded transition-colors bg-crux-bg-lighter border border-crux-gold/20 hover:bg-[rgba(26,24,19,0.06)]"
                   >
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-nofx-gold text-white">
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-crux-gold text-white">
                       {user.email[0].toUpperCase()}
                     </div>
-                    <span className="hidden text-sm text-nofx-text-muted 2xl:inline">
+                    <span className="hidden text-sm text-crux-text-muted 2xl:inline">
                       {user.email}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-nofx-text-muted" />
+                    <ChevronDown className="w-4 h-4 text-crux-text-muted" />
                   </button>
 
                   {userDropdownOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg overflow-hidden z-50 bg-nofx-bg-lighter border border-nofx-gold/20">
-                      <div className="px-3 py-2 border-b border-nofx-gold/20">
-                        <div className="text-xs text-nofx-text-muted">
+                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg overflow-hidden z-50 bg-crux-bg-lighter border border-crux-gold/20">
+                      <div className="px-3 py-2 border-b border-crux-gold/20">
+                        <div className="text-xs text-crux-text-muted">
                           {t('loggedInAs', language)}
                         </div>
-                        <div className="text-sm font-medium text-nofx-text-muted">
+                        <div className="text-sm font-medium text-crux-text-muted">
                           {user.email}
                         </div>
                       </div>
@@ -239,7 +239,7 @@ export default function HeaderBar({
                           navigateInApp(ROUTES.settings)
                           setUserDropdownOpen(false)
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-[rgba(26,24,19,0.06)] text-nofx-text-muted hover:text-nofx-text"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-[rgba(26,24,19,0.06)] text-crux-text-muted hover:text-crux-text"
                       >
                         <Settings className="w-3.5 h-3.5" />
                         Settings
@@ -251,7 +251,7 @@ export default function HeaderBar({
                             onLogout()
                             setUserDropdownOpen(false)
                           }}
-                          className="w-full px-3 py-2 text-sm font-semibold transition-colors hover:opacity-80 text-center bg-nofx-danger/20 text-nofx-danger"
+                          className="w-full px-3 py-2 text-sm font-semibold transition-colors hover:opacity-80 text-center bg-crux-danger/20 text-crux-danger"
                         >
                           {t('exitLogin', language)}
                         </button>
@@ -268,7 +268,7 @@ export default function HeaderBar({
                   <button
                     type="button"
                     onClick={() => navigateInApp(ROUTES.login)}
-                    className="px-3 py-2 text-sm font-medium transition-colors rounded text-nofx-text-muted hover:text-nofx-text"
+                    className="px-3 py-2 text-sm font-medium transition-colors rounded text-crux-text-muted hover:text-crux-text"
                   >
                     {t('signIn', language)}
                   </button>
@@ -283,7 +283,7 @@ export default function HeaderBar({
         {/* Mobile Menu Button */}
         <motion.button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="shrink-0 text-nofx-text-muted hover:text-nofx-text lg:hidden"
+          className="shrink-0 text-crux-text-muted hover:text-crux-text lg:hidden"
           aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
           whileTap={{ scale: 0.9 }}
         >
@@ -389,17 +389,17 @@ export default function HeaderBar({
                         transition={{ delay: 0.1 + i * 0.05 }}
                         onClick={() => handleMobileNavClick(tab)}
                         className={`text-2xl font-black tracking-tight text-left flex items-center gap-3
-                        ${resolvedCurrentPage === tab.page ? 'text-nofx-gold' : 'text-zinc-500'}`}
+                        ${resolvedCurrentPage === tab.page ? 'text-crux-gold' : 'text-zinc-500'}`}
                       >
                         {resolvedCurrentPage === tab.page && (
                           <motion.div
                             layoutId="active-indicator"
-                            className="w-1.5 h-1.5 rounded-full bg-nofx-gold"
+                            className="w-1.5 h-1.5 rounded-full bg-crux-gold"
                           />
                         )}
                         {tab.label}
                         {tab.badge && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-nofx-gold/20 text-nofx-gold font-semibold uppercase align-middle relative -top-1">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-crux-gold/20 text-crux-gold font-semibold uppercase align-middle relative -top-1">
                             {tab.badge}
                           </span>
                         )}
@@ -452,7 +452,7 @@ export default function HeaderBar({
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-nofx-gold hover:border-nofx-gold transition-colors"
+                      className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-crux-gold hover:border-crux-gold transition-colors"
                     >
                       <svg
                         width="20"
@@ -488,7 +488,7 @@ export default function HeaderBar({
                           navigateInApp(ROUTES.login)
                           setMobileMenuOpen(false)
                         }}
-                        className="flex items-center justify-center bg-nofx-gold text-white rounded-lg font-bold text-sm hover:opacity-90 transition-colors"
+                        className="flex items-center justify-center bg-crux-gold text-white rounded-lg font-bold text-sm hover:opacity-90 transition-colors"
                       >
                         {t('signIn', language)}
                       </button>

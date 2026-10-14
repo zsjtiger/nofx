@@ -8,25 +8,25 @@ export default {
     extend: {
       colors: {
         // Cream-paper + vermilion terminal palette (was Neo-Gold dark)
-        'nofx-gold': {
+        'crux-gold': {
           DEFAULT: '#E0483B', // vermilion brand accent
           dim: 'rgba(224, 72, 59, 0.10)',
           glow: 'rgba(224, 72, 59, 0.30)',
           highlight: '#C8392B',
         },
-        'nofx-bg': {
+        'crux-bg': {
           DEFAULT: '#F1ECE2', // warm paper
           deeper: '#E8E2D5',  // recessed paper
           lighter: '#F7F4EC', // panel
         },
-        'nofx-accent': '#E0483B', // vermilion (was cyan)
-        'nofx-text': {
+        'crux-accent': '#E0483B', // vermilion (was cyan)
+        'crux-text': {
           DEFAULT: '#1A1813', // ink
           main: '#1A1813',
           muted: '#8A8478',
         },
-        'nofx-success': '#2E8B57', // forest green
-        'nofx-danger': '#D6433A',  // crimson
+        'crux-success': '#2E8B57', // forest green
+        'crux-danger': '#D6433A',  // crimson
       },
       fontFamily: {
         sans: ['IBM Plex Mono', 'ui-monospace', 'Menlo', 'monospace'],
@@ -69,8 +69,8 @@ export default {
         },
       },
       boxShadow: {
-        'neon': '0 0 5px theme("colors.nofx-gold.DEFAULT"), 0 0 20px theme("colors.nofx-gold.dim")',
-        'neon-blue': '0 0 5px theme("colors.nofx-accent"), 0 0 20px rgba(0, 240, 255, 0.2)',
+        'neon': '0 0 5px theme("colors.crux-gold.DEFAULT"), 0 0 20px theme("colors.crux-gold.dim")',
+        'neon-blue': '0 0 5px theme("colors.crux-accent"), 0 0 20px rgba(0, 240, 255, 0.2)',
       },
     },
   },

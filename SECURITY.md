@@ -171,14 +171,13 @@ iptables -A INPUT -p tcp --dport 8080 -j DROP
 ```
 
 ### 4. Use Subaccounts
-- Create dedicated Binance subaccount for trading
+- Create a dedicated sub-account for trading, where your broker supports it
 - Limit maximum balance
 - Restrict withdrawal permissions
 - Use IP whitelist
 
 ### 5. Test on Testnet First
-- Hyperliquid: Use testnet mode
-- Binance: Use testnet API (https://testnet.binancefuture.com)
+- Alpaca: use the paper-trading account (https://paper-api.alpaca.markets) for all testing
 - Never test with real funds initially
 
 ### 6. Regular Updates
@@ -221,7 +220,6 @@ We thank the following security researchers for responsibly disclosing vulnerabi
 **Security Documentation:**
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [CWE Top 25](https://cwe.mitre.org/top25/)
-- [Binance API Security Best Practices](https://www.binance.com/en/support/faq/360002502072)
 
 **Audit Reports:**
 - No third-party audits completed yet
@@ -410,14 +408,13 @@ iptables -A INPUT -p tcp --dport 8080 -j DROP
 ```
 
 ### 4. 使用子账户
-- 为交易创建专用的 Binance 子账户
+- 如券商支持，为交易创建专用子账户
 - 限制最大余额
 - 限制提现权限
 - 使用 IP 白名单
 
 ### 5. 先在测试网上测试
-- Hyperliquid：使用测试网模式
-- Binance：使用测试网 API (https://testnet.binancefuture.com)
+- Alpaca：测试时使用模拟盘账户 (https://paper-api.alpaca.markets)
 - 最初永远不要用真实资金测试
 
 ### 6. 定期更新

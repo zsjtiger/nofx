@@ -43,7 +43,7 @@ export function ConfigStatusGrid({
       return {
         label: language === 'zh' ? 'NOT CHECKED' : 'NOT CHECKED',
         className:
-          'text-nofx-text-muted border-[rgba(26,24,19,0.14)] bg-nofx-bg-deeper',
+          'text-crux-text-muted border-[rgba(26,24,19,0.14)] bg-crux-bg-deeper',
       }
     }
 
@@ -52,34 +52,34 @@ export function ConfigStatusGrid({
         return {
           label: state.display_balance || '0',
           className:
-            'text-nofx-success border-nofx-success/20 bg-nofx-success/10',
+            'text-crux-success border-crux-success/20 bg-crux-success/10',
         }
       case 'disabled':
         return {
           label: language === 'zh' ? 'DISABLED' : 'DISABLED',
           className:
-            'text-nofx-text-muted border-[rgba(26,24,19,0.14)] bg-nofx-bg-deeper',
+            'text-crux-text-muted border-[rgba(26,24,19,0.14)] bg-crux-bg-deeper',
         }
       case 'missing_credentials':
         return {
           label: language === 'zh' ? 'INCOMPLETE' : 'INCOMPLETE',
-          className: 'text-nofx-gold border-nofx-gold/20 bg-nofx-gold/10',
+          className: 'text-crux-gold border-crux-gold/20 bg-crux-gold/10',
         }
       case 'invalid_credentials':
         return {
           label: language === 'zh' ? 'INVALID KEYS' : 'INVALID KEYS',
-          className: 'text-nofx-danger border-nofx-danger/20 bg-nofx-danger/10',
+          className: 'text-crux-danger border-crux-danger/20 bg-crux-danger/10',
         }
       case 'permission_denied':
         return {
           label: language === 'zh' ? 'NO PERMISSION' : 'NO PERMISSION',
-          className: 'text-nofx-gold border-nofx-gold/20 bg-nofx-gold/10',
+          className: 'text-crux-gold border-crux-gold/20 bg-crux-gold/10',
         }
       default:
         return {
           label: language === 'zh' ? 'UNAVAILABLE' : 'UNAVAILABLE',
           className:
-            'text-nofx-text-muted border-[rgba(26,24,19,0.14)] bg-nofx-bg-deeper',
+            'text-crux-text-muted border-[rgba(26,24,19,0.14)] bg-crux-bg-deeper',
         }
     }
   }
@@ -87,10 +87,10 @@ export function ConfigStatusGrid({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* AI Models Card */}
-      <div className="bg-nofx-bg-lighter rounded-lg border border-[rgba(26,24,19,0.14)] overflow-hidden">
-        <div className="px-4 py-3 border-b border-[rgba(26,24,19,0.14)] bg-nofx-bg-deeper flex items-center gap-2">
-          <Brain className="w-4 h-4 text-nofx-gold" />
-          <h3 className="text-sm font-mono tracking-widest text-nofx-text uppercase">
+      <div className="bg-crux-bg-lighter rounded-lg border border-[rgba(26,24,19,0.14)] overflow-hidden">
+        <div className="px-4 py-3 border-b border-[rgba(26,24,19,0.14)] bg-crux-bg-deeper flex items-center gap-2">
+          <Brain className="w-4 h-4 text-crux-gold" />
+          <h3 className="text-sm font-mono tracking-widest text-crux-text uppercase">
             {t('aiModels', language)}
           </h3>
         </div>
@@ -103,7 +103,7 @@ export function ConfigStatusGrid({
                 key={model.id}
                 role="button"
                 tabIndex={0}
-                className="group relative flex cursor-pointer items-center justify-between rounded-md border border-transparent bg-nofx-bg-deeper p-3 transition-all hover:border-nofx-gold/20 hover:bg-nofx-bg"
+                className="group relative flex cursor-pointer items-center justify-between rounded-md border border-transparent bg-crux-bg-deeper p-3 transition-all hover:border-crux-gold/20 hover:bg-crux-bg"
                 onClick={() => onModelClick(model.id)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
@@ -114,12 +114,12 @@ export function ConfigStatusGrid({
               >
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-nofx-bg border border-[rgba(26,24,19,0.14)] relative z-10">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-crux-bg border border-[rgba(26,24,19,0.14)] relative z-10">
                       {getModelIcon(model.provider || model.id, {
                         width: 20,
                         height: 20,
                       }) || (
-                        <span className="text-xs font-bold text-nofx-accent">
+                        <span className="text-xs font-bold text-crux-accent">
                           {getShortName(model.name)[0]}
                         </span>
                       )}
@@ -127,10 +127,10 @@ export function ConfigStatusGrid({
                   </div>
 
                   <div className="min-w-0">
-                    <div className="font-mono text-sm text-nofx-text group-hover:text-nofx-gold transition-colors">
+                    <div className="font-mono text-sm text-crux-text group-hover:text-crux-gold transition-colors">
                       {getShortName(model.name)}
                     </div>
-                    <div className="text-[10px] text-nofx-text-muted font-mono flex items-center gap-2">
+                    <div className="text-[10px] text-crux-text-muted font-mono flex items-center gap-2">
                       {model.customModelName ||
                         AI_PROVIDER_CONFIG[model.provider]?.defaultModel ||
                         ''}
@@ -143,14 +143,14 @@ export function ConfigStatusGrid({
                     <span
                       className={`text-[10px] font-mono px-2 py-1 rounded border ${
                         usageInfo.runningCount > 0
-                          ? 'bg-nofx-success/10 border-nofx-success/30 text-nofx-success'
-                          : 'bg-nofx-gold/10 border-nofx-gold/30 text-nofx-gold'
+                          ? 'bg-crux-success/10 border-crux-success/30 text-crux-success'
+                          : 'bg-crux-gold/10 border-crux-gold/30 text-crux-gold'
                       }`}
                     >
                       {usageInfo.runningCount}/{usageInfo.totalCount} ACTIVE
                     </span>
                   ) : (
-                    <span className="text-[10px] font-mono text-nofx-text-muted uppercase tracking-wider">
+                    <span className="text-[10px] font-mono text-crux-text-muted uppercase tracking-wider">
                       {language === 'zh' ? 'STANDBY' : 'STANDBY'}
                     </span>
                   )}
@@ -160,9 +160,9 @@ export function ConfigStatusGrid({
           })}
 
           {configuredModels.length === 0 && (
-            <div className="text-center py-10 border border-dashed border-[rgba(26,24,19,0.14)] rounded-lg bg-nofx-bg-deeper">
-              <Brain className="w-8 h-8 mx-auto mb-3 text-nofx-text-muted" />
-              <div className="text-xs font-mono text-nofx-text-muted uppercase tracking-widest">
+            <div className="text-center py-10 border border-dashed border-[rgba(26,24,19,0.14)] rounded-lg bg-crux-bg-deeper">
+              <Brain className="w-8 h-8 mx-auto mb-3 text-crux-text-muted" />
+              <div className="text-xs font-mono text-crux-text-muted uppercase tracking-widest">
                 {t('noModelsConfigured', language)}
               </div>
             </div>
@@ -171,10 +171,10 @@ export function ConfigStatusGrid({
       </div>
 
       {/* Exchanges Card */}
-      <div className="bg-nofx-bg-lighter rounded-lg border border-[rgba(26,24,19,0.14)] overflow-hidden">
-        <div className="px-4 py-3 border-b border-[rgba(26,24,19,0.14)] bg-nofx-bg-deeper flex items-center gap-2">
-          <Landmark className="w-4 h-4 text-nofx-gold" />
-          <h3 className="text-sm font-mono tracking-widest text-nofx-text uppercase">
+      <div className="bg-crux-bg-lighter rounded-lg border border-[rgba(26,24,19,0.14)] overflow-hidden">
+        <div className="px-4 py-3 border-b border-[rgba(26,24,19,0.14)] bg-crux-bg-deeper flex items-center gap-2">
+          <Landmark className="w-4 h-4 text-crux-gold" />
+          <h3 className="text-sm font-mono tracking-widest text-crux-text uppercase">
             {t('exchanges', language)}
           </h3>
         </div>
@@ -189,7 +189,7 @@ export function ConfigStatusGrid({
                 key={exchange.id}
                 role="button"
                 tabIndex={0}
-                className="group relative flex cursor-pointer items-center justify-between rounded-md border border-transparent bg-nofx-bg-deeper p-3 transition-all hover:border-nofx-gold/20 hover:bg-nofx-bg"
+                className="group relative flex cursor-pointer items-center justify-between rounded-md border border-transparent bg-crux-bg-deeper p-3 transition-all hover:border-crux-gold/20 hover:bg-crux-bg"
                 onClick={() => onExchangeClick(exchange.id)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
@@ -200,7 +200,7 @@ export function ConfigStatusGrid({
               >
                 <div className="flex items-center gap-4 min-w-0">
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-nofx-bg border border-[rgba(26,24,19,0.14)] relative z-10">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-crux-bg border border-[rgba(26,24,19,0.14)] relative z-10">
                       {getExchangeIcon(exchange.exchange_type || exchange.id, {
                         width: 20,
                         height: 20,
@@ -209,14 +209,14 @@ export function ConfigStatusGrid({
                   </div>
 
                   <div className="min-w-0">
-                    <div className="font-mono text-sm text-nofx-text group-hover:text-nofx-gold transition-colors truncate">
+                    <div className="font-mono text-sm text-crux-text group-hover:text-crux-gold transition-colors truncate">
                       {exchange.exchange_type?.toUpperCase() ||
                         getShortName(exchange.name)}
-                      <span className="text-[10px] text-nofx-text-muted ml-2 border border-[rgba(26,24,19,0.14)] px-1 rounded">
+                      <span className="text-[10px] text-crux-text-muted ml-2 border border-[rgba(26,24,19,0.14)] px-1 rounded">
                         {exchange.account_name || 'DEFAULT'}
                       </span>
                     </div>
-                    <div className="text-[10px] text-nofx-text-muted font-mono flex items-center gap-2">
+                    <div className="text-[10px] text-crux-text-muted font-mono flex items-center gap-2">
                       {exchange.type?.toUpperCase() || 'CEX'}
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] font-mono">
@@ -230,7 +230,7 @@ export function ConfigStatusGrid({
                           : stateMeta.label}
                       </span>
                       {state?.status !== 'ok' && state?.error_message ? (
-                        <span className="text-nofx-text-muted truncate max-w-[220px]">
+                        <span className="text-crux-text-muted truncate max-w-[220px]">
                           {state.error_message}
                         </span>
                       ) : null}
@@ -243,14 +243,14 @@ export function ConfigStatusGrid({
                     <span
                       className={`text-[10px] font-mono px-2 py-1 rounded border ${
                         usageInfo.runningCount > 0
-                          ? 'bg-nofx-success/10 border-nofx-success/30 text-nofx-success'
-                          : 'bg-nofx-gold/10 border-nofx-gold/30 text-nofx-gold'
+                          ? 'bg-crux-success/10 border-crux-success/30 text-crux-success'
+                          : 'bg-crux-gold/10 border-crux-gold/30 text-crux-gold'
                       }`}
                     >
                       {usageInfo.runningCount}/{usageInfo.totalCount} ACTIVE
                     </span>
                   ) : (
-                    <span className="text-[10px] font-mono text-nofx-text-muted uppercase tracking-wider">
+                    <span className="text-[10px] font-mono text-crux-text-muted uppercase tracking-wider">
                       {language === 'zh' ? 'STANDBY' : 'STANDBY'}
                     </span>
                   )}
@@ -259,9 +259,9 @@ export function ConfigStatusGrid({
             )
           })}
           {configuredExchanges.length === 0 && (
-            <div className="text-center py-10 border border-dashed border-[rgba(26,24,19,0.14)] rounded-lg bg-nofx-bg-deeper">
-              <Landmark className="w-8 h-8 mx-auto mb-3 text-nofx-text-muted" />
-              <div className="text-xs font-mono text-nofx-text-muted uppercase tracking-widest">
+            <div className="text-center py-10 border border-dashed border-[rgba(26,24,19,0.14)] rounded-lg bg-crux-bg-deeper">
+              <Landmark className="w-8 h-8 mx-auto mb-3 text-crux-text-muted" />
+              <div className="text-xs font-mono text-crux-text-muted uppercase tracking-widest">
                 {t('noExchangesConfigured', language)}
               </div>
             </div>

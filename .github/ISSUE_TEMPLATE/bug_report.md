@@ -102,9 +102,8 @@ Paste backend logs here (last 50-100 lines around the error)
 - **Node.js Version:** [run: `node -v`]
 
 **Trading Setup:**
-- **Exchange:** [Binance / Hyperliquid / Aster]
+- **Broker:** [Alpaca Paper / CN Paper]
 - **Account Type:** [Main Account / Subaccount]
-- **Position Mode:** [Hedge Mode (Dual) / One-way Mode] ← **Important for trading bugs!**
 - **AI Model:** [DeepSeek / Qwen / Custom]
 - **Number of Traders:** [e.g. 1, 2, etc.]
 
@@ -112,11 +111,10 @@ Paste backend logs here (last 50-100 lines around the error)
 <!-- Only include non-sensitive parts of your config -->
 <!-- ⚠️ NEVER paste API keys or private keys! -->
 
-**Leverage Settings:**
+**Strategy Settings:**
 ```json
 {
-  "btc_eth_leverage": 5,
-  "altcoin_leverage": 5
+  "max_position_value_ratio": 1.0
 }
 ```
 
@@ -152,8 +150,7 @@ Paste backend logs here (last 50-100 lines around the error)
 ## 📝 Quick Tips for Faster Resolution
 
 **For Trading Issues:**
-1. ✅ Check Binance position mode: Go to Futures → ⚙️ Preferences → Position Mode → Must be **Hedge Mode**
-2. ✅ Verify API permissions: Futures trading must be enabled
+1. ✅ Verify the Alpaca API key has trading permission and the account is the paper account
 3. ✅ Check decision logs in `decision_logs/{trader_id}/` for AI reasoning
 
 **For Connection Issues:**

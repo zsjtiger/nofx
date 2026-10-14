@@ -17,14 +17,14 @@ export function RegistrationDisabled() {
     >
       <div className="text-center max-w-md px-6">
         <img
-          src="/icons/nofx.svg"
+          src="/icons/crux.svg"
           alt="Crux Logo"
           className="w-16 h-16 mx-auto mb-4"
         />
         <h1 className="text-2xl font-semibold mb-3">
           {t('registrationClosed', language)}
         </h1>
-        <p className="text-sm text-nofx-text-muted">
+        <p className="text-sm text-crux-text-muted">
           {t('registrationClosedMessage', language)}
         </p>
         <button

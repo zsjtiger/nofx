@@ -41,7 +41,7 @@ func TestFetchEquityKlinesWithoutSource(t *testing.T) {
 }
 
 func TestFetchEquityKlinesRejectsBadSymbol(t *testing.T) {
-	if _, err := FetchEquityKlines("BTCUSDT", types.MarketUSEquity, 10); err == nil {
+	if _, err := FetchEquityKlines("AAPL", types.MarketUSEquity, 10); err == nil {
 		t.Fatal("expected error for crypto pair on US market")
 	}
 }

@@ -16,7 +16,7 @@ function InlineText({ text }: { text: string }) {
         part.startsWith('`') && part.endsWith('`') ? (
           <code
             key={i}
-            className="rounded bg-nofx-bg-deeper border border-[rgba(26,24,19,0.10)] px-1.5 py-0.5 font-mono text-[0.85em] text-nofx-text break-all"
+            className="rounded bg-crux-bg-deeper border border-[rgba(26,24,19,0.10)] px-1.5 py-0.5 font-mono text-[0.85em] text-crux-text break-all"
           >
             {part.slice(1, -1)}
           </code>
@@ -32,7 +32,7 @@ function Block({ block }: { block: FAQBlock }) {
   switch (block.type) {
     case 'p':
       return (
-        <p className="text-sm leading-6 text-nofx-text-muted">
+        <p className="text-sm leading-6 text-crux-text-muted">
           <InlineText text={block.text} />
         </p>
       )
@@ -42,9 +42,9 @@ function Block({ block }: { block: FAQBlock }) {
           {block.items.map((item, i) => (
             <li
               key={i}
-              className="flex gap-2 text-sm leading-6 text-nofx-text-muted"
+              className="flex gap-2 text-sm leading-6 text-crux-text-muted"
             >
-              <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-nofx-gold" />
+              <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-crux-gold" />
               <span>
                 <InlineText text={item} />
               </span>
@@ -58,9 +58,9 @@ function Block({ block }: { block: FAQBlock }) {
           {block.items.map((item, i) => (
             <li
               key={i}
-              className="flex gap-3 text-sm leading-6 text-nofx-text-muted"
+              className="flex gap-3 text-sm leading-6 text-crux-text-muted"
             >
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border border-nofx-gold/30 bg-nofx-gold/10 font-mono text-[11px] font-bold text-nofx-gold">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border border-crux-gold/30 bg-crux-gold/10 font-mono text-[11px] font-bold text-crux-gold">
                 {i + 1}
               </span>
               <span>
@@ -72,7 +72,7 @@ function Block({ block }: { block: FAQBlock }) {
       )
     case 'note':
       return (
-        <div className="border-l-2 border-nofx-gold bg-nofx-gold/10 px-3 py-2 text-sm leading-6 text-nofx-text">
+        <div className="border-l-2 border-crux-gold bg-crux-gold/10 px-3 py-2 text-sm leading-6 text-crux-text">
           <InlineText text={block.text} />
         </div>
       )
@@ -85,7 +85,7 @@ function Block({ block }: { block: FAQBlock }) {
               href={link.href}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded border border-nofx-gold/25 bg-nofx-bg-deeper px-2.5 py-1 font-mono text-xs font-semibold text-nofx-gold hover:border-nofx-gold/50 hover:bg-nofx-gold/10"
+              className="inline-flex items-center gap-1.5 rounded border border-crux-gold/25 bg-crux-bg-deeper px-2.5 py-1 font-mono text-xs font-semibold text-crux-gold hover:border-crux-gold/50 hover:bg-crux-gold/10"
             >
               {link.label}
               <ExternalLink className="h-3 w-3" />
@@ -132,15 +132,15 @@ export function FAQContent({
         <div
           key={category.id}
           id={category.id}
-          className="overflow-hidden rounded-xl border border-nofx-gold/20 bg-nofx-bg-lighter"
+          className="overflow-hidden rounded-xl border border-crux-gold/20 bg-crux-bg-lighter"
         >
           {/* category header — terminal small-caps strip */}
-          <div className="flex items-center gap-2.5 border-b border-nofx-gold/20 bg-nofx-bg px-5 py-3 md:px-6">
-            <category.icon className="h-4 w-4 text-nofx-gold" />
-            <h2 className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-nofx-text">
+          <div className="flex items-center gap-2.5 border-b border-crux-gold/20 bg-crux-bg px-5 py-3 md:px-6">
+            <category.icon className="h-4 w-4 text-crux-gold" />
+            <h2 className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-crux-text">
               {category.title}
             </h2>
-            <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-nofx-text-muted">
+            <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-crux-text-muted">
               {category.items.length}{' '}
               {category.items.length === 1 ? 'entry' : 'entries'}
             </span>
@@ -155,7 +155,7 @@ export function FAQContent({
                 ref={(el) => setRef(item.id, el)}
                 className="scroll-mt-24 px-5 py-5 md:px-6"
               >
-                <h3 className="mb-3 text-[15px] font-semibold leading-6 text-nofx-text">
+                <h3 className="mb-3 text-[15px] font-semibold leading-6 text-crux-text">
                   {item.question}
                 </h3>
                 <div className="space-y-3">

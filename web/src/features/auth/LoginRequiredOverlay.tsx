@@ -37,7 +37,7 @@ export function LoginRequiredOverlay({
           className="fixed inset-0 z-50"
         >
           <DeepVoidBackground
-            className="w-full h-full bg-nofx-bg/95 backdrop-blur-md flex items-center justify-center p-4 text-nofx-text"
+            className="w-full h-full bg-crux-bg/95 backdrop-blur-md flex items-center justify-center p-4 text-crux-text"
             disableAnimation
             onClick={onClose}
           >
@@ -46,20 +46,20 @@ export function LoginRequiredOverlay({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="relative max-w-md w-full overflow-hidden bg-nofx-bg-lighter border border-nofx-gold/30 shadow-lg rounded-sm group font-mono"
+              className="relative max-w-md w-full overflow-hidden bg-crux-bg-lighter border border-crux-gold/30 shadow-lg rounded-sm group font-mono"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Terminal Window Header */}
-              <div className="flex items-center justify-between px-3 py-2 bg-nofx-bg-deeper border-b border-nofx-gold/20">
+              <div className="flex items-center justify-between px-3 py-2 bg-crux-bg-deeper border-b border-crux-gold/20">
                 <div className="flex items-center gap-2">
-                  <Terminal size={12} className="text-nofx-gold" />
-                  <span className="text-[10px] text-nofx-text-muted uppercase tracking-wider">
+                  <Terminal size={12} className="text-crux-gold" />
+                  <span className="text-[10px] text-crux-text-muted uppercase tracking-wider">
                     auth_protocol.exe
                   </span>
                 </div>
                 <button
                   onClick={onClose}
-                  className="text-nofx-text-muted hover:text-nofx-danger transition-colors"
+                  className="text-crux-text-muted hover:text-crux-danger transition-colors"
                 >
                   <X size={14} />
                 </button>
@@ -74,7 +74,7 @@ export function LoginRequiredOverlay({
                   {/* Flashing Access Denied */}
                   <div className="flex justify-center mb-6">
                     <div className="relative">
-                      <div className="bg-nofx-bg-lighter border border-nofx-danger/50 text-nofx-danger px-4 py-2 flex items-center gap-3">
+                      <div className="bg-crux-bg-lighter border border-crux-danger/50 text-crux-danger px-4 py-2 flex items-center gap-3">
                         <AlertTriangle size={18} className="animate-pulse" />
                         <span className="font-bold tracking-widest text-sm uppercase">
                           {tr('accessDenied')}
@@ -86,17 +86,17 @@ export function LoginRequiredOverlay({
                   {/* Terminal Text */}
                   <div className="space-y-4 mb-8">
                     <div className="text-center">
-                      <h2 className="text-xl font-bold text-nofx-text uppercase tracking-wider mb-2">
+                      <h2 className="text-xl font-bold text-crux-text uppercase tracking-wider mb-2">
                         {tr('title')}
                       </h2>
-                      <p className="text-nofx-gold text-xs uppercase tracking-widest border-b border-nofx-gold/20 pb-4 inline-block">
+                      <p className="text-crux-gold text-xs uppercase tracking-widest border-b border-crux-gold/20 pb-4 inline-block">
                         {subtitle}
                       </p>
                     </div>
 
-                    <div className="bg-nofx-bg-deeper border-l-2 border-nofx-gold/20 p-3 my-4">
-                      <p className="text-xs text-nofx-text-muted leading-relaxed font-mono">
-                        <span className="text-nofx-success mr-2">$</span>
+                    <div className="bg-crux-bg-deeper border-l-2 border-crux-gold/20 p-3 my-4">
+                      <p className="text-xs text-crux-text-muted leading-relaxed font-mono">
+                        <span className="text-crux-success mr-2">$</span>
                         {tr('description')}
                       </p>
                     </div>
@@ -105,9 +105,9 @@ export function LoginRequiredOverlay({
                       {benefits.map((benefit, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-2 text-[10px] text-nofx-text-muted uppercase tracking-wide"
+                          className="flex items-center gap-2 text-[10px] text-crux-text-muted uppercase tracking-wide"
                         >
-                          <span className="text-nofx-gold">✓</span> {benefit}
+                          <span className="text-crux-gold">✓</span> {benefit}
                         </div>
                       ))}
                     </div>
@@ -117,7 +117,7 @@ export function LoginRequiredOverlay({
                   <div className="space-y-3">
                     <Link
                       to="/login"
-                      className="flex items-center justify-center gap-2 w-full py-3 bg-nofx-gold text-nofx-bg font-bold text-xs uppercase tracking-widest hover:bg-nofx-gold-highlight transition-all group"
+                      className="flex items-center justify-center gap-2 w-full py-3 bg-crux-gold text-crux-bg font-bold text-xs uppercase tracking-widest hover:bg-crux-gold-highlight transition-all group"
                     >
                       <LogIn size={14} />
                       <span>{tr('loginButton')}</span>
@@ -128,7 +128,7 @@ export function LoginRequiredOverlay({
 
                     <Link
                       to="/register"
-                      className="flex items-center justify-center gap-2 w-full py-3 bg-transparent border border-nofx-gold/20 text-nofx-text-muted hover:text-nofx-text hover:border-nofx-gold font-bold text-xs uppercase tracking-widest transition-all hover:bg-nofx-gold/10"
+                      className="flex items-center justify-center gap-2 w-full py-3 bg-transparent border border-crux-gold/20 text-crux-text-muted hover:text-crux-text hover:border-crux-gold font-bold text-xs uppercase tracking-widest transition-all hover:bg-crux-gold/10"
                     >
                       <UserPlus size={14} />
                       <span>{tr('registerButton')}</span>
@@ -138,7 +138,7 @@ export function LoginRequiredOverlay({
                   <div className="mt-4 text-center">
                     <button
                       onClick={onClose}
-                      className="text-[10px] text-nofx-text-muted hover:text-nofx-danger uppercase tracking-widest hover:underline decoration-nofx-danger/30"
+                      className="text-[10px] text-crux-text-muted hover:text-crux-danger uppercase tracking-widest hover:underline decoration-crux-danger/30"
                     >
                       [ {tr('abort')} ]
                     </button>
@@ -147,8 +147,8 @@ export function LoginRequiredOverlay({
               </div>
 
               {/* Corner Accents */}
-              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-nofx-gold"></div>
-              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-nofx-gold"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-crux-gold"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-crux-gold"></div>
             </motion.div>
           </DeepVoidBackground>
         </motion.div>

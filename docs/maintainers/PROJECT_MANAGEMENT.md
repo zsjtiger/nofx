@@ -160,7 +160,7 @@ All work should align with our [roadmap](../archive/roadmap/README.md):
 **Must Accept:**
 - Security enhancements
 - AI model integrations
-- Exchange integrations (OKX, Bybit, Lighter, EdgeX)
+- Broker integrations (Alpaca, A-share paper trading)
 - Project structure refactoring
 - UI/UX improvements
 

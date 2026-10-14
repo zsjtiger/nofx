@@ -376,7 +376,7 @@ export function DecisionCard({
           <div>
             <button
               onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-              className="flex items-center gap-2 text-sm transition-colors w-full justify-between p-2 rounded hover:bg-nofx-gold/10"
+              className="flex items-center gap-2 text-sm transition-colors w-full justify-between p-2 rounded hover:bg-crux-gold/10"
             >
               <div className="flex items-center gap-2">
                 <span className="text-base">⚙️</span>
@@ -451,7 +451,7 @@ export function DecisionCard({
           <div>
             <button
               onClick={() => setShowInputPrompt(!showInputPrompt)}
-              className="flex items-center gap-2 text-sm transition-colors w-full justify-between p-2 rounded hover:bg-nofx-gold/10"
+              className="flex items-center gap-2 text-sm transition-colors w-full justify-between p-2 rounded hover:bg-crux-gold/10"
             >
               <div className="flex items-center gap-2">
                 <span className="text-base">📥</span>
@@ -526,7 +526,7 @@ export function DecisionCard({
           <div>
             <button
               onClick={() => setShowCoT(!showCoT)}
-              className="flex items-center gap-2 text-sm transition-colors w-full justify-between p-2 rounded hover:bg-nofx-gold/10"
+              className="flex items-center gap-2 text-sm transition-colors w-full justify-between p-2 rounded hover:bg-crux-gold/10"
             >
               <div className="flex items-center gap-2">
                 <span className="text-base">🧠</span>

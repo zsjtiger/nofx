@@ -29,7 +29,7 @@ export function ModelCard({
       }}
     >
       <div className="relative">
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-nofx-bg-deeper border border-[rgba(26,24,19,0.14)]">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-crux-bg-deeper border border-[rgba(26,24,19,0.14)]">
           {getModelIcon(model.provider || model.id, {
             width: 32,
             height: 32,

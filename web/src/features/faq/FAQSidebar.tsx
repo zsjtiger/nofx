@@ -20,8 +20,8 @@ export function FAQSidebar({
         {categories.map((category) => (
           <div key={category.id}>
             <div className="mb-2 flex items-center gap-2 px-2">
-              <category.icon className="h-3.5 w-3.5 text-nofx-gold" />
-              <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-nofx-gold">
+              <category.icon className="h-3.5 w-3.5 text-crux-gold" />
+              <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-crux-gold">
                 {category.title}
               </h3>
             </div>
@@ -34,8 +34,8 @@ export function FAQSidebar({
                       onClick={() => onItemClick(category.id, item.id)}
                       className={`-ml-px w-full border-l-2 py-1.5 pl-3 pr-2 text-left text-[13px] leading-5 transition-colors ${
                         isActive
-                          ? 'border-nofx-gold bg-nofx-gold/5 font-medium text-nofx-text'
-                          : 'border-transparent text-nofx-text-muted hover:border-nofx-gold/40 hover:text-nofx-text'
+                          ? 'border-crux-gold bg-crux-gold/5 font-medium text-crux-text'
+                          : 'border-transparent text-crux-text-muted hover:border-crux-gold/40 hover:text-crux-text'
                       }`}
                     >
                       {item.question}

@@ -28,7 +28,7 @@ func TestRebuildPositionsFromTrades_SimpleLongOpenClose(t *testing.T) {
 	trades := []TradeRecord{
 		{
 			TradeID:  "t1",
-			Symbol:   "BTCUSDT",
+			Symbol:   "AAPL",
 			Side:     "BUY",
 			Price:    100.0,
 			Quantity: 1.0,
@@ -37,7 +37,7 @@ func TestRebuildPositionsFromTrades_SimpleLongOpenClose(t *testing.T) {
 		},
 		{
 			TradeID:     "t2",
-			Symbol:      "BTCUSDT",
+			Symbol:      "AAPL",
 			Side:        "SELL",
 			Price:       110.0,
 			Quantity:    1.0,
@@ -53,8 +53,8 @@ func TestRebuildPositionsFromTrades_SimpleLongOpenClose(t *testing.T) {
 	}
 
 	r := records[0]
-	if r.Symbol != "BTCUSDT" {
-		t.Errorf("Symbol = %q, want BTCUSDT", r.Symbol)
+	if r.Symbol != "AAPL" {
+		t.Errorf("Symbol = %q, want AAPL", r.Symbol)
 	}
 	if r.Side != "long" {
 		t.Errorf("Side = %q, want long", r.Side)
@@ -93,7 +93,7 @@ func TestRebuildPositionsFromTrades_PartialClose(t *testing.T) {
 	trades := []TradeRecord{
 		{
 			TradeID:  "open1",
-			Symbol:   "ETHUSDT",
+			Symbol:   "MSFT",
 			Side:     "BUY",
 			Price:    100.0,
 			Quantity: 2.0,
@@ -102,7 +102,7 @@ func TestRebuildPositionsFromTrades_PartialClose(t *testing.T) {
 		},
 		{
 			TradeID:     "close1",
-			Symbol:      "ETHUSDT",
+			Symbol:      "MSFT",
 			Side:        "SELL",
 			Price:       110.0,
 			Quantity:    1.0,
@@ -112,7 +112,7 @@ func TestRebuildPositionsFromTrades_PartialClose(t *testing.T) {
 		},
 		{
 			TradeID:     "close2",
-			Symbol:      "ETHUSDT",
+			Symbol:      "MSFT",
 			Side:        "SELL",
 			Price:       120.0,
 			Quantity:    1.0,
@@ -170,7 +170,7 @@ func TestRebuildPositionsFromTrades_MultipleOpensWeightedEntry(t *testing.T) {
 	trades := []TradeRecord{
 		{
 			TradeID:  "open1",
-			Symbol:   "BTCUSDT",
+			Symbol:   "AAPL",
 			Side:     "BUY",
 			Price:    100.0,
 			Quantity: 1.0,
@@ -179,7 +179,7 @@ func TestRebuildPositionsFromTrades_MultipleOpensWeightedEntry(t *testing.T) {
 		},
 		{
 			TradeID:  "open2",
-			Symbol:   "BTCUSDT",
+			Symbol:   "AAPL",
 			Side:     "BUY",
 			Price:    110.0,
 			Quantity: 1.0,
@@ -188,7 +188,7 @@ func TestRebuildPositionsFromTrades_MultipleOpensWeightedEntry(t *testing.T) {
 		},
 		{
 			TradeID:     "close1",
-			Symbol:      "BTCUSDT",
+			Symbol:      "AAPL",
 			Side:        "SELL",
 			Price:       120.0,
 			Quantity:    2.0,
@@ -225,7 +225,7 @@ func TestRebuildPositionsFromTrades_HedgeMode(t *testing.T) {
 	trades := []TradeRecord{
 		{
 			TradeID:      "lo",
-			Symbol:       "BTCUSDT",
+			Symbol:       "AAPL",
 			Side:         "BUY",
 			PositionSide: "LONG",
 			Price:        100.0,
@@ -234,7 +234,7 @@ func TestRebuildPositionsFromTrades_HedgeMode(t *testing.T) {
 		},
 		{
 			TradeID:      "so",
-			Symbol:       "BTCUSDT",
+			Symbol:       "AAPL",
 			Side:         "SELL",
 			PositionSide: "SHORT",
 			Price:        100.0,
@@ -243,7 +243,7 @@ func TestRebuildPositionsFromTrades_HedgeMode(t *testing.T) {
 		},
 		{
 			TradeID:      "lc",
-			Symbol:       "BTCUSDT",
+			Symbol:       "AAPL",
 			Side:         "SELL",
 			PositionSide: "LONG",
 			Price:        110.0,
@@ -253,7 +253,7 @@ func TestRebuildPositionsFromTrades_HedgeMode(t *testing.T) {
 		},
 		{
 			TradeID:      "sc",
-			Symbol:       "BTCUSDT",
+			Symbol:       "AAPL",
 			Side:         "BUY",
 			PositionSide: "SHORT",
 			Price:        90.0,
@@ -289,7 +289,7 @@ func TestRebuildPositionsFromTrades_OneWayModeShort(t *testing.T) {
 	trades := []TradeRecord{
 		{
 			TradeID:  "open1",
-			Symbol:   "SOLUSDT",
+			Symbol:   "NVDA",
 			Side:     "SELL", // sell with zero PnL opens a short in one-way mode
 			Price:    100.0,
 			Quantity: 1.0,
@@ -298,7 +298,7 @@ func TestRebuildPositionsFromTrades_OneWayModeShort(t *testing.T) {
 		},
 		{
 			TradeID:     "close1",
-			Symbol:      "SOLUSDT",
+			Symbol:      "NVDA",
 			Side:        "BUY", // buy with non-zero PnL closes the short
 			Price:       90.0,
 			Quantity:    1.0,
@@ -339,7 +339,7 @@ func TestRebuildPositionsFromTrades_PnLFallbackEntryPrice(t *testing.T) {
 			name: "long fallback: entry = exit - pnl/qty",
 			trade: TradeRecord{
 				TradeID:     "lone-long",
-				Symbol:      "BTCUSDT",
+				Symbol:      "AAPL",
 				Side:        "SELL",
 				Price:       110.0,
 				Quantity:    2.0,
@@ -353,7 +353,7 @@ func TestRebuildPositionsFromTrades_PnLFallbackEntryPrice(t *testing.T) {
 			name: "short fallback: entry = exit + pnl/qty",
 			trade: TradeRecord{
 				TradeID:     "lone-short",
-				Symbol:      "BTCUSDT",
+				Symbol:      "AAPL",
 				Side:        "BUY",
 				Price:       95.0,
 				Quantity:    1.0,
@@ -396,7 +396,7 @@ func TestRebuildPositionsFromTrades_InvalidTrades(t *testing.T) {
 			trades: []TradeRecord{
 				{
 					TradeID:     "zq",
-					Symbol:      "BTCUSDT",
+					Symbol:      "AAPL",
 					Side:        "SELL",
 					Price:       110.0,
 					Quantity:    0,
@@ -410,7 +410,7 @@ func TestRebuildPositionsFromTrades_InvalidTrades(t *testing.T) {
 			trades: []TradeRecord{
 				{
 					TradeID:     "zp",
-					Symbol:      "BTCUSDT",
+					Symbol:      "AAPL",
 					Side:        "SELL",
 					Price:       0,
 					Quantity:    1.0,
@@ -424,7 +424,7 @@ func TestRebuildPositionsFromTrades_InvalidTrades(t *testing.T) {
 			trades: []TradeRecord{
 				{
 					TradeID:  "bad-side",
-					Symbol:   "BTCUSDT",
+					Symbol:   "AAPL",
 					Side:     "HOLD",
 					Price:    100.0,
 					Quantity: 1.0,
@@ -449,7 +449,7 @@ func TestRebuildPositionsFromTrades_UnsortedInputUsesChronologicalFIFO(t *testin
 	trades := []TradeRecord{
 		{
 			TradeID:     "close1",
-			Symbol:      "BTCUSDT",
+			Symbol:      "AAPL",
 			Side:        "SELL",
 			Price:       120.0,
 			Quantity:    1.0,
@@ -458,7 +458,7 @@ func TestRebuildPositionsFromTrades_UnsortedInputUsesChronologicalFIFO(t *testin
 		},
 		{
 			TradeID:  "open2",
-			Symbol:   "BTCUSDT",
+			Symbol:   "AAPL",
 			Side:     "BUY",
 			Price:    110.0,
 			Quantity: 1.0,
@@ -466,7 +466,7 @@ func TestRebuildPositionsFromTrades_UnsortedInputUsesChronologicalFIFO(t *testin
 		},
 		{
 			TradeID:  "open1",
-			Symbol:   "BTCUSDT",
+			Symbol:   "AAPL",
 			Side:     "BUY",
 			Price:    100.0,
 			Quantity: 1.0,

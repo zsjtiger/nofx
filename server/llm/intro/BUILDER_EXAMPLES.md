@@ -141,7 +141,7 @@ story, err := client.CallWithRequest(request)
 ```go
 request := mcp.NewRequestBuilder().
     WithSystemPrompt("You are a quantitative analyst").
-    WithUserPrompt("Analyze BTC/USDT chart pattern").
+    WithUserPrompt("Analyze AAPL chart pattern").
     WithTemperature(0.5).        // 中等温度
     WithMaxTokens(1500).
     WithStopSequences([]string{"---", "END"}).  // 多个停止序列
@@ -292,7 +292,7 @@ func main() {
     // 场景1: 市场分析（需要精确）
     analysisRequest := mcp.NewRequestBuilder().
         WithSystemPrompt("You are a professional quantitative trader").
-        WithUserPrompt("Analyze BTC/USDT 1H chart, current price $45,000").
+        WithUserPrompt("Analyze AAPL 1H chart, current price $190").
         WithTemperature(0.3).  // 低温度，更精确
         WithMaxTokens(1500).
         Build()
@@ -307,7 +307,7 @@ func main() {
     // 场景2: 继续对话，询问入场点
     followUpRequest := mcp.NewRequestBuilder().
         AddSystemMessage("You are a professional quantitative trader").
-        AddUserMessage("Analyze BTC/USDT 1H chart, current price $45,000").
+        AddUserMessage("Analyze AAPL 1H chart, current price $190").
         AddAssistantMessage(analysis).  // 添加之前的回复
         AddUserMessage("Based on your analysis, what's the best entry point?").
         WithTemperature(0.3).
@@ -512,7 +512,7 @@ baseBuilder := mcp.NewRequestBuilder().
 
 // 为不同问题添加用户消息
 question1 := baseBuilder.
-    AddUserMessage("Analyze BTC").
+    AddUserMessage("Analyze AAPL").
     Build()
 
 question2 := baseBuilder.

@@ -54,7 +54,7 @@ export const faqCategories: FAQCategory[] = [
     icon: BookOpen,
     items: [
       {
-        id: 'what-is-nofx',
+        id: 'what-is-crux',
         question: 'What is Crux?',
         blocks: [
           {

@@ -28,8 +28,8 @@ function configBadge(label: string, active: boolean) {
     <span
       className={`text-[11px] px-2 py-0.5 rounded-full ${
         active
-          ? 'bg-nofx-success/10 text-nofx-success'
-          : 'bg-nofx-bg-deeper text-nofx-text-muted'
+          ? 'bg-crux-success/10 text-crux-success'
+          : 'bg-crux-bg-deeper text-crux-text-muted'
       }`}
     >
       {label}
@@ -296,10 +296,10 @@ export function SettingsPage() {
       style={{ background: '#F1ECE2' }}
     >
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-xl font-bold text-nofx-text mb-6">Settings</h1>
+        <h1 className="text-xl font-bold text-crux-text mb-6">Settings</h1>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-nofx-bg-lighter border border-[rgba(26,24,19,0.14)] rounded-xl p-1">
+        <div className="flex gap-1 mb-6 bg-crux-bg-lighter border border-[rgba(26,24,19,0.14)] rounded-xl p-1">
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -307,8 +307,8 @@ export function SettingsPage() {
               className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all
                 ${
                   activeTab === tab.key
-                    ? 'bg-nofx-gold text-nofx-bg'
-                    : 'text-nofx-text-muted hover:text-nofx-text'
+                    ? 'bg-crux-gold text-crux-bg'
+                    : 'text-crux-text-muted hover:text-crux-text'
                 }`}
             >
               {tab.icon}
@@ -318,24 +318,24 @@ export function SettingsPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-nofx-bg-lighter backdrop-blur-xl border border-[rgba(26,24,19,0.14)] rounded-2xl p-6">
+        <div className="bg-crux-bg-lighter backdrop-blur-xl border border-[rgba(26,24,19,0.14)] rounded-2xl p-6">
           {/* Account Tab */}
           {activeTab === 'account' && (
             <div className="space-y-6">
               <div>
-                <p className="text-xs text-nofx-text-muted mb-1">Email</p>
-                <p className="text-sm text-nofx-text font-medium">
+                <p className="text-xs text-crux-text-muted mb-1">Email</p>
+                <p className="text-sm text-crux-text font-medium">
                   {user?.email}
                 </p>
               </div>
 
               <div className="border-t border-[rgba(26,24,19,0.14)] pt-6">
-                <h3 className="text-sm font-semibold text-nofx-text mb-4">
+                <h3 className="text-sm font-semibold text-crux-text mb-4">
                   Change Password
                 </h3>
                 <form onSubmit={handleChangePassword} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-nofx-text-muted mb-2">
+                    <label className="block text-xs font-medium text-crux-text-muted mb-2">
                       New Password
                     </label>
                     <div className="relative">
@@ -343,14 +343,14 @@ export function SettingsPage() {
                         type={showPassword ? 'text' : 'password'}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full bg-nofx-bg-deeper border border-[rgba(26,24,19,0.14)] rounded-xl px-4 py-3 pr-11 text-sm text-nofx-text placeholder-nofx-text-muted focus:outline-none focus:border-nofx-gold/60 focus:ring-1 focus:ring-nofx-gold/30 transition-all"
+                        className="w-full bg-crux-bg-deeper border border-[rgba(26,24,19,0.14)] rounded-xl px-4 py-3 pr-11 text-sm text-crux-text placeholder-crux-text-muted focus:outline-none focus:border-crux-gold/60 focus:ring-1 focus:ring-crux-gold/30 transition-all"
                         placeholder="At least 8 characters"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-nofx-text-muted hover:text-nofx-text transition-colors"
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-crux-text-muted hover:text-crux-text transition-colors"
                       >
                         {showPassword ? (
                           <EyeOff size={16} />
@@ -363,7 +363,7 @@ export function SettingsPage() {
                   <button
                     type="submit"
                     disabled={changingPassword || newPassword.length < 8}
-                    className="w-full bg-nofx-gold hover:bg-nofx-gold-highlight active:scale-[0.98] text-nofx-bg font-semibold py-3 rounded-xl text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-crux-gold hover:bg-crux-gold-highlight active:scale-[0.98] text-crux-bg font-semibold py-3 rounded-xl text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {changingPassword ? 'Updating...' : 'Update Password'}
                   </button>
@@ -376,7 +376,7 @@ export function SettingsPage() {
           {activeTab === 'models' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-nofx-text-muted">
+                <p className="text-sm text-crux-text-muted">
                   {configuredModels.length} model
                   {configuredModels.length !== 1 ? 's' : ''} configured
                 </p>
@@ -385,7 +385,7 @@ export function SettingsPage() {
                     setEditingModel(null)
                     setShowModelModal(true)
                   }}
-                  className="flex items-center gap-1.5 text-xs font-medium bg-nofx-gold/10 hover:bg-nofx-gold/20 text-nofx-gold px-3 py-1.5 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-medium bg-crux-gold/10 hover:bg-crux-gold/20 text-crux-gold px-3 py-1.5 rounded-lg transition-colors"
                 >
                   <Plus size={14} />
                   Add Model
@@ -393,7 +393,7 @@ export function SettingsPage() {
               </div>
 
               {configuredModels.length === 0 ? (
-                <div className="text-center py-8 text-nofx-text-muted text-sm">
+                <div className="text-center py-8 text-crux-text-muted text-sm">
                   No AI models configured yet
                 </div>
               ) : (
@@ -405,18 +405,18 @@ export function SettingsPage() {
                         setEditingModel(model.id)
                         setShowModelModal(true)
                       }}
-                      className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-nofx-bg-deeper hover:bg-nofx-bg-deeper border border-[rgba(26,24,19,0.14)] transition-colors group"
+                      className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-crux-bg-deeper hover:bg-crux-bg-deeper border border-[rgba(26,24,19,0.14)] transition-colors group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-nofx-bg-deeper flex items-center justify-center">
-                          <Cpu size={14} className="text-nofx-text" />
+                        <div className="w-8 h-8 rounded-lg bg-crux-bg-deeper flex items-center justify-center">
+                          <Cpu size={14} className="text-crux-text" />
                         </div>
                         <div className="text-left">
-                          <p className="text-sm font-medium text-nofx-text">
+                          <p className="text-sm font-medium text-crux-text">
                             {model.name}
                           </p>
                           <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                            <p className="text-xs text-nofx-text-muted">
+                            <p className="text-xs text-crux-text-muted">
                               {model.provider}
                             </p>
                             {configBadge('API Key', !!model.has_api_key)}
@@ -431,13 +431,13 @@ export function SettingsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-xs px-2 py-0.5 rounded-full ${model.enabled ? 'bg-nofx-success/10 text-nofx-success' : 'bg-nofx-bg-deeper text-nofx-text-muted'}`}
+                          className={`text-xs px-2 py-0.5 rounded-full ${model.enabled ? 'bg-crux-success/10 text-crux-success' : 'bg-crux-bg-deeper text-crux-text-muted'}`}
                         >
                           {model.enabled ? 'Active' : 'Inactive'}
                         </span>
                         <Pencil
                           size={14}
-                          className="text-nofx-text-muted group-hover:text-nofx-text-muted transition-colors"
+                          className="text-crux-text-muted group-hover:text-crux-text-muted transition-colors"
                         />
                       </div>
                     </button>
@@ -451,7 +451,7 @@ export function SettingsPage() {
           {activeTab === 'exchanges' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-nofx-text-muted">
+                <p className="text-sm text-crux-text-muted">
                   {exchanges.length} account{exchanges.length !== 1 ? 's' : ''}{' '}
                   connected
                 </p>
@@ -459,7 +459,7 @@ export function SettingsPage() {
                   <button
                     onClick={refreshExchangeStates}
                     disabled={exchangeStatesLoading}
-                    className="text-xs font-medium bg-nofx-bg-deeper hover:bg-nofx-bg-deeper disabled:opacity-60 text-nofx-text px-3 py-1.5 rounded-lg transition-colors"
+                    className="text-xs font-medium bg-crux-bg-deeper hover:bg-crux-bg-deeper disabled:opacity-60 text-crux-text px-3 py-1.5 rounded-lg transition-colors"
                   >
                     {exchangeStatesLoading ? 'Refreshing…' : 'Refresh Balances'}
                   </button>
@@ -468,7 +468,7 @@ export function SettingsPage() {
                       setEditingExchange(null)
                       setShowExchangeModal(true)
                     }}
-                    className="flex items-center gap-1.5 text-xs font-medium bg-nofx-gold/10 hover:bg-nofx-gold/20 text-nofx-gold px-3 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium bg-crux-gold/10 hover:bg-crux-gold/20 text-crux-gold px-3 py-1.5 rounded-lg transition-colors"
                   >
                     <Plus size={14} />
                     Add Exchange
@@ -477,7 +477,7 @@ export function SettingsPage() {
               </div>
 
               {exchanges.length === 0 ? (
-                <div className="text-center py-8 text-nofx-text-muted text-sm">
+                <div className="text-center py-8 text-crux-text-muted text-sm">
                   No exchange accounts connected yet
                 </div>
               ) : (
@@ -491,18 +491,18 @@ export function SettingsPage() {
                           setEditingExchange(exchange.id)
                           setShowExchangeModal(true)
                         }}
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-nofx-bg-deeper hover:bg-nofx-bg-deeper border border-[rgba(26,24,19,0.14)] transition-colors group"
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-crux-bg-deeper hover:bg-crux-bg-deeper border border-[rgba(26,24,19,0.14)] transition-colors group"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-nofx-bg-deeper flex items-center justify-center">
-                            <Building2 size={14} className="text-nofx-text" />
+                          <div className="w-8 h-8 rounded-lg bg-crux-bg-deeper flex items-center justify-center">
+                            <Building2 size={14} className="text-crux-text" />
                           </div>
                           <div className="text-left">
-                            <p className="text-sm font-medium text-nofx-text">
+                            <p className="text-sm font-medium text-crux-text">
                               {exchange.account_name || exchange.name}
                             </p>
                             <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                              <p className="text-xs text-nofx-text-muted capitalize">
+                              <p className="text-xs text-crux-text-muted capitalize">
                                 {exchange.exchange_type || exchange.type}
                               </p>
                               {configBadge('API Key', !!exchange.has_api_key)}
@@ -512,14 +512,14 @@ export function SettingsPage() {
                               <div className="flex flex-wrap items-center gap-2 mt-2 text-xs">
                                 {accountState.status === 'ok' ? (
                                   <>
-                                    <span className="rounded-full bg-nofx-success/10 px-2 py-0.5 font-mono text-nofx-success">
+                                    <span className="rounded-full bg-crux-success/10 px-2 py-0.5 font-mono text-crux-success">
                                       Balance{' '}
                                       {accountState.display_balance ||
                                         `${accountState.total_equity?.toFixed(2) ?? '--'} ${accountState.asset || ''}`}
                                     </span>
                                     {typeof accountState.available_balance ===
                                       'number' && (
-                                      <span className="text-nofx-text-muted">
+                                      <span className="text-crux-text-muted">
                                         Available{' '}
                                         {accountState.available_balance.toFixed(
                                           2
@@ -529,7 +529,7 @@ export function SettingsPage() {
                                     )}
                                   </>
                                 ) : (
-                                  <span className="rounded-full bg-nofx-gold/10 px-2 py-0.5 text-nofx-gold">
+                                  <span className="rounded-full bg-crux-gold/10 px-2 py-0.5 text-crux-gold">
                                     Balance unavailable:{' '}
                                     {accountState.error_message ||
                                       accountState.status}
@@ -541,7 +541,7 @@ export function SettingsPage() {
                         </div>
                         <ChevronRight
                           size={14}
-                          className="text-nofx-text-muted group-hover:text-nofx-text-muted transition-colors"
+                          className="text-crux-text-muted group-hover:text-crux-text-muted transition-colors"
                         />
                       </button>
                     )

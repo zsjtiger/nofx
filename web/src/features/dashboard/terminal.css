@@ -1,12 +1,12 @@
 /*
  * Crux orchestration terminal theme — cream paper + vermilion accent.
- * Scoped under .nofx-terminal so it can be built and previewed without
+ * Scoped under .crux-terminal so it can be built and previewed without
  * disturbing the global Neo-Gold theme. The global flip (task #6) promotes
  * these tokens to :root once the look is approved.
  */
 @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
 
-.nofx-terminal {
+.crux-terminal {
   /* surfaces */
   --tm-paper: #f1ece2;
   --tm-panel: #f7f4ec;
@@ -32,8 +32,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-.nofx-terminal,
-.nofx-terminal * {
+.crux-terminal,
+.crux-terminal * {
   box-sizing: border-box;
 }
 
@@ -146,7 +146,7 @@
 }
 
 @media (max-width: 768px) {
-  .nofx-terminal {
+  .crux-terminal {
     font-size: 13px;
   }
 }

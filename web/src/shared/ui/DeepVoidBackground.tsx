@@ -14,13 +14,13 @@ export function DeepVoidBackground({
 }: DeepVoidBackgroundProps) {
   return (
     <div
-      className={`relative w-full min-h-screen bg-nofx-bg text-nofx-text overflow-hidden flex flex-col ${className}`}
+      className={`relative w-full min-h-screen bg-crux-bg text-crux-text overflow-hidden flex flex-col ${className}`}
       {...props}
     >
       {/* Background layers: neutralized to a plain cream surface for the light theme */}
       {disableAnimation ? (
         <>
-          <div className="absolute inset-0 pointer-events-none z-0 bg-nofx-bg"></div>
+          <div className="absolute inset-0 pointer-events-none z-0 bg-crux-bg"></div>
           <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.035] bg-[linear-gradient(to_right,rgba(26,24,19,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(26,24,19,0.08)_1px,transparent_1px)] bg-[size:36px_36px]"></div>
         </>
       ) : (

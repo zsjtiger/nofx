@@ -358,7 +358,7 @@ func TestIsStaleData_NormalData(t *testing.T) {
 		{Close: 100.1, Volume: 950},
 	}
 
-	result := isStaleData(klines, "BTCUSDT")
+	result := isStaleData(klines, "AAPL")
 
 	if result {
 		t.Error("Expected false for normal fluctuating data, got true")
@@ -375,7 +375,7 @@ func TestIsStaleData_PriceFreezeWithZeroVolume(t *testing.T) {
 		{Close: 100.0, Volume: 0},
 	}
 
-	result := isStaleData(klines, "DOGEUSDT")
+	result := isStaleData(klines, "TSLA")
 
 	if !result {
 		t.Error("Expected true for frozen price + zero volume, got false")
@@ -407,7 +407,7 @@ func TestIsStaleData_InsufficientData(t *testing.T) {
 		{Close: 100.0, Volume: 0},
 	}
 
-	result := isStaleData(klines, "BTCUSDT")
+	result := isStaleData(klines, "AAPL")
 
 	if result {
 		t.Error("Expected false for insufficient data (<5 klines), got true")
@@ -425,7 +425,7 @@ func TestIsStaleData_ExactlyFiveKlines(t *testing.T) {
 		{Close: 100.0, Volume: 0},
 	}
 
-	result := isStaleData(staleKlines, "TESTUSDT")
+	result := isStaleData(staleKlines, "TESTX")
 	if !result {
 		t.Error("Expected true for exactly 5 frozen klines with zero volume, got false")
 	}
@@ -439,7 +439,7 @@ func TestIsStaleData_ExactlyFiveKlines(t *testing.T) {
 		{Close: 100.05, Volume: 950},
 	}
 
-	result = isStaleData(normalKlines, "TESTUSDT")
+	result = isStaleData(normalKlines, "TESTX")
 	if result {
 		t.Error("Expected false for exactly 5 normal klines, got true")
 	}
@@ -460,7 +460,7 @@ func TestIsStaleData_WithinTolerance(t *testing.T) {
 		{Close: basePrice + smallChange, Volume: 1000},
 	}
 
-	result := isStaleData(klines, "BTCUSDT")
+	result := isStaleData(klines, "AAPL")
 
 	// Should return false because there's normal volume despite tiny price changes
 	if result {
@@ -482,7 +482,7 @@ func TestIsStaleData_MixedScenario(t *testing.T) {
 		{Close: 50.0, Volume: 0},     // Frozen (last 5 are all frozen)
 	}
 
-	result := isStaleData(klines, "DOGEUSDT")
+	result := isStaleData(klines, "TSLA")
 
 	// Should detect stale data based on last 5 klines
 	if !result {
@@ -494,7 +494,7 @@ func TestIsStaleData_MixedScenario(t *testing.T) {
 func TestIsStaleData_EmptyKlines(t *testing.T) {
 	klines := []Kline{}
 
-	result := isStaleData(klines, "BTCUSDT")
+	result := isStaleData(klines, "AAPL")
 
 	if result {
 		t.Error("Expected false for empty klines, got true")

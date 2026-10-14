@@ -8,11 +8,11 @@
 CLAUDE.md
 
 # 编译产物
-nofx-auto
+crux-auto
 *.exe
-nofx
 crux
-nofx_test
+crux
+crux_test
 
 # Go 相关
 *.test
@@ -42,7 +42,7 @@ data/
 
 # 决策日志
 decision_logs/
-nofx_test
+crux_test
 
 # Node.js
 web/node_modules
@@ -134,7 +134,7 @@ dmypy.json
 PR_DESCRIPTION.md
 
 # Go build artifacts
-/nofx-server
+/crux-server
 .gstack/
 
 # Local AI agent / skill scaffolding (not part of the runtime app)

@@ -75,7 +75,7 @@ result, err := client.CallWithRequest(request)
 // 构建包含历史的多轮对话
 request := mcp.NewRequestBuilder().
     AddSystemMessage("You are a trading advisor").
-    AddUserMessage("Analyze BTC").
+    AddUserMessage("Analyze AAPL").
     AddAssistantMessage("BTC is bullish...").
     AddUserMessage("What about entry point?").  // 继续对话
     WithTemperature(0.3).

@@ -29,13 +29,13 @@ export function EquityKlineChart({ market, symbol }: EquityKlineChartProps) {
 
   if (error) {
     return (
-      <p className="text-sm text-nofx-text-muted">
+      <p className="text-sm text-crux-text-muted">
         Daily bars unavailable for {symbol}.
       </p>
     )
   }
   if (!data) {
-    return <p className="text-sm text-nofx-text-muted">Loading {symbol}…</p>
+    return <p className="text-sm text-crux-text-muted">Loading {symbol}…</p>
   }
 
   const points = data.klines.map((k) => ({

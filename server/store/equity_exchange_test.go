@@ -12,7 +12,7 @@ import (
 func TestMarketForExchangeType(t *testing.T) {
 	assert.Equal(t, "us_equity", MarketForExchangeType("alpaca_paper"))
 	assert.Equal(t, "cn_equity", MarketForExchangeType(" CN_PAPER "))
-	assert.Equal(t, "", MarketForExchangeType("binance"))
+	assert.Equal(t, "", MarketForExchangeType("retired_exchange"))
 	assert.Equal(t, "", MarketForExchangeType(""))
 }
 
@@ -24,7 +24,7 @@ func TestMissingRequiredFieldsForEquityExchanges(t *testing.T) {
 	assert.Equal(t, []string{"api_key (tushare token)"}, MissingRequiredExchangeCredentialFields("cn_paper", "", ""))
 	assert.Empty(t, MissingRequiredExchangeCredentialFields("cn_paper", "tok", ""))
 
-	assert.Equal(t, []string{"exchange_type"}, MissingRequiredExchangeCredentialFields("binance", "k", "s"), "retired exchange types are rejected")
+	assert.Equal(t, []string{"exchange_type"}, MissingRequiredExchangeCredentialFields("retired_exchange", "k", "s"), "retired exchange types are rejected")
 }
 
 // TestEnsureMarketColumnMigratesOldTable covers a database created before the market column existed.

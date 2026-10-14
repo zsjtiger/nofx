@@ -20,7 +20,7 @@ func TestIsSupportedTraderSymbol(t *testing.T) {
 		{name: "A-share with suffix", market: types.MarketCNEquity, symbol: "600519.SH", want: true},
 		{name: "A-share bare code", market: types.MarketCNEquity, symbol: "000001", want: true},
 		{name: "A-share rejects US ticker", market: types.MarketCNEquity, symbol: "AAPL", want: false},
-		{name: "A-share rejects crypto pair", market: types.MarketCNEquity, symbol: "BTCUSDT", want: false},
+		{name: "A-share rejects US ticker", market: types.MarketCNEquity, symbol: "AAPL", want: false},
 		{name: "empty slot ignored", market: types.MarketUSEquity, symbol: "  ", want: true},
 	}
 

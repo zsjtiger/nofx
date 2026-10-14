@@ -242,13 +242,13 @@ export function TerminalDashboard({
   }, [])
 
   return (
-    <div className="nofx-terminal" style={{ minHeight: '100vh', padding: 0 }}>
+    <div className="crux-terminal" style={{ minHeight: '100vh', padding: 0 }}>
       {/* centered, capped content column — no border (keeps it from feeling
           embedded) but bounded so the aspect-ratio SVGs don't balloon on wide screens */}
       {navSlot &&
         createPortal(
           <span
-            className="nofx-terminal"
+            className="crux-terminal"
             style={{
               background: 'transparent',
               display: 'flex',
