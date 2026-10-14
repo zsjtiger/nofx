@@ -693,5 +693,3 @@ export function StrategyStudioPage() {
     </DeepVoidBackground>
   )
 }
-
-export default StrategyStudioPage

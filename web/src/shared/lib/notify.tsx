@@ -1,7 +1,7 @@
 import { toast } from 'sonner'
 import type { ReactNode } from 'react'
 
-export interface ConfirmOptions {
+interface ConfirmOptions {
   title?: string
   message?: string
   okText?: string
@@ -83,5 +83,3 @@ export const notify = {
   dismiss,
   promise,
 }
-
-export default { confirmToast, notify }

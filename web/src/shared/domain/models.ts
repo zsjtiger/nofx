@@ -1,6 +1,6 @@
 // Constants for AI model and provider configuration
 
-export interface AIProviderConfig {
+interface AIProviderConfig {
   defaultModel: string
   apiUrl: string
   apiName: string

@@ -175,5 +175,3 @@ export function EdgeProfile({ positions }: EdgeProfileProps) {
     </div>
   )
 }
-
-export default EdgeProfile

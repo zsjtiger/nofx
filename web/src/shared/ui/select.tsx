@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '../lib/cn'
 
-export interface SelectOption {
+interface SelectOption {
   value: string | number
   label: string
 }

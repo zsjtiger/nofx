@@ -1,7 +1,7 @@
 // Trader color configuration - unified color assignment logic
 // Used by ComparisonChart and Leaderboard to ensure color consistency
 
-export const TRADER_COLORS = [
+const TRADER_COLORS = [
   '#60a5fa', // blue-400
   '#c084fc', // purple-400
   '#34d399', // emerald-400

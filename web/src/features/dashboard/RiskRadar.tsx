@@ -467,5 +467,3 @@ function GaugeRow({
     </div>
   )
 }
-
-export default RiskRadar

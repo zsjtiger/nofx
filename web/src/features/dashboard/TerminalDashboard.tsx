@@ -939,5 +939,3 @@ export function TerminalDashboard({
     </div>
   )
 }
-
-export default TerminalDashboard

@@ -1,4 +1,4 @@
-export interface EncryptedPayload {
+interface EncryptedPayload {
   wrappedKey: string // RSA-OAEP(K)
   iv: string // 12 bytes
   ciphertext: string // AES-GCM output (includes tag)
@@ -7,18 +7,8 @@ export interface EncryptedPayload {
   ts?: number // optional: unix seconds, used for replay protection
 }
 
-export interface CryptoConfig {
+interface CryptoConfig {
   transport_encryption: boolean
-}
-
-export interface WebCryptoEnvironmentInfo {
-  isBrowser: boolean
-  isSecureContext: boolean
-  hasSubtleCrypto: boolean
-  origin?: string
-  protocol?: string
-  hostname?: string
-  isLocalhost?: boolean
 }
 
 export class CryptoService {
@@ -185,62 +175,4 @@ export class CryptoService {
   // authenticated config endpoints. The server exposes no public decrypt route,
   // so a client-side decrypt helper would be both useless and a security
   // anti-pattern (it implied an unauthenticated decryption oracle existed).
-}
-
-// Generate an obfuscation string (used for clipboard obfuscation)
-export function generateObfuscation(): string {
-  const bytes = new Uint8Array(32)
-  crypto.getRandomValues(bytes)
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join(
-    ''
-  )
-}
-
-// Validate private key format
-export function validatePrivateKeyFormat(
-  value: string,
-  expectedLength: number = 64
-): boolean {
-  const normalized = value.startsWith('0x') ? value.slice(2) : value
-  if (normalized.length !== expectedLength) {
-    return false
-  }
-  return /^[0-9a-fA-F]+$/.test(normalized)
-}
-
-export function diagnoseWebCryptoEnvironment(): WebCryptoEnvironmentInfo {
-  if (typeof window === 'undefined') {
-    return {
-      isBrowser: false,
-      isSecureContext: false,
-      hasSubtleCrypto: false,
-    }
-  }
-
-  const { location } = window
-  const hostname = location?.hostname
-  const protocol = location?.protocol
-  const origin = location?.origin
-  const isLocalhost = hostname
-    ? ['localhost', '127.0.0.1', '::1'].includes(hostname)
-    : false
-
-  const secureContext =
-    typeof window.isSecureContext === 'boolean'
-      ? window.isSecureContext
-      : protocol === 'https:' || (protocol === 'http:' && isLocalhost)
-
-  const hasSubtleCrypto =
-    typeof window.crypto !== 'undefined' &&
-    typeof window.crypto.subtle !== 'undefined'
-
-  return {
-    isBrowser: true,
-    isSecureContext: secureContext,
-    hasSubtleCrypto,
-    origin: origin || undefined,
-    protocol: protocol || undefined,
-    hostname,
-    isLocalhost,
-  }
 }

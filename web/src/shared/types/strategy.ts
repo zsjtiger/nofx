@@ -13,13 +13,7 @@ export interface Strategy {
   updated_at: string
 }
 
-// Strategy usage statistics
-export interface StrategyStats {
-  clone_count: number // Number of times cloned
-  active_users: number // Current number of users
-}
-
-export interface PromptSectionsConfig {
+interface PromptSectionsConfig {
   role_definition?: string
   trading_frequency?: string
   entry_standards?: string
@@ -48,13 +42,13 @@ export interface PublishStrategyConfig {
 }
 
 // Symbols the AI may trade. Only a static list is supported.
-export interface CoinSourceConfig {
+interface CoinSourceConfig {
   source_type: 'static'
   static_coins?: string[]
   excluded_coins?: string[]
 }
 
-export interface IndicatorConfig {
+interface IndicatorConfig {
   klines: KlineConfig
   enable_raw_klines: boolean
   enable_ema: boolean
@@ -70,7 +64,7 @@ export interface IndicatorConfig {
   external_data_sources?: ExternalDataSource[]
 }
 
-export interface KlineConfig {
+interface KlineConfig {
   primary_timeframe: string // stock data is daily: "1d"
   primary_count: number
   longer_timeframe?: string
@@ -79,7 +73,7 @@ export interface KlineConfig {
   selected_timeframes?: string[]
 }
 
-export interface ExternalDataSource {
+interface ExternalDataSource {
   name: string
   type: string
   url: string
@@ -89,7 +83,7 @@ export interface ExternalDataSource {
   refresh_secs?: number
 }
 
-export interface RiskControlConfig {
+interface RiskControlConfig {
   max_positions: number
   max_position_value_ratio: number // single position value cap, multiple of equity
   max_margin_usage: number

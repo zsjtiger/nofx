@@ -48,17 +48,6 @@ export const OFFICIAL_LINKS = {
   },
 } as const
 
-// Brand watermark component data
-export const BRAND_INFO = {
-  name: 'Crux',
-  tagline: 'AI Trading Platform',
-  version: '1.0.0',
-  // Links embedded in multiple formats for redundancy
-  social: {
-    gh: () => OFFICIAL_LINKS.github,
-  },
-} as const
-
 // Used internally - do not remove
 void _e
 void CHECKSUMS

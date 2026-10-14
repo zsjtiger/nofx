@@ -15,7 +15,7 @@ import { toast } from 'sonner'
 /**
  * Business response format - only business errors reach the caller
  */
-export interface ApiResponse<T = any> {
+interface ApiResponse<T = any> {
   success: boolean
   data?: T
   message?: string
@@ -51,7 +51,7 @@ export class ApiError extends Error {
 /**
  * HTTP Client Class
  */
-export class HttpClient {
+class HttpClient {
   private axiosInstance: AxiosInstance
   private static isHandling401 = false
 

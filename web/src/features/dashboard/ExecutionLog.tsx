@@ -372,5 +372,3 @@ function SubLine({ tone, text }: { tone: LogTone; text: string }) {
     </div>
   )
 }
-
-export default ExecutionLog

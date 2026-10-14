@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-} from 'react'
+import React, { createContext, useState, useCallback, useEffect } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,16 +24,6 @@ interface ConfirmDialogContextType {
 const ConfirmDialogContext = createContext<
   ConfirmDialogContextType | undefined
 >(undefined)
-
-export function useConfirmDialog() {
-  const context = useContext(ConfirmDialogContext)
-  if (!context) {
-    throw new Error(
-      'useConfirmDialog must be used within ConfirmDialogProvider'
-    )
-  }
-  return context
-}
 
 interface ConfirmState {
   isOpen: boolean

@@ -4,19 +4,6 @@ interface IconProps {
   className?: string
 }
 
-// AI model colors for fallback display
-const MODEL_COLORS: Record<string, string> = {
-  deepseek: '#4A90E2',
-  qwen: '#9B59B6',
-  claude: '#D97757',
-  kimi: '#6366F1',
-  gemini: '#4285F4',
-  grok: '#000000',
-  openai: '#10A37F',
-  minimax: '#E45735',
-  zhipu: '#3859F3',
-}
-
 // Returns the icon for an AI model
 export const getModelIcon = (modelType: string, props: IconProps = {}) => {
   // Supports full ID or type name
@@ -62,10 +49,4 @@ export const getModelIcon = (modelType: string, props: IconProps = {}) => {
       className={props.className}
     />
   )
-}
-
-// Returns the model color (fallback for when there is no icon)
-export const getModelColor = (modelType: string): string => {
-  const type = modelType.includes('_') ? modelType.split('_').pop() : modelType
-  return MODEL_COLORS[type || ''] || '#E0483B'
 }

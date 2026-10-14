@@ -6,7 +6,7 @@ import { Trash2, Check } from 'lucide-react'
 import { getShortName } from '../../utils/traderUtils'
 
 // Paper accounts are the only exchange types. The market is fixed by the type.
-export const SUPPORTED_EXCHANGE_TEMPLATES = [
+const SUPPORTED_EXCHANGE_TEMPLATES = [
   {
     exchange_type: 'alpaca_paper',
     name: 'Alpaca Paper (US Equities)',
@@ -262,5 +262,3 @@ export function ExchangeConfigModal({
     </div>
   )
 }
-
-export default ExchangeConfigModal

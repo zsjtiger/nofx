@@ -26,18 +26,6 @@ export const ROUTES = {
   strategyMarket: '/strategy-market',
 } as const
 
-export const PAGE_PATHS: Record<Page, string> = {
-  competition: ROUTES.competition,
-  traders: ROUTES.traders,
-  trader: ROUTES.dashboard,
-  strategy: ROUTES.strategy,
-  'strategy-market': ROUTES.strategyMarket,
-  data: ROUTES.data,
-  faq: ROUTES.faq,
-  login: ROUTES.login,
-  register: ROUTES.register,
-}
-
 export const LEGACY_HASH_ROUTES: Record<string, string> = {
   competition: ROUTES.competition,
   traders: ROUTES.traders,
