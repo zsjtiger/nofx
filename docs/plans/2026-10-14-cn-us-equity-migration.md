@@ -8,7 +8,7 @@
 | A 股券商 | 大智慧（待确认：其个人量化交易接口是否可用，见"阻塞项"） |
 | A 股数据源 | Tushare |
 | 交易模式 | 先纸上交易，后实盘 |
-| 大模型 | 用户自配 API Key；Claw402 支付链路删除（按此理解执行，如需保留请告知） |
+| 大模型 | 用户自配 API Key，兼容 OpenAI 协议（自定义 base URL 与模型名）；仅删除 Claw402 支付链路（`mcp/payment`、x402、USDC 计费） |
 | 货币与时区 | A 股：CNY / 北京时间；美股：USD / 美东时间 |
 
 ## 阻塞项
@@ -61,7 +61,8 @@
 - 删除 `provider/coinank`、`provider/hyperliquid`、`provider/vergex`、`provider/nofxos`（视 nofxos 是否仅服务于加密而定，需逐一核对）。
 - 删除 `mcp/payment`（x402 / Claw402 支付）、`wallet/`、Hyperliquid 相关 onboarding 与燃料费流程。
 - 删除 `api/handler_hyperliquid_wallet.go`、`api/handler_wallet.go`、`api/handler_ai_cost.go` 中的 USDC 相关逻辑（需逐一核对）。
-- 模型配置保留自定义 Key 模式（`api/handler_ai_model.go`），移除 Claw402 选项。
+- 模型配置保留自定义 Key 模式（`api/handler_ai_model.go`），移除 Claw402 选项；确认 OpenAI 兼容的自定义 base URL 与模型名路径保持可用（`mcp/providers.go` 中 `ProviderOpenAI`）。
+- 注意：Claw402 不只是支付层。`provider/nofxos/claw402.go` 以及 `store/ai_charge.go`、`api/launch_preflight.go`、`api/handler_onboarding.go`、`manager/trader_manager.go`、`telegram/bot.go` 等多处引用 claw402，删除前要先区分"支付"与"数据/模型路由"两类引用，逐一改掉。
 - 数据库：`store/exchange.go` 中硬编码的交易所 ID 列表需更新；新增迁移处理已有加密交易员记录（建议直接停用，不迁移）。
 - 前端：交易所图标、钱包 / 燃料费页面、Hyperliquid 文案、竞赛排行榜中的加密字段。
 - 文档：README（中英文）、`docs/architecture/`、`docs/getting-started/`、`install.sh`、`.env.example`。
