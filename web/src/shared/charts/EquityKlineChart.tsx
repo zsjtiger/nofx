@@ -8,9 +8,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { api } from '../../../shared/lib/api'
-import { useAuth } from '../../../shared/contexts/AuthContext'
-import type { EquityMarket } from '../../../shared/lib/equityMarket'
+import { api } from '../lib/api'
+import { useAuth } from '../contexts/AuthContext'
+import type { EquityMarket } from '../lib/equityMarket'
 
 interface EquityKlineChartProps {
   market: EquityMarket

@@ -12,11 +12,11 @@ import {
   ComposedChart,
 } from 'recharts'
 import useSWR from 'swr'
-import { api } from '../../../shared/lib/api'
-import type { CompetitionTraderData } from '../../../shared/types'
-import { getTraderColor } from '../../../shared/utils/traderColors'
-import { useLanguage } from '../../../shared/contexts/LanguageContext'
-import { t } from '../../../shared/i18n/translations'
+import { api } from '../lib/api'
+import type { CompetitionTraderData } from '../types'
+import { getTraderColor } from '../utils/traderColors'
+import { useLanguage } from '../contexts/LanguageContext'
+import { t } from '../i18n/translations'
 import { BarChart3, TrendingUp, TrendingDown, Zap } from 'lucide-react'
 
 // Time period options: 1D, 3D, 7D, 30D, All

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import type { Exchange } from '../../shared/types'
-import type { Language } from '../../shared/i18n/translations'
-import { getExchangeIcon } from '../../shared/ui/ExchangeIcons'
+import type { Exchange } from '../../types'
+import type { Language } from '../../i18n/translations'
+import { getExchangeIcon } from '../../ui/ExchangeIcons'
 import { Trash2, Check } from 'lucide-react'
-import { getShortName } from './utils'
+import { getShortName } from '../../../features/traders/utils'
 
 // Paper accounts are the only exchange types. The market is fixed by the type.
 export const SUPPORTED_EXCHANGE_TEMPLATES = [

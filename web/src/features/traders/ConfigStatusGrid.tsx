@@ -8,7 +8,7 @@ import type { Language } from '../../shared/i18n/translations'
 import { t } from '../../shared/i18n/translations'
 import { getModelIcon } from '../../shared/ui/ModelIcons'
 import { getExchangeIcon } from '../../shared/ui/ExchangeIcons'
-import { getShortName, AI_PROVIDER_CONFIG } from './model-constants'
+import { getShortName, AI_PROVIDER_CONFIG } from '../../shared/domain/models'
 
 interface UsageInfo {
   runningCount: number

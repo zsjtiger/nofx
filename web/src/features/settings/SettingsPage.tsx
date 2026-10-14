@@ -14,9 +14,9 @@ import {
 import { useAuth } from '../../shared/contexts/AuthContext'
 import { useLanguage } from '../../shared/contexts/LanguageContext'
 import { api } from '../../shared/lib/api'
-import { ExchangeConfigModal } from '../traders/ExchangeConfigModal'
-import { TelegramConfigModal } from '../traders/TelegramConfigModal'
-import { ModelConfigModal } from '../traders/ModelConfigModal'
+import { ExchangeConfigModal } from '../../shared/components/config/ExchangeConfigModal'
+import { TelegramConfigModal } from '../../shared/components/config/TelegramConfigModal'
+import { ModelConfigModal } from '../../shared/components/config/ModelConfigModal'
 import type {
   Exchange,
   AIModel,

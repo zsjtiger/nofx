@@ -10,10 +10,10 @@ import {
   ReferenceLine,
 } from 'recharts'
 import useSWR from 'swr'
-import { api } from '../../../shared/lib/api'
-import { useLanguage } from '../../../shared/contexts/LanguageContext'
-import { useAuth } from '../../../shared/contexts/AuthContext'
-import { t } from '../../../shared/i18n/translations'
+import { api } from '../lib/api'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useAuth } from '../contexts/AuthContext'
+import { t } from '../i18n/translations'
 import {
   AlertTriangle,
   BarChart3,

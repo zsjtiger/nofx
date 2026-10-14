@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { getSystemConfig, invalidateSystemConfig } from '../lib/config'
 import { reset401Flag, httpClient } from '../lib/httpClient'
 import { getPostAuthPath, setUserMode, type UserMode } from '../lib/onboarding'
-import { ROUTES } from '../../app/router/paths'
+import { ROUTES } from '../routes/paths'
 import { useLanguage } from './LanguageContext'
 
 interface User {

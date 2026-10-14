@@ -39,7 +39,7 @@ import {
   LEGACY_HASH_ROUTES,
   ROUTES,
   type Page,
-} from './paths'
+} from '../../shared/routes/paths'
 
 function getTraderSlug(trader: TraderInfo) {
   const idPrefix = trader.trader_id.slice(0, 4)

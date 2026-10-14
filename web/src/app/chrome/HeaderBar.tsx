@@ -4,7 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown, Settings } from 'lucide-react'
 import { t, type Language } from '../../shared/i18n/translations'
 import { OFFICIAL_LINKS } from '../../shared/constants/branding'
-import { getCurrentPageForPath, ROUTES, type Page } from '../router/paths'
+import {
+  getCurrentPageForPath,
+  ROUTES,
+  type Page,
+} from '../../shared/routes/paths'
 
 interface HeaderBarProps {
   onLoginClick?: () => void

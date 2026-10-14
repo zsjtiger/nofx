@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Trash2, Brain, ExternalLink } from 'lucide-react'
-import type { AIModel } from '../../shared/types'
-import type { Language } from '../../shared/i18n/translations'
-import { t } from '../../shared/i18n/translations'
-import { getModelIcon } from '../../shared/ui/ModelIcons'
-import { ModelStepIndicator } from './ModelStepIndicator'
-import { ModelCard } from './ModelCard'
-import { AI_PROVIDER_CONFIG, getShortName } from './model-constants'
+import type { AIModel } from '../../types'
+import type { Language } from '../../i18n/translations'
+import { t } from '../../i18n/translations'
+import { getModelIcon } from '../../ui/ModelIcons'
+import { ModelStepIndicator } from '../../../features/traders/ModelStepIndicator'
+import { ModelCard } from '../../../features/traders/ModelCard'
+import { AI_PROVIDER_CONFIG, getShortName } from '../../domain/models'
 
 interface ModelConfigModalProps {
   allModels: AIModel[]

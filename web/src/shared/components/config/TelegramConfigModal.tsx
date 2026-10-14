@@ -8,10 +8,10 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { api } from '../../shared/lib/api'
-import type { TelegramConfig, AIModel } from '../../shared/types'
-import { t, type Language } from '../../shared/i18n/translations'
-import { NofxSelect } from '../../shared/ui/select'
+import { api } from '../../lib/api'
+import type { TelegramConfig, AIModel } from '../../types'
+import { t, type Language } from '../../i18n/translations'
+import { NofxSelect } from '../../ui/select'
 
 // Step indicator (reused pattern from ExchangeConfigModal)
 function StepIndicator({

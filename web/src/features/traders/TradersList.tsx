@@ -11,7 +11,10 @@ import type { TraderInfo, Exchange } from '../../shared/types'
 import type { Language } from '../../shared/i18n/translations'
 import { t } from '../../shared/i18n/translations'
 import { PunkAvatar, getTraderAvatar } from '../../shared/ui/PunkAvatar'
-import { getModelDisplayName, getExchangeDisplayName } from './model-constants'
+import {
+  getModelDisplayName,
+  getExchangeDisplayName,
+} from '../../shared/domain/models'
 
 interface TradersListProps {
   traders: TraderInfo[] | undefined
