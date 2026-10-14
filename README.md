@@ -2,12 +2,6 @@
   <img src="docs/assets/nofx-banner.svg" alt="Crux — AI trading terminal" width="100%"/>
 </p>
 
-<p align="center">
-  <a href="https://github.com/NoFxAiOS/nofx/stargazers"><img src="https://img.shields.io/github/stars/NoFxAiOS/nofx?style=flat-square&labelColor=1A1813&color=E0483B" alt="Stars"></a>
-  <a href="https://github.com/NoFxAiOS/nofx/releases"><img src="https://img.shields.io/github/v/release/NoFxAiOS/nofx?style=flat-square&labelColor=1A1813&color=E0483B" alt="Release"></a>
-  <a href="https://github.com/NoFxAiOS/nofx/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-E0483B?style=flat-square&labelColor=1A1813" alt="License"></a>
-</p>
-
 <br/>
 
 Crux is a self-hosted trading terminal for **US stocks** and **China A-shares**. A language model reads daily market data on each cycle and proposes buy, sell or hold decisions. Before any order is sent, a Go runtime checks the decision against the market's rules: whole lots, T+1 settlement, daily price limits, no shorting for A-shares, and the trading session.
@@ -110,21 +104,3 @@ The migration plan and the decisions behind it are in [docs/plans/2026-10-14-cn-
 cd server && go test ./...
 cd web && npx tsc --noEmit -p . && npx vitest run
 ```
-
-## Documentation
-
-| | |
-| :--- | :--- |
-| [Getting Started](docs/getting-started/README.md) | Setup steps and account configuration |
-| [Migration plan](docs/plans/2026-10-14-cn-us-equity-migration.md) | A-share and US equity design |
-| [Troubleshooting](docs/archive/guides/TROUBLESHOOTING.md) | Diagnosing common issues |
-
-The FAQ inside the web app is the most current reference.
-
-[![Star History Chart](https://star-history.dera.page/svg?repos=NoFxAiOS/nofx&type=Date)](https://star-history.dera.page/#NoFxAiOS/nofx&Date)
-
-## License
-
-[AGPL-3.0](LICENSE)
-
-<sub>Automated trading involves substantial risk. AI-driven strategies are experimental and can lose money. This software is for paper trading and research. It is not investment advice.</sub>
