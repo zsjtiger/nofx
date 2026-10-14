@@ -87,14 +87,11 @@
 
 ### 特殊规则
 
-- OKX 除 API Key 和 Secret 外，还需要 passphrase
 - Bybit 永续/合约交易需要合约权限
 - 不建议开启提现权限
 
 ### 参考文档
 
-- `docs/getting-started/okx-api.md`
-- `docs/getting-started/bybit-api.md`
 
 ## skill_exchange_api_diagnosis
 
@@ -110,7 +107,7 @@
 
 1. 系统时间是否同步
 2. API Key / Secret 是否正确
-3. 是否遗漏额外字段，如 OKX passphrase
+3. 是否遗漏额外字段
 4. IP 白名单是否包含当前服务器
 5. 是否启用了交易或合约权限
 6. 密钥是否过期或已重建
@@ -118,7 +115,6 @@
 ### 已知实现事实
 
 - 时间不同步是 `invalid signature` / `timestamp` 的高频根因，见 `docs/guides/TROUBLESHOOTING.zh-CN.md`
-- OKX 的 passphrase 缺失会导致签名相关问题，见 `docs/getting-started/okx-api.md`
 
 ### 输出格式
 

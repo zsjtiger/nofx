@@ -74,7 +74,7 @@ Use this to:
 **Create strategy** (independent from traders):
 - Never GET trader info just to create a strategy.
 - POST {"name":"<descriptive name>"} — config is OPTIONAL. Backend applies complete working defaults automatically (ai500 top coins, all indicators, standard risk control). Strategy is immediately usable.
-- Only include "config" when user explicitly requests custom settings (specific coins, custom leverage, different timeframes).
+- Only include "config" when user explicitly requests custom settings (specific symbols, custom indicators, different risk limits).
 - After POST: GET /api/strategies/:id to verify → show user: name, coin_source.source_type, key risk_control values
 
 **"create strategy and start" (full setup workflow)**:

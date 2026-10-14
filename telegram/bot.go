@@ -365,7 +365,7 @@ Just tell me what you want:
 
 📊 "Show my positions"
 💰 "What's my balance?"
-🤖 "Create a BTC trend strategy and start it"
+🤖 "Create an AAPL trend strategy and start it"
 ⏹ "Stop all traders"
 
 /help for more · /lang to change language`
@@ -376,7 +376,7 @@ Just tell me what you want:
 
 📊 "Show my positions"
 💰 "What's my balance?"
-🤖 "Create a BTC trend strategy and start it"
+🤖 "Create an AAPL trend strategy and start it"
 ⏹ "Stop all traders"
 
 /help for more · /lang to change language`
@@ -410,8 +410,8 @@ func helpMsg(lang string) string {
 • "List my traders"
 
 *Create & start*
-• "Create a BTC trend strategy and start it"
-• "Conservative strategy, BTC and ETH only"
+• "Create an AAPL trend strategy and start it"
+• "Conservative strategy, AAPL and MSFT only"
 
 *Control*
 • "Start trader"
@@ -431,8 +431,8 @@ func helpMsg(lang string) string {
 • "List my traders"
 
 *Create & start*
-• "Create a BTC trend strategy and start it"
-• "Conservative strategy, BTC and ETH only"
+• "Create an AAPL trend strategy and start it"
+• "Conservative strategy, AAPL and MSFT only"
 
 *Control*
 • "Start trader"

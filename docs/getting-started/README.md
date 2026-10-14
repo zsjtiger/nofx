@@ -1,122 +1,30 @@
-# 🚀 Getting Started with NOFX
+# Getting Started
 
-**Language:** [English](README.md) | [中文](README.zh-CN.md)
+NOFX runs on your own server. You add an AI model and a trading account in the web app, then create a strategy and a trader.
 
-This section contains all the documentation you need to get NOFX up and running.
+## 1. Install
 
-## 📋 Deployment Options
+See the [README](../../README.md#install). The web app runs at `http://127.0.0.1:3000` by default.
 
-Choose the method that best fits your needs:
+## 2. Register
 
-### 🐳 Docker Deployment (Recommended)
+The first account created becomes the owner of the instance.
 
-**Best for:** Beginners, quick setup, production deployments
+## 3. Add an AI model
 
-- **English:** [docker-deploy.en.md](docker-deploy.en.md)
-- **中文:** [docker-deploy.zh-CN.md](docker-deploy.zh-CN.md)
+Any model with an OpenAI-compatible chat completions endpoint works. Enter the base URL, model name and API key in the AI model settings.
 
-**Pros:**
-- ✅ One-command setup
-- ✅ All dependencies included
-- ✅ Easy to update and manage
-- ✅ Isolated environment
+## 4. Add a trading account
 
-**Quick Start:**
-```bash
-cp config.json.example config.json
-./scripts/start.sh start --build
-```
+| Account type | Market | What you need |
+| :--- | :--- | :--- |
+| `alpaca_paper` | US stocks | An Alpaca paper trading key and secret |
+| `cn_paper` | China A-shares | A Tushare Pro token |
 
----
+Both markets run in paper trading mode. See the [migration plan](../plans/2026-10-14-cn-us-equity-migration.md) for the rules that apply to each market.
 
+## 5. Create a strategy and a trader
 
-## 🤖 AI Configuration
+Create a strategy in **Strategy Studio** with the symbols and the risk limits. Then create a trader that uses the strategy, the AI model and the account, and start it.
 
-### Custom AI Providers
-
-- **English:** [custom-api.en.md](custom-api.en.md)
-- **中文:** [custom-api.md](custom-api.md)
-
-Use custom AI models or third-party OpenAI-compatible APIs:
-- Custom DeepSeek endpoints
-- Self-hosted models
-- Other LLM providers
-
----
-
-## 🔑 Prerequisites
-
-Before starting, ensure you have:
-
-### For Docker Method:
-- ✅ Docker 20.10+
-- ✅ Docker Compose V2
-
-### For Manual Method:
-- ✅ Go 1.21+
-- ✅ Node.js 18+
-- ✅ TA-Lib library
-
----
-
-## 📚 Next Steps
-
-After deployment:
-
-1. **Configure AI Models** → Web interface at http://localhost:3000
-2. **Set Up Exchange** → Add Binance/Hyperliquid credentials
-3. **Create Traders** → Combine AI models with exchanges
-4. **Start Trading** → Monitor performance in dashboard
-
-### 🔐 Optional: Enable Admin Mode (Single-User)
-
-For single-tenant/self-hosted usage, you can enable strict admin-only access:
-
-1) In `config.json` set the 2 fields below:
-```jsonc
-{
-	"admin_mode": true,
-  ...
-  "jwt_secret": "YOUR_JWT_SCR"
-}
-```
-2) Set environment variables (Docker compose already wired):
-- `NOFX_ADMIN_PASSWORD` — admin password (plaintext; hashed on startup)
-
-3) Login at `/login` using the admin password. All non-essential endpoints are blocked to unauthenticated users while admin mode is enabled.
-
----
-
-## ⚠️ Important Notes
-
-**Before Trading:**
-- ⚠️ Test on testnet first
-- ⚠️ Start with small amounts
-- ⚠️ Understand the risks
-- ⚠️ Read [Security Policy](../../SECURITY.md)
-
-**API Keys:**
-- 🔑 Never commit API keys to git
-- 🔑 Use environment variables
-- 🔑 Restrict IP access
-- 🔑 Enable 2FA on exchanges
-
----
-
-## 🆘 Troubleshooting
-
-**Common Issues:**
-
-1. **Docker build fails** → Check Docker version, update to 20.10+
-2. **TA-Lib not found** → `brew install ta-lib` (macOS) or `apt-get install libta-lib0-dev` (Ubuntu)
-3. **Port 8080 in use** → Change `API_PORT` in .env file
-4. **Frontend won't connect** → Check backend is running on port 8080
-
-**Need more help?**
-- 📖 [FAQ](../guides/faq.zh-CN.md)
-- 💬 [Telegram Community](https://t.me/nofx_dev_community)
-- 🐛 [GitHub Issues](https://github.com/NoFxAiOS/nofx/issues)
-
----
-
-[← Back to Documentation Home](../README.md)
+A trader only accepts symbols that match its market. For example, `AAPL` is valid for `us_equity` and `600519.SH` is valid for `cn_equity`.

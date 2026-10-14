@@ -53,10 +53,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
   const [isExchangeAccountStatesLoading, setIsExchangeAccountStatesLoading] =
     useState(false)
   const [supportedModels, setSupportedModels] = useState<AIModel[]>([])
-  const [visibleTraderAddresses, setVisibleTraderAddresses] = useState<
-    Set<string>
-  >(new Set())
-  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const loadConfigs = async () => {
     if (!user || !token) {
@@ -80,30 +76,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
       setSupportedModels(models)
     } finally {
       setIsExchangeAccountStatesLoading(false)
-    }
-  }
-
-  // Toggle wallet address visibility for a trader
-  const toggleTraderAddressVisibility = (traderId: string) => {
-    setVisibleTraderAddresses((prev) => {
-      const next = new Set(prev)
-      if (next.has(traderId)) {
-        next.delete(traderId)
-      } else {
-        next.add(traderId)
-      }
-      return next
-    })
-  }
-
-  // Copy wallet address to clipboard
-  const handleCopyAddress = async (id: string, address: string) => {
-    try {
-      await navigator.clipboard.writeText(address)
-      setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 2000)
-    } catch (err) {
-      console.error('Failed to copy address:', err)
     }
   }
 
@@ -678,8 +650,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
           allExchanges={allExchanges}
           configuredModelsCount={configuredModels.length}
           configuredExchangesCount={configuredExchanges.length}
-          visibleTraderAddresses={visibleTraderAddresses}
-          copiedId={copiedId}
           language={language}
           onTraderSelect={onTraderSelect}
           onNavigate={(path) => navigate(path)}
@@ -687,8 +657,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
           onToggleTrader={handleToggleTrader}
           onToggleCompetition={handleToggleCompetition}
           onDeleteTrader={handleDeleteTrader}
-          onToggleTraderAddress={toggleTraderAddressVisibility}
-          onCopyAddress={handleCopyAddress}
         />
 
         {/* Create Trader Modal */}

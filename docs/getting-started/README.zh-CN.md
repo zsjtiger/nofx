@@ -1,103 +1,30 @@
-# 🚀 NOFX 快速开始
+# 快速开始
 
-本节包含让 NOFX 运行起来所需的所有文档。
+NOFX 运行在您自己的服务器上。在网页端添加 AI 模型和交易账户，然后创建策略和交易员即可。
 
-## 📋 部署选项
+## 1. 安装
 
-选择最适合您的方式：
+参见 [README](../../README.md#install)。默认访问 `http://127.0.0.1:3000`。
 
-### 🐳 Docker 部署（推荐）
+## 2. 注册
 
-**适合：** 初学者、快速部署、生产环境
+第一个创建的账户将成为实例的所有者。
 
-- **中文文档：** [docker-deploy.zh-CN.md](docker-deploy.zh-CN.md)
-- **English:** [docker-deploy.en.md](docker-deploy.en.md)
+## 3. 添加 AI 模型
 
-**优势：**
-- ✅ 一键启动
-- ✅ 包含所有依赖
-- ✅ 易于更新和管理
-- ✅ 隔离环境
+任何兼容 OpenAI Chat Completions 接口的模型均可使用。在 AI 模型设置中填写 Base URL、模型名称和 API Key。
 
-**快速开始：**
-```bash
-cp config.json.example config.json
-./scripts/start.sh start --build
-```
+## 4. 添加交易账户
 
----
+| 账户类型 | 市场 | 需要准备 |
+| :--- | :--- | :--- |
+| `alpaca_paper` | 美股 | Alpaca 纸盘的 Key 和 Secret |
+| `cn_paper` | A 股 | Tushare Pro 的 Token |
 
+两个市场目前都是纸上交易。各市场适用的规则见[迁移方案](../plans/2026-10-14-cn-us-equity-migration.md)。
 
-## 🤖 AI 配置
+## 5. 创建策略和交易员
 
-### 自定义 AI 提供商
+在 **Strategy Studio** 中创建策略，设置标的和风控参数。然后创建交易员，选择策略、AI 模型和账户，并启动。
 
-- **中文文档：** [custom-api.md](custom-api.md)
-- **English:** [custom-api.en.md](custom-api.en.md)
-
-使用自定义 AI 模型或第三方 OpenAI 兼容 API：
-- 自定义 DeepSeek 端点
-- 本地部署的模型
-- 其他 LLM 提供商
-
----
-
-## 🔑 环境要求
-
-开始之前，请确保已安装：
-
-### Docker 方式：
-- ✅ Docker 20.10+
-- ✅ Docker Compose V2
-
-### 手动部署方式：
-- ✅ Go 1.21+
-- ✅ Node.js 18+
-- ✅ TA-Lib 库
-
----
-
-## 📚 下一步
-
-部署完成后：
-
-1. **配置 AI 模型** → 访问 Web 界面 http://localhost:3000
-2. **设置交易所** → 添加 Binance/Hyperliquid 凭证
-3. **创建交易员** → 将 AI 模型与交易所结合
-4. **开始交易** → 在仪表板中监控表现
-
----
-
-## ⚠️ 重要提示
-
-**交易前：**
-- ⚠️ 先在测试网测试
-- ⚠️ 从小金额开始
-- ⚠️ 了解风险
-- ⚠️ 阅读[安全策略](../../SECURITY.md)
-
-**API 密钥：**
-- 🔑 永远不要提交 API 密钥到 git
-- 🔑 使用环境变量
-- 🔑 限制 IP 访问
-- 🔑 在交易所启用 2FA
-
----
-
-## 🆘 故障排除
-
-**常见问题：**
-
-1. **Docker 构建失败** → 检查 Docker 版本，更新到 20.10+
-2. **找不到 TA-Lib** → `brew install ta-lib` (macOS) 或 `apt-get install libta-lib0-dev` (Ubuntu)
-3. **端口 8080 被占用** → 在 .env 文件中更改 `API_PORT`
-4. **前端无法连接** → 检查后端是否在端口 8080 上运行
-
-**需要更多帮助？**
-- 📖 [常见问题](../guides/faq.zh-CN.md)
-- 💬 [Telegram 社区](https://t.me/nofx_dev_community)
-- 🐛 [GitHub Issues](https://github.com/NoFxAiOS/nofx/issues)
-
----
-
-[← 返回文档首页](../README.md)
+交易员只接受与其市场匹配的标的。例如 `AAPL` 适用于 `us_equity`，`600519.SH` 适用于 `cn_equity`。

@@ -67,8 +67,6 @@ NOFX offers bounties for valuable contributions:
 
 | Task | Reward | Difficulty | Status |
 |------|--------|------------|--------|
-| [Hyperliquid Integration](bounty-hyperliquid.md) | TBD | Hard | 🟡 Open |
-| [Aster DEX Integration](bounty-aster.md) | TBD | Medium | ✅ Completed |
 
 ---
 
@@ -192,8 +190,6 @@ NOFX offers bounties for valuable contributions:
    - [Code of Conduct](../../CODE_OF_CONDUCT.md)
 
 2. **For Exchange Integration:**
-   - [Hyperliquid Bounty](bounty-hyperliquid.md)
-   - [Aster Bounty](bounty-aster.md)
    - Existing code: `trader/binance_futures.go`
 
 3. **For AI Features:**

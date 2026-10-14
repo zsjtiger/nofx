@@ -1,3 +1,5 @@
+> **Status:** The root README and [getting-started](getting-started/README.md) describe the current US stock and A-share paper-trading product. Other documents in this folder were written for the earlier crypto version and have not been rewritten yet. Treat them as historical.
+
 # 📚 NOFX Documentation Center / 文档中心
 
 Welcome to the NOFX documentation! This page helps you find the right documentation quickly.
@@ -52,8 +54,6 @@ Welcome to the NOFX documentation! This page helps you find the right documentat
 | [Code of Conduct](../CODE_OF_CONDUCT.md) | Community guidelines | 社区行为准则 |
 | [Security Policy](../SECURITY.md) | Report security vulnerabilities | 报告安全漏洞 |
 | [Bounty Guide](community/bounty-guide.md) | How to post bounty tasks | 如何发布悬赏任务 |
-| [Hyperliquid Bounty](community/bounty-hyperliquid.md) | Hyperliquid integration bounty | Hyperliquid 集成悬赏 |
-| [Aster Bounty](community/bounty-aster.md) | Aster DEX integration bounty | Aster DEX 集成悬赏 |
 
 **Get Involved:**
 - 💬 [Telegram Community](https://t.me/nofx_dev_community)

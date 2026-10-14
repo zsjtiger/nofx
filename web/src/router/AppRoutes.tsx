@@ -19,7 +19,6 @@ import { SetupPage } from '../components/modals/SetupPage'
 import { CompetitionPage } from '../components/trader/CompetitionPage'
 import { AITradersPage } from '../components/trader/AITradersPage'
 import { FAQPage } from '../pages/FAQPage'
-import { LandingPage } from '../pages/LandingPage'
 import { SettingsPage } from '../pages/SettingsPage'
 import { StrategyStudioPage } from '../pages/StrategyStudioPage'
 import { TerminalDashboard } from '../components/terminal/TerminalDashboard'
@@ -387,7 +386,7 @@ export function AppRoutes() {
     <>
       <LegacyHashRedirect />
       <Routes>
-        <Route path={ROUTES.home} element={<LandingPage />} />
+        <Route path={ROUTES.home} element={<Navigate to={ROUTES.login} replace />} />
         <Route path={ROUTES.login} element={<LoginPage />} />
         <Route path={ROUTES.register} element={<RegisterPage />} />
         <Route path={ROUTES.resetPassword} element={<ResetPasswordPage />} />
@@ -441,7 +440,7 @@ export function AppRoutes() {
                 <CompetitionPage />
               </AppChrome>
             ) : (
-              <LandingPage />
+              <Navigate to={ROUTES.login} replace />
             )
           }
         />
@@ -451,7 +450,7 @@ export function AppRoutes() {
             isAuthenticated ? (
               <Navigate to={ROUTES.strategy} replace />
             ) : (
-              <LandingPage />
+              <Navigate to={ROUTES.login} replace />
             )
           }
         />
@@ -467,7 +466,7 @@ export function AppRoutes() {
         />
         <Route
           path={ROUTES.dashboard}
-          element={isAuthenticated ? <DashboardRoute /> : <LandingPage />}
+          element={isAuthenticated ? <DashboardRoute /> : <Navigate to={ROUTES.login} replace />}
         />
         <Route
           path={ROUTES.strategy}
@@ -477,7 +476,7 @@ export function AppRoutes() {
                 <StrategyStudioPage />
               </AppChrome>
             ) : (
-              <LandingPage />
+              <Navigate to={ROUTES.login} replace />
             )
           }
         />

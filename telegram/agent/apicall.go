@@ -69,12 +69,10 @@ var botAPIAllowlist = []allowedRoute{
 	{"GET", regexp.MustCompile(`^/api/traders$`)},
 	{"GET", regexp.MustCompile(`^/api/traders/[^/]+/config$`)},
 	{"GET", regexp.MustCompile(`^/api/traders/[^/]+/public-config$`)},
-	{"GET", regexp.MustCompile(`^/api/traders/[^/]+/grid-risk$`)},
 	{"GET", regexp.MustCompile(`^/api/competition$`)},
 	{"GET", regexp.MustCompile(`^/api/top-traders$`)},
 	{"GET", regexp.MustCompile(`^/api/equity-history$`)},
-	{"GET", regexp.MustCompile(`^/api/klines$`)},
-	{"GET", regexp.MustCompile(`^/api/symbols$`)},
+	{"GET", regexp.MustCompile(`^/api/equity/klines$`)},
 	{"GET", regexp.MustCompile(`^/api/status$`)},
 	{"GET", regexp.MustCompile(`^/api/account$`)},
 	{"GET", regexp.MustCompile(`^/api/positions$`)},
@@ -86,8 +84,6 @@ var botAPIAllowlist = []allowedRoute{
 	{"GET", regexp.MustCompile(`^/api/decisions$`)},
 	{"GET", regexp.MustCompile(`^/api/decisions/latest$`)},
 	{"GET", regexp.MustCompile(`^/api/statistics$`)},
-	{"GET", regexp.MustCompile(`^/api/ai-costs$`)},
-	{"GET", regexp.MustCompile(`^/api/ai-costs/summary$`)},
 
 	// Write endpoints — trader and strategy lifecycle. These let the bot create
 	// traders and strategies the user has asked for, and start/stop them. NOT

@@ -1,5 +1,3 @@
-<p align="center"><strong>Backed by <a href="https://vergex.trade">vergex.trade</a></strong></p>
-
 <p align="center">
   <img src="docs/assets/nofx-banner.svg" alt="NOFX — AI trading terminal" width="100%"/>
 </p>
@@ -11,155 +9,57 @@
   <a href="https://t.me/nofx_dev_community"><img src="https://img.shields.io/badge/telegram-community-E0483B?style=flat-square&labelColor=1A1813&logo=telegram&logoColor=white" alt="Telegram"></a>
 </p>
 
-<p align="center">
-  <a href="README.md">English</a> ·
-  <a href="docs/i18n/zh-CN/README.md">中文</a> ·
-  <a href="docs/i18n/ja/README.md">日本語</a> ·
-  <a href="docs/i18n/ko/README.md">한국어</a> ·
-  <a href="docs/i18n/ru/README.md">Русский</a> ·
-  <a href="docs/i18n/uk/README.md">Українська</a> ·
-  <a href="docs/i18n/vi/README.md">Tiếng Việt</a>
-</p>
-
 <br/>
 
-NOFX is an open-source trading terminal where the strategy is a language model. Each trader runs a continuous loop — read market structure, decide, execute, record the reasoning — while a Go runtime clamps every order to hard risk limits the model cannot override.
+NOFX is a self-hosted trading terminal for **US stocks** and **China A-shares**. A language model reads daily market data on each cycle and proposes buy, sell or hold decisions. Before any order is sent, a Go runtime checks the decision against the market's rules: whole lots, T+1 settlement, daily price limits, no shorting for A-shares, and the trading session.
 
-Traders compose freely: any model, any of nine exchanges, any strategy. Run several side by side and compare them on a public leaderboard by realized return. Everything runs on your own machine; exchange credentials are encrypted at rest and never leave it.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/NoFxAiOS/nofx/main/install.sh | bash
-```
-
-The terminal opens at `http://127.0.0.1:3000`.
-
-**First run**
-
-1. Register — the first account becomes the owner of the instance.
-2. Follow the guided launch: put **$1+ USDC** (Base network) in the AI fee wallet it creates for you, then connect Hyperliquid and deposit **$12+ USDC** to trade with.
-3. Start **Autopilot**. The AI scans the market every few minutes and trades on its own; every decision appears on the dashboard as it happens. Stop it anytime with one click.
-
-<br/>
-
-## Register exchanges
-
-NOFX is free and open source. Opening an account through the partner links below carries reduced trading fees and funds continued development.
-
-| Exchange                                                                                                                      | Status | Register with fee discount                                                          |
-| :---------------------------------------------------------------------------------------------------------------------------- | :----: | :---------------------------------------------------------------------------------- |
-| <img src="web/public/exchange-icons/binance.jpg" width="20" height="20" style="vertical-align: middle;"/> **Binance**       |   ✅   | [Register](https://www.binance.com/join?ref=NOFXENG)                                |
-| <img src="web/public/exchange-icons/bybit.png" width="20" height="20" style="vertical-align: middle;"/> **Bybit**           |   ✅   | [Register](https://partner.bybit.com/b/83856)                                       |
-| <img src="web/public/exchange-icons/okx.svg" width="20" height="20" style="vertical-align: middle;"/> **OKX**               |   ✅   | [Register](https://www.okx.com/join/1865360)                                        |
-| <img src="web/public/exchange-icons/hyperliquid.png" width="20" height="20" style="vertical-align: middle;"/> **Hyperliquid** |   ✅   | [Register](https://app.hyperliquid.xyz/join/AITRADING)                              |
-| <img src="web/public/exchange-icons/bitget.svg" width="20" height="20" style="vertical-align: middle;"/> **Bitget**         |   ✅   | [Register](https://www.bitget.com/referral/register?from=referral&clacCode=c8a43172) |
-| <img src="web/public/exchange-icons/kucoin.svg" width="20" height="20" style="vertical-align: middle;"/> **KuCoin**         |   ✅   | [Register](https://www.kucoin.com/r/broker/CXEV7XKK)                                |
-| <img src="web/public/exchange-icons/gate.svg" width="20" height="20" style="vertical-align: middle;"/> **Gate**             |   ✅   | [Register](https://www.gatenode.xyz/share/VQBGUAxY)                                 |
-| <img src="web/public/exchange-icons/aster.svg" width="20" height="20" style="vertical-align: middle;"/> **Aster**           |   ✅   | [Register](https://www.asterdex.com/en/referral/fdfc0e)                             |
-| <img src="web/public/exchange-icons/lighter.png" width="20" height="20" style="vertical-align: middle;"/> **Lighter**       |   ✅   | [Register](https://app.lighter.xyz/?referral=68151432)                              |
-
-<br/>
-
-## Demo
-
-https://github.com/user-attachments/assets/3310f495-14c5-4586-a1cc-3d32e44aa505
-
-<br/>
-
-## The model proposes. The runtime disposes.
-
-Decisions come from the [Claw402.ai](https://claw402.ai) · Vergex data stack: a live direction board for the market universe, per-symbol current direction and direction history, cost-basis and liquidation heatmaps, and real-time market net flow. NOFX follows the board direction and uses the remaining data as execution context.
-
-Every order passes through limits enforced in code, outside the model's reach:
-
-|                          |                                                                                    |
-| :----------------------- | :--------------------------------------------------------------------------------- |
-| Position limits          | Max concurrent positions, notional capped as a ratio of equity, one position per symbol |
-| Leverage clamps          | Hard caps applied at order-sizing time, independent of what the model requests     |
-| Exchange-side protection | Stop-loss and take-profit placed on the exchange immediately after every entry     |
-| Drawdown auto-close      | Profitable positions that give back too much from their peak are closed            |
-| Trade throttling         | Minimum hold times, per-symbol re-entry cooldowns, per-cycle and per-hour entry limits |
-| Safe mode                | Repeated model failures block new entries until the model recovers                 |
-| Launch preflight         | Model access, wallet funds, strategy, and exchange balances verified before a trader may start |
-
-Each decision is stored with the model's full reasoning. There is no position without a paper trail.
-
-<br/>
-
-## Terminal
-
-| | |
-| :--- | :--- |
-| **Autopilot** | Guided launch: fund, connect, deposit, start — with server-side preflight throughout |
-| **Strategy Studio** | Style presets, coin universes, indicators, leverage, entry confidence, custom prompts |
-| **Competition** | Public leaderboard ranked by realized return, each entry attributed to its model |
-| **Dashboard** | Live positions, orders, statistics, and the reasoning behind every decision |
-
-<details>
-<summary>Screenshots</summary>
-
-<br/>
-
-|                        Overview                         |                          Market Chart                           |
-| :-----------------------------------------------------: | :-------------------------------------------------------------: |
-| <img src="screenshots/dashboard-page.png" width="400"/> | <img src="screenshots/dashboard-market-chart.png" width="400"/> |
-
-|                          Trading Stats                           |                          Position History                           |
-| :--------------------------------------------------------------: | :-----------------------------------------------------------------: |
-| <img src="screenshots/dashboard-trading-stats.png" width="400"/> | <img src="screenshots/dashboard-position-history.png" width="400"/> |
-
-|                     Strategy Editor                      |                      Indicators Config                       |
-| :------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="screenshots/strategy-studio.png" width="400"/> | <img src="screenshots/strategy-indicators.png" width="400"/> |
-
-|                     Competition                           |                    Configuration                              |
-| :-------------------------------------------------------: | :-----------------------------------------------------------: |
-| <img src="screenshots/competition-page.png" width="400"/> | <img src="screenshots/config-ai-exchanges.png" width="400"/>  |
-
-</details>
-
-<br/>
-
-## Models
-
-Eight providers with your own keys — DeepSeek, OpenAI, Claude, Qwen, Gemini, Grok, Kimi, MiniMax — including custom endpoints and model names.
-
-Or no keys at all: [Claw402](https://claw402.ai) meters model usage per call in USDC over the x402 protocol. A wallet on Base replaces every API key.
-
-| Provider | Access |
-| :------- | :----- |
-| **Claw402** | [Pay-as-you-go AI models with official discount](https://claw402.ai) |
+**Status:** paper trading only. US orders go to an Alpaca paper account. A-share orders go to a built-in paper account. A live A-share broker is not connected yet.
 
 ## Markets
 
-Crypto perpetuals on all nine exchanges. On Hyperliquid, the same runtime also trades tokenized US equities, commodities, indices, FX, and pre-IPO perps — TSLA, NVDA, GOLD, SPX, EUR, OPENAI — alongside crypto.
+| Market | Symbols | Currency and clock | Data | Execution |
+| :--- | :--- | :--- | :--- | :--- |
+| US equities (`us_equity`) | `AAPL`, `BRK.B` | USD, US Eastern | Alpaca daily bars | Alpaca paper account |
+| China A-shares (`cn_equity`) | `600519.SH`, `000001.SZ`, `830799.BJ` | CNY, Beijing | Tushare Pro daily bars (forward-adjusted) | Built-in paper account (commission and stamp duty) |
 
-<br/>
+A-share rules the runtime enforces:
 
-## Architecture
+- Whole lots of 100 shares. An odd-lot sell is allowed only when it closes the whole position.
+- T+1: shares bought today cannot be sold until the next trading day.
+- No shorting and no leverage.
+- Daily price limits: 10% main board, 20% ChiNext and STAR, 30% Beijing, 5% ST stocks.
 
-```
-    ┌─────────────────────────────────────────────────┐
-    │                 Trading Terminal                 │
-    │        React · TypeScript · TradingView          │
-    │   Dashboard · Strategy Studio · Competition      │
-    ├─────────────────────────────────────────────────┤
-    │                  API Server (Go)                  │
-    │      JWT auth · encrypted credential store        │
-    ├──────────────┬──────────────┬───────────────────┤
-    │   Strategy    │  Autopilot   │   Trader Runtime  │
-    │    Engine     │  Preflight   │    Risk Engine    │
-    ├──────────────┴──────────────┴───────────────────┤
-    │                 AI Model Layer                    │
-    │  DeepSeek · OpenAI · Claude · Qwen · Gemini      │
-    │  Grok · Kimi · MiniMax · Claw402 (x402 USDC)     │
-    ├─────────────────────────────────────────────────┤
-    │              Exchange Connectivity                │
-    │ Binance · Bybit · OKX · Hyperliquid · Bitget     │
-    │ KuCoin · Gate · Aster · Lighter                  │
-    └─────────────────────────────────────────────────┘
-```
+US stocks may be shorted and accept fractional quantities. Leverage is not used.
 
-<br/>
+## Quick start
+
+1. Install and open the web app (see [Install](#install)).
+2. Register. The first account becomes the owner of the instance.
+3. **Add an AI model.** Any OpenAI-compatible endpoint works. Enter the base URL, model name and API key.
+4. **Add an exchange account.**
+   - For US stocks, choose `alpaca_paper` and enter your Alpaca paper key and secret.
+   - For A-shares, choose `cn_paper` and enter your Tushare Pro token.
+5. Create a strategy in **Strategy Studio**. Pick the symbols and the risk limits.
+6. Create a trader that uses the strategy and the account, then start it.
+
+The dashboard shows the equity curve, open positions, each AI decision with its reasoning, and the daily price for the first open position.
+
+## Configuration
+
+Copy `.env.example` to `.env` and set the required secrets:
+
+| Variable | Purpose |
+| :--- | :--- |
+| `JWT_SECRET` | Signs login tokens. At least 32 characters. |
+| `DATA_ENCRYPTION_KEY` | Base64 32-byte key. Encrypts stored API keys. |
+| `RSA_PRIVATE_KEY` | Used for browser-to-server encryption. |
+| `ALPACA_API_KEY`, `ALPACA_SECRET_KEY` | Optional server-wide Alpaca market-data keys. |
+| `DB_TYPE`, `DB_PATH` | SQLite by default. Set `DB_TYPE=postgres` for PostgreSQL. |
+| `EXPERIENCE_IMPROVEMENT` | Set to `false` to turn off anonymous usage statistics. |
+
+Broker and data keys are normally entered in the web app per account, not in `.env`. The Tushare token is entered in the `cn_paper` account.
+
+Paper account state is saved under `data/paper`.
 
 ## Install
 
@@ -169,9 +69,7 @@ Crypto perpetuals on all nine exchanges. On Hyperliquid, the same runtime also t
 curl -fsSL https://raw.githubusercontent.com/NoFxAiOS/nofx/main/install.sh | bash
 ```
 
-**Railway**
-
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/nofx?referralCode=nofx)
+Then open `http://127.0.0.1:3000`.
 
 **Docker**
 
@@ -180,14 +78,7 @@ curl -O https://raw.githubusercontent.com/NoFxAiOS/nofx/main/docker-compose.prod
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-**Windows** — install [Docker Desktop](https://www.docker.com/products/docker-desktop/), then:
-
-```powershell
-curl -o docker-compose.prod.yml https://raw.githubusercontent.com/NoFxAiOS/nofx/main/docker-compose.prod.yml
-docker compose -f docker-compose.prod.yml up -d
-```
-
-**From source** — Go 1.21+, Node.js 18+:
+**From source** — Go 1.25+ and Node.js 18+:
 
 ```bash
 git clone https://github.com/NoFxAiOS/nofx.git && cd nofx
@@ -195,48 +86,47 @@ go build -o nofx && ./nofx            # backend
 cd web && npm install && npm run dev  # frontend, in a second terminal
 ```
 
-**Update** — re-run the install script; it upgrades in place.
+**Update** — re-run the install script, or pull the new image and restart with `docker compose`.
 
-<details>
-<summary>Server deployment</summary>
+## Architecture
 
-<br/>
+| Path | Role |
+| :--- | :--- |
+| `trader/types` | Market definitions, capabilities and rules (lots, settlement, price limits, sessions) |
+| `trader/cnpaper`, `trader/alpacapaper` | Paper brokers for A-shares and US stocks |
+| `provider/tushare`, `provider/alpaca` | Market-data clients |
+| `market` | Daily bars and indicators for the AI prompt |
+| `kernel` | Prompt building and fail-closed validation of AI decisions |
+| `store` | Database models (GORM, SQLite or PostgreSQL) |
+| `api` | HTTP API used by the web app |
+| `web` | React and TypeScript front end |
 
-**HTTP**
+The migration plan and the decisions behind it are in [docs/plans/2026-10-14-cn-us-equity-migration.md](docs/plans/2026-10-14-cn-us-equity-migration.md).
+
+## Testing
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NoFxAiOS/nofx/main/install.sh | bash
-# http://YOUR_IP:3000
+go test ./...
+cd web && npx tsc --noEmit -p . && npx vitest run
 ```
-
-**HTTPS via Cloudflare**
-
-1. Add the domain to [Cloudflare](https://dash.cloudflare.com) (free plan)
-2. A record → server IP, proxied
-3. SSL/TLS → Flexible
-4. `TRANSPORT_ENCRYPTION=true` in `.env`
-
-</details>
-
-<br/>
 
 ## Documentation
 
-|                                                         |                                       |
-| :------------------------------------------------------ | :------------------------------------ |
-| [Getting Started](docs/getting-started/README.md)       | Deployment and exchange API guides    |
-| [Architecture](docs/architecture/README.md)             | System design and module index        |
-| [Strategy Module](docs/architecture/STRATEGY_MODULE.md) | Coin selection, AI prompts, execution |
-| [FAQ](docs/guides/faq.en.md)                            | Common questions                      |
-| [Troubleshooting](docs/guides/TROUBLESHOOTING.md)       | Diagnosing common issues              |
+| | |
+| :--- | :--- |
+| [Getting Started](docs/getting-started/README.md) | Setup steps and account configuration |
+| [Migration plan](docs/plans/2026-10-14-cn-us-equity-migration.md) | A-share and US equity design |
+| [Troubleshooting](docs/guides/TROUBLESHOOTING.md) | Diagnosing common issues |
+
+The FAQ inside the web app is the most current reference.
 
 ## Community
 
-[Telegram](https://t.me/nofx_dev_community) · [Twitter/X](https://x.com/vergex_ai) · [Issues](https://github.com/NoFxAiOS/nofx/issues) · [vergex.trade](https://vergex.trade) · [Live dashboard](https://vergex.trade/explore)
+[Telegram](https://t.me/nofx_dev_community) · [Issues](https://github.com/NoFxAiOS/nofx/issues)
 
 ## Contributing
 
-Code, documentation, translations, and bug reports are all welcome — see the [Contributing Guide](CONTRIBUTING.md), [Code of Conduct](CODE_OF_CONDUCT.md), and [Security Policy](SECURITY.md).
+Code, documentation and bug reports are welcome. See the [Contributing Guide](CONTRIBUTING.md), [Code of Conduct](CODE_OF_CONDUCT.md) and [Security Policy](SECURITY.md).
 
 NOFX tracks meaningful contributions and intends to reward contributors as the ecosystem grows. Priority issues carry higher weight.
 
@@ -279,4 +169,4 @@ If NOFX is useful to you, a star helps other traders find it.
 
 [AGPL-3.0](LICENSE)
 
-<sub>Automated trading involves substantial risk. AI-driven strategies are experimental and can lose money. Size positions appropriately, understand each venue, and never trade funds you cannot afford to lose. Full [disclaimer](DISCLAIMER.md).</sub>
+<sub>Automated trading involves substantial risk. AI-driven strategies are experimental and can lose money. This software is for paper trading and research. It is not investment advice.</sub>

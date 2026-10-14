@@ -85,7 +85,7 @@ func (m *Memory) compact() {
 
 Must preserve:
 - What the user is configuring (strategy/exchange/model/trader)
-- Confirmed parameters (trading pairs, leverage, stop loss, indicators, etc.)
+- Confirmed parameters (symbols, position size, stop loss, indicators, etc.)
 - Pending or missing parameters
 - User preferences and requirements
 
