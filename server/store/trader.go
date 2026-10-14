@@ -101,8 +101,6 @@ func (s *TraderStore) UpdateShowInCompetition(userID, id string, showInCompetiti
 
 // Update updates trader configuration
 func (s *TraderStore) Update(trader *Trader) error {
-	fmt.Printf("📝 TraderStore.Update: ID=%s, Name=%s, AIModelID=%s, StrategyID=%s\n",
-		trader.ID, trader.Name, trader.AIModelID, trader.StrategyID)
 
 	updates := map[string]interface{}{
 		"name":                   trader.Name,
@@ -122,9 +120,6 @@ func (s *TraderStore) Update(trader *Trader) error {
 	}
 	if trader.ScanIntervalMinutes > 0 {
 		updates["scan_interval_minutes"] = trader.ScanIntervalMinutes
-		fmt.Printf("📊 TraderStore.Update: scan_interval_minutes=%d will be saved\n", trader.ScanIntervalMinutes)
-	} else {
-		fmt.Printf("⚠️ TraderStore.Update: scan_interval_minutes=%d (<=0, NOT updating)\n", trader.ScanIntervalMinutes)
 	}
 
 	return s.db.Model(&Trader{}).

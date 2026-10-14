@@ -66,7 +66,7 @@ func GetForMarket(symbol string, m types.Market) (*Data, error) {
 	if err != nil {
 		return nil, err
 	}
-	// BuildDataFromKlines applies crypto symbol rules, so restore the equity symbol.
+	// BuildDataFromKlines may rewrite the symbol, so restore the canonical equity symbol.
 	data.Symbol = canonical
 	return data, nil
 }

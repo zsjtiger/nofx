@@ -39,7 +39,7 @@ func NewServer(traderManager *manager.TraderManager, st *store.Store, cryptoServ
 	// Enable CORS
 	router.Use(corsMiddleware())
 
-	// Create crypto handler
+	// Create encryption handler
 	encryptionHandler := NewEncryptionHandler(cryptoService)
 
 	s := &Server{

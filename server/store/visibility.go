@@ -71,9 +71,6 @@ func IsVisibleStrategy(strategy *Strategy) bool {
 	return strings.TrimSpace(strategy.Name) != ""
 }
 
-// MarketForExchangeType returns the market an exchange type trades. Exchanges
-// added before per-market support were crypto markets.
-
 // MarketForExchangeType returns the market an exchange type trades, or an empty
 // string for an unknown exchange type.
 func MarketForExchangeType(exchangeType string) string {

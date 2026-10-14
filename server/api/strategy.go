@@ -585,7 +585,7 @@ func (s *Server) handleStrategyTestRun(c *gin.Context) {
 	for _, coin := range candidates {
 		data, err := engine.FetchMarketData(coin.Symbol)
 		if err != nil {
-			fmt.Printf("⚠️  Failed to get market data for %s: %v\n", coin.Symbol, err)
+			logger.Warnf("Failed to get market data for %s: %v", coin.Symbol, err)
 			continue
 		}
 		marketDataMap[coin.Symbol] = data

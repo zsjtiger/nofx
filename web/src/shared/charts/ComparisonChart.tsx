@@ -51,15 +51,10 @@ export function ComparisonChart({ traders }: ComparisonChartProps) {
       ? `equity-histories-${tradersKey}-${selectedHours}`
       : null,
     async () => {
-      console.log('Fetching equity history with hours:', selectedHours)
       const traderIds = traders.map((trader) => trader.trader_id)
       const batchData = await api.getEquityHistoryBatch(
         traderIds,
         selectedHours
-      )
-      console.log(
-        'Received data points:',
-        Object.values(batchData.histories || {}).map((h: any) => h?.length)
       )
       return traders.map((trader) => {
         const history = batchData.histories?.[trader.trader_id] || []

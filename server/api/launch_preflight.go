@@ -38,9 +38,6 @@ type LaunchCheck struct {
 	Required float64  `json:"required,omitempty"`
 	Actual   *float64 `json:"actual,omitempty"`
 	Asset    string   `json:"asset,omitempty"`
-	// Address is the funding address for balance checks, so the UI can offer
-	// a deposit shortcut next to the failing item.
-	Address string `json:"address,omitempty"`
 }
 
 type LaunchPreflightResult struct {

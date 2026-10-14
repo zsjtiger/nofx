@@ -62,19 +62,3 @@ func (h *EncryptionHandler) HandleGetPublicKey(c *gin.Context) {
 // generic decrypt route would turn the server into a decryption oracle that any
 // unauthenticated caller could use to recover the plaintext of a captured
 // ciphertext, defeating the entire transport-encryption layer.
-
-// ==================== Audit Log Query Endpoint ====================
-
-// Audit log functionality removed, not needed in current simplified implementation
-
-// ==================== Utility Functions ====================
-
-// isValidPrivateKey Validate private key format
-func isValidPrivateKey(key string) bool {
-	// EVM private key: 64 hex characters (optional 0x prefix)
-	if len(key) == 64 || (len(key) == 66 && key[:2] == "0x") {
-		return true
-	}
-	// TODO: Add validation for other chains
-	return false
-}
