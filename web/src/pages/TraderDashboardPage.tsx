@@ -1,17 +1,16 @@
 import { useEffect, useState, useRef } from 'react'
 import { mutate } from 'swr'
 import { api } from '../lib/api'
-import { ChartTabs } from '../components/charts/ChartTabs'
+import { EquityChart } from '../components/charts/EquityChart'
 import { DecisionCard } from '../components/trader/DecisionCard'
 import { PositionHistory } from '../components/trader/PositionHistory'
 import { PunkAvatar, getTraderAvatar } from '../components/common/PunkAvatar'
 import { confirmToast, notify } from '../lib/notify'
 import { formatPrice, formatQuantity } from '../utils/format'
 import { t, type Language } from '../i18n/translations'
-import { LogOut, Loader2, Eye, EyeOff, Copy, Check } from 'lucide-react'
+import { LogOut, Loader2 } from 'lucide-react'
 import { DeepVoidBackground } from '../components/common/DeepVoidBackground'
 import { NofxSelect } from '../components/ui/select'
-import { GridRiskPanel } from '../components/strategy/GridRiskPanel'
 import type {
     SystemStatus,
     AccountInfo,
@@ -53,44 +52,8 @@ function getExchangeDisplayNameFromList(
 }
 
 // Helper function to get exchange type from exchange ID (UUID) - for kline charts
-function getExchangeTypeFromList(
-    exchangeId: string | undefined,
-    exchanges: Exchange[] | undefined
-): string {
-    if (!exchangeId) return 'binance'
-    const exchange = exchanges?.find((e) => e.id === exchangeId)
-    if (!exchange) return 'binance' // Default to binance for charts
-    return exchange.exchange_type?.toLowerCase() || 'binance'
-}
 
-// Helper function to check if exchange is a perp-dex type (wallet-based)
-function isPerpDexExchange(exchangeType: string | undefined): boolean {
-    if (!exchangeType) return false
-    const perpDexTypes = ['hyperliquid', 'lighter', 'aster']
-    return perpDexTypes.includes(exchangeType.toLowerCase())
-}
 
-// Helper function to get wallet address for perp-dex exchanges
-function getWalletAddress(exchange: Exchange | undefined): string | undefined {
-    if (!exchange) return undefined
-    const type = exchange.exchange_type?.toLowerCase()
-    switch (type) {
-        case 'hyperliquid':
-            return exchange.hyperliquidWalletAddr
-        case 'lighter':
-            return exchange.lighterWalletAddr
-        case 'aster':
-            return exchange.asterSigner
-        default:
-            return undefined
-    }
-}
-
-// Helper function to truncate wallet address for display
-function truncateAddress(address: string, startLen = 6, endLen = 4): string {
-    if (address.length <= startLen + endLen + 3) return address
-    return `${address.slice(0, startLen)}...${address.slice(-endLen)}`
-}
 
 // --- Components ---
 
@@ -138,11 +101,7 @@ export function TraderDashboardPage({
 }: TraderDashboardPageProps) {
     const [closingPosition, setClosingPosition] = useState<string | null>(null)
     const [closingAll, setClosingAll] = useState(false)
-    const [selectedChartSymbol, setSelectedChartSymbol] = useState<string | undefined>(undefined)
-    const [chartUpdateKey, setChartUpdateKey] = useState<number>(0)
     const chartSectionRef = useRef<HTMLDivElement>(null)
-    const [showWalletAddress, setShowWalletAddress] = useState<boolean>(false)
-    const [copiedAddress, setCopiedAddress] = useState<boolean>(false)
 
     // Current positions pagination
     const [positionsPageSize, setPositionsPageSize] = useState<number>(20)
@@ -161,36 +120,10 @@ export function TraderDashboardPage({
         setPositionsCurrentPage(1)
     }, [selectedTraderId, positionsPageSize])
 
-    // Auto-set chart symbol for grid trading
-    useEffect(() => {
-        if (status?.strategy_type === 'grid_trading' && status?.grid_symbol) {
-            setSelectedChartSymbol(status.grid_symbol)
-        }
-    }, [status?.strategy_type, status?.grid_symbol])
 
-    // Get current exchange info for perp-dex wallet display
-    const currentExchange = exchanges?.find(
-        (e) => e.id === selectedTrader?.exchange_id
-    )
-    const walletAddress = getWalletAddress(currentExchange)
-    const isPerpDex = isPerpDexExchange(currentExchange?.exchange_type)
-
-    // Copy wallet address to clipboard
-    const handleCopyAddress = async () => {
-        if (!walletAddress) return
-        try {
-            await navigator.clipboard.writeText(walletAddress)
-            setCopiedAddress(true)
-            setTimeout(() => setCopiedAddress(false), 2000)
-        } catch (err) {
-            console.error('Failed to copy address:', err)
-        }
-    }
 
     // Handle symbol click from Decision Card
-    const handleSymbolClick = (symbol: string) => {
-        // Set the selected symbol
-        setSelectedChartSymbol(symbol)
+    const handleSymbolClick = () => {
         // Scroll to chart section
         setTimeout(() => {
             chartSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -439,52 +372,6 @@ export function TraderDashboardPage({
                                 </div>
                             )}
 
-                            {/* Wallet Address Display for Perp-DEX */}
-                            {exchanges && isPerpDex && (
-                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg nofx-glass border border-nofx-gold/20">
-                                    {walletAddress ? (
-                                        <>
-                                            <span className="text-xs font-mono text-nofx-gold">
-                                                {showWalletAddress
-                                                    ? walletAddress
-                                                    : truncateAddress(walletAddress)}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowWalletAddress(!showWalletAddress)}
-                                                className="p-1 rounded hover:bg-nofx-text/10 transition-colors"
-                                                title={
-                                                    showWalletAddress
-                                                        ? t('traderDashboard.hideAddress', language)
-                                                        : t('traderDashboard.showFullAddress', language)
-                                                }
-                                            >
-                                                {showWalletAddress ? (
-                                                    <EyeOff className="w-3.5 h-3.5 text-nofx-text-muted" />
-                                                ) : (
-                                                    <Eye className="w-3.5 h-3.5 text-nofx-text-muted" />
-                                                )}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={handleCopyAddress}
-                                                className="p-1 rounded hover:bg-nofx-text/10 transition-colors"
-                                                title={t('traderDashboard.copyAddress', language)}
-                                            >
-                                                {copiedAddress ? (
-                                                    <Check className="w-3.5 h-3.5 text-nofx-green" />
-                                                ) : (
-                                                    <Copy className="w-3.5 h-3.5 text-nofx-text-muted" />
-                                                )}
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <span className="text-xs text-nofx-text-muted">
-                                            {t('traderDashboard.noAddressConfigured', language)}
-                                        </span>
-                                    )}
-                                </div>
-                            )}
                         </div>
                     </div>
                     <div className="flex items-center gap-6 text-sm flex-wrap text-nofx-text-muted font-mono pl-2">
@@ -557,7 +444,7 @@ export function TraderDashboardPage({
                     <StatCard
                         title={t('totalEquity', language)}
                         value={accountFailed && !account ? '--' : `${account?.total_equity?.toFixed(2) ?? '--'}`}
-                        unit="USDT"
+                        unit="USD"
                         change={account ? (account.total_pnl_pct || 0) : undefined}
                         positive={(account?.total_pnl ?? 0) > 0}
                         icon="💰"
@@ -566,7 +453,7 @@ export function TraderDashboardPage({
                     <StatCard
                         title={t('availableBalance', language)}
                         value={accountFailed && !account ? '--' : `${account?.available_balance?.toFixed(2) ?? '--'}`}
-                        unit="USDT"
+                        unit="USD"
                         subtitle={accountFailed && !account ? '--' : `${account?.available_balance && account?.total_equity ? ((account.available_balance / account.total_equity) * 100).toFixed(1) : '--'}% ${t('free', language)}`}
                         icon="💳"
                         loading={!account && !accountFailed}
@@ -574,7 +461,7 @@ export function TraderDashboardPage({
                     <StatCard
                         title={t('totalPnL', language)}
                         value={accountFailed && !account ? '--' : `${account?.total_pnl !== undefined && account.total_pnl >= 0 ? '+' : ''}${account?.total_pnl?.toFixed(2) ?? '--'}`}
-                        unit="USDT"
+                        unit="USD"
                         change={account ? (account.total_pnl_pct || 0) : undefined}
                         positive={(account?.total_pnl ?? 0) >= 0}
                         icon="📈"
@@ -590,36 +477,17 @@ export function TraderDashboardPage({
                     />
                 </div>
 
-                {/* Grid Risk Panel - Only show for grid trading strategy */}
-                {status?.strategy_type === 'grid_trading' && selectedTraderId && (
-                    <div className="mb-8 animate-slide-in" style={{ animationDelay: '0.05s' }}>
-                        <GridRiskPanel
-                            traderId={selectedTraderId}
-                            language={language}
-                            refreshInterval={5000}
-                        />
-                    </div>
-                )}
-
                 {/* Main Content Area */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Left Column: Charts + Positions */}
                     <div className="space-y-6">
-                        {/* Chart Tabs (Equity / K-line) */}
+                        {/* Equity curve */}
                         <div
                             ref={chartSectionRef}
                             className="chart-container animate-slide-in scroll-mt-32 backdrop-blur-sm"
                             style={{ animationDelay: '0.1s' }}
                         >
-                            <ChartTabs
-                                traderId={selectedTrader.trader_id}
-                                selectedSymbol={selectedChartSymbol}
-                                updateKey={chartUpdateKey}
-                                exchangeId={getExchangeTypeFromList(
-                                    selectedTrader.exchange_id,
-                                    exchanges
-                                )}
-                            />
+                            <EquityChart traderId={selectedTrader.trader_id} embedded />
                         </div>
 
                         {/* Current Positions */}
@@ -680,8 +548,6 @@ export function TraderDashboardPage({
                                                         key={i}
                                                         className="border-b border-[rgba(26,24,19,0.14)] last:border-0 transition-all hover:bg-nofx-text/5 cursor-pointer group/row"
                                                         onClick={() => {
-                                                            setSelectedChartSymbol(pos.symbol)
-                                                            setChartUpdateKey(Date.now())
                                                             if (chartSectionRef.current) {
                                                                 chartSectionRef.current.scrollIntoView({
                                                                     behavior: 'smooth',

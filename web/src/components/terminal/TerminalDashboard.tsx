@@ -11,29 +11,11 @@ import type {
   DecisionRecord,
   TraderInfo,
 } from '../../types'
-import { OrchestrationTopology } from './OrchestrationTopology'
-import { OrderBook } from './OrderBook'
-import { LiquidationMap } from './LiquidationMap'
-import { WinrateMatrix } from './WinrateMatrix'
-import { KlineChart } from './KlineChart'
 import { ExecutionLog } from './ExecutionLog'
 import { formatRequestError } from '../../lib/requestErrors'
-import { SignalMatrix } from './SignalMatrix'
 import { RiskRadar } from './RiskRadar'
 import { EdgeProfile } from './EdgeProfile'
-import { useDemoEngine } from '../../lib/demo/useDemoEngine'
 
-// crypto majors trade on the Hyperliquid main dex (no hip3 cost/liq heatmap);
-// everything else in the universe is an xyz-dex synthetic market that does.
-const CRYPTO_MAJORS = new Set([
-  'BTC', 'ETH', 'SOL', 'HYPE', 'BNB', 'XRP', 'DOGE', 'AVAX', 'LINK', 'SUI', 'APT', 'ARB', 'OP',
-  'TON', 'ADA', 'TRX', 'LTC', 'BCH', 'NEAR', 'INJ', 'SEI', 'TIA', 'PEPE', 'WIF', 'BONK', 'AAVE',
-  'UNI', 'ENA', 'ONDO', 'JUP', 'PENDLE', 'KPEPE', 'ZEC', 'XPL', 'LIT',
-])
-
-// fixed height for the three row-1 panels so the row stays balanced at any width
-const ROW1_H = 500
-import { FlowMarkets } from './FlowMarkets'
 import './terminal.css'
 
 interface TerminalDashboardProps {
@@ -186,129 +168,21 @@ export function TerminalDashboard({
     () => api.getTraderConfig(traderId!, true),
     { refreshInterval: 120000, shouldRetryOnError: false }
   )
-  const { data: realFlow } = useSWR(
-    traderId ? ['flow-markets', traderId] : null,
-    () => api.getFlowMarkets(selectedTrader?.ai_model, 'mainnet', '1h', 50, true),
-    // paid x402 endpoint — poll slowly (5m) to conserve claw402 funds; the
-    // topology beam animation is client-side and stays fast regardless
-    { refreshInterval: 300000, shouldRetryOnError: false }
-  )
-  const { data: realSignalRank } = useSWR(
-    traderId ? ['signal-rank', traderId] : null,
-    () => api.getDirectionChangeLeaderboard(30, true),
-    // paid x402 endpoint — poll slowly (5m) to conserve claw402 funds
-    { refreshInterval: 300000, shouldRetryOnError: false }
-  )
-
-  // Demo / showcase mode for product walkthroughs. Toggle with Shift+D (or the
-  // discreet corner dot). Generates a fast, profitable-looking US-equity dataset
-  // entirely client-side — it never touches the backend or any real account.
-  // When off, real data flows through unchanged.
-  const [demo, setDemo] = useState(false)
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.shiftKey && (e.key === 'D' || e.key === 'd')) {
-        const el = document.activeElement
-        if (el && /^(input|textarea|select)$/i.test(el.tagName)) return
-        setDemo((v) => !v)
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
-  const sim = useDemoEngine(demo)
-  const on = demo && !!sim
-
-  const status = on ? sim!.status : propStatus
-  const account = on ? sim!.account : propAccount
-  const positions = on ? sim!.positions : propPositions
-  const decisions = on ? sim!.decisions : propDecisions
-  const fullStats = on ? sim!.fullStats : realFullStats
-  const history = on ? sim!.history : realHistory
-  const config = on ? (sim!.config as unknown as typeof realConfig) : realConfig
-  const flow = on ? sim!.flow : realFlow
-  const signalRank = on ? sim!.signalRank : realSignalRank
+  const status = propStatus
+  const account = propAccount
+  const positions = propPositions
+  const decisions = propDecisions
+  const fullStats = realFullStats
+  const history = realHistory
+  const config = realConfig
 
   const latest = decisions && decisions.length > 0 ? decisions[0] : undefined
   const candidateCoins = latest?.candidate_coins ?? []
-  const flowItems = flow?.data?.inflow ?? []
-
-  // Both the cost/liq map and the order book follow this symbol so they stay in
-  // sync. The heatmap only covers hip3_perp synthetic markets, so we pick a
-  // synthetic (non-crypto) the bot trades — preferring the BUSIEST one (most
-  // 1h trades, per flow-markets) so the shared order book ticks as fast as
-  // possible. Falls back to any held synthetic, then SP500.
-  const heatmapSymbol = useMemo(() => {
-    const held = new Set(
-      [...(positions ?? []).map((p) => p.symbol), ...candidateCoins]
-        .map(baseLabel)
-        .filter((b) => b && !CRYPTO_MAJORS.has(b)),
-    )
-    const synthByActivity = flowItems
-      .map((i) => ({ b: baseLabel(i.symbol), trades: i.trades || 0 }))
-      .filter((x) => x.b && !CRYPTO_MAJORS.has(x.b))
-      .sort((a, b) => b.trades - a.trades)
-    const busiestHeld = synthByActivity.find((x) => held.has(x.b))
-    if (busiestHeld) return busiestHeld.b
-    if (held.size) return [...held][0]
-    if (synthByActivity.length) return synthByActivity[0].b
-    return 'SP500'
-  }, [positions, candidateCoins, flowItems])
-
-  // user can click a signal-matrix cell to drive both the cost/liq map and the
-  // order book. Default to the instrument the bot is ACTUALLY holding (first
-  // open position, else this cycle's first candidate) so the price panels match
-  // the real traded symbol; only fall back to the busiest synthetic if the bot
-  // holds nothing.
-  const [selectedSym, setSelectedSym] = useState<string | null>(null)
-  const defaultSym = useMemo(() => {
-    // the bot's actual first open position (else this cycle's first candidate);
-    // every market — synthetic or crypto — now has a cost/liq heatmap, so no
-    // need to prefer one type. Falls back to the busiest synthetic if flat.
-    const heldBases = [...(positions ?? []).map((p) => p.symbol), ...candidateCoins].map(baseLabel).filter(Boolean)
-    return heldBases[0] || heatmapSymbol || 'SP500'
-  }, [positions, candidateCoins, heatmapSymbol])
-  const activeSym = baseLabel(selectedSym || defaultSym)
-  const activeSignal = signalRank?.items?.find((item) => baseLabel(item.symbol) === activeSym)
-  const sourceSymbol = activeSignal?.symbol || [...(positions ?? []).map((p) => p.symbol), ...candidateCoins].find((s) => baseLabel(s) === activeSym) || selectedSym || defaultSym
-  const activeMarketType = activeSignal?.market_type === 'core_perp' || activeSignal?.market_type === 'hip3_perp'
-    ? activeSignal.market_type
-    : /^xyz:/i.test(sourceSymbol) ? 'hip3_perp'
-      : /USDT$/i.test(sourceSymbol) || CRYPTO_MAJORS.has(activeSym) ? 'core_perp' : 'hip3_perp'
-  const activeRequestSymbol = activeMarketType === 'hip3_perp' ? `xyz:${activeSym}` : activeSym
 
   const pnl = account?.total_pnl ?? 0
   const pnlPct = account?.total_pnl_pct ?? 0
   const up = pnl >= 0
   const running = status?.is_running
-
-  // direction per symbol — priority: AI's actual decision > signal bias >
-  // net flow > prevailing market majority (never blindly default to long).
-  const dirFor = useMemo(() => {
-    const dec = new Map<string, 'long' | 'short'>()
-    ;(latest?.decisions ?? []).forEach((d) => {
-      const b = baseLabel(d.symbol)
-      if (d.action === 'open_long' || d.action === 'close_short') dec.set(b, 'long')
-      else if (d.action === 'open_short' || d.action === 'close_long') dec.set(b, 'short')
-    })
-    const sig = new Map<string, 'long' | 'short'>()
-    let bull = 0
-    let bear = 0
-    ;(signalRank?.items ?? []).forEach((s) => {
-      const b = baseLabel(s.symbol)
-      const bias = (s.bias || '').toLowerCase()
-      if (bias === 'bearish') { sig.set(b, 'short'); bear++ }
-      else if (bias === 'bullish') { sig.set(b, 'long'); bull++ }
-    })
-    const fl = new Map<string, 'long' | 'short'>()
-    ;(flow?.data?.inflow ?? []).forEach((i) => fl.set(baseLabel(i.symbol), 'long'))
-    ;(flow?.data?.outflow ?? []).forEach((i) => fl.set(baseLabel(i.symbol), 'short'))
-    const majority: 'long' | 'short' = bear > bull ? 'short' : 'long'
-    return (sym: string): 'long' | 'short' => {
-      const b = baseLabel(sym)
-      return dec.get(b) ?? sig.get(b) ?? fl.get(b) ?? majority
-    }
-  }, [latest, signalRank, flow])
 
   const scanMin = config?.scan_interval_minutes || parseScanMinutes(status?.scan_interval)
   const nextCycleMs = useMemo(() => {
@@ -344,26 +218,6 @@ export function TerminalDashboard({
 
   return (
     <div className="nofx-terminal" style={{ minHeight: '100vh', padding: 0 }}>
-      {/* discreet, unlabelled showcase toggle (Shift+D also works) */}
-      <button
-        type="button"
-        onClick={() => setDemo((v) => !v)}
-        aria-label="toggle presentation mode"
-        style={{
-          position: 'fixed',
-          right: 10,
-          bottom: 10,
-          zIndex: 9999,
-          width: 12,
-          height: 12,
-          padding: 0,
-          borderRadius: '50%',
-          border: 'none',
-          cursor: 'pointer',
-          background: on ? 'var(--tm-up)' : 'rgba(26,24,19,0.2)',
-          opacity: on ? 0.55 : 0.18,
-        }}
-      />
       {/* centered, capped content column — no border (keeps it from feeling
           embedded) but bounded so the aspect-ratio SVGs don't balloon on wide screens */}
       {navSlot &&
@@ -383,7 +237,7 @@ export function TerminalDashboard({
           navSlot,
         )}
       <div className="tm-box" style={{ maxWidth: 1280, margin: '0 auto', border: 'none' }}>
-        {!on && status?.trading_blocked && (
+        {status?.trading_blocked && (
           <div role="alert" className="tm-mono" style={{ margin: '8px 14px 0', padding: '12px', fontSize: 12, border: '1px solid var(--tm-dn)', color: 'var(--tm-dn)', background: 'rgba(200,60,40,0.06)' }}>
             <strong>Trading blocked / 交易已阻断</strong>
             <div className="tm-error">{formatRequestError(status.trading_error)}</div>
@@ -392,25 +246,19 @@ export function TerminalDashboard({
         )}
         {/* runtime health banner — AI fee wallet dry / safe mode would otherwise
             only be visible in server logs while the bot silently idles */}
-        {!on && status && (status.safe_mode || status.ai_wallet_status === 'empty' || status.ai_wallet_status === 'low') && (
+        {status?.safe_mode && (
           <div className="tm-mono" style={{ display: 'flex', gap: 10, alignItems: 'center', margin: '8px 14px 0', padding: '8px 12px', fontSize: 11, border: '1px solid var(--tm-down)', color: 'var(--tm-down)', background: 'rgba(200,60,40,0.06)', flexWrap: 'wrap' }}>
             <span style={{ fontWeight: 600 }}>
-              {status.ai_wallet_status === 'empty'
-                ? 'AI fee wallet is out of USDC — decisions are failing.'
-                : status.ai_wallet_status === 'low'
-                  ? `AI fee wallet is low (${(status.ai_wallet_balance_usdc ?? 0).toFixed(2)} USDC) — top up soon.`
-                  : 'Safe mode: AI failed repeatedly, no new positions are being opened.'}
+              {'Safe mode: AI failed repeatedly, no new positions are being opened.'}
             </span>
             <span style={{ color: 'var(--tm-ink-2)' }}>
-              {status.ai_wallet_status === 'empty' || status.ai_wallet_status === 'low'
-                ? 'Deposit Base USDC to the Claw402 wallet, the trader recovers automatically.'
-                : status.safe_mode_reason || ''}
+              {status.safe_mode_reason || ''}
             </span>
           </div>
         )}
         {/* first-run reassurance — a fresh autopilot looks idle for its first
             minute (the AI is reading the market); tell newcomers what to expect */}
-        {!on && status?.is_running && (status.call_count ?? 0) <= 1 && !status.safe_mode && !status.trading_blocked && status.trading_checked_at && (
+        {status?.is_running && (status.call_count ?? 0) <= 1 && !status.safe_mode && !status.trading_blocked && status.trading_checked_at && (
           <div className="tm-mono" style={{ display: 'flex', gap: 10, alignItems: 'center', margin: '8px 14px 0', padding: '8px 12px', fontSize: 11, border: '1px solid var(--tm-up)', color: 'var(--tm-ink)', background: 'rgba(40,140,80,0.06)', flexWrap: 'wrap' }}>
             <span style={{ fontWeight: 600, color: 'var(--tm-up)' }}>Your AI is live.</span>
             <span style={{ color: 'var(--tm-ink-2)' }}>
@@ -424,7 +272,6 @@ export function TerminalDashboard({
           <span><span className="tm-sc">model </span>{(() => {
             const raw = config?.ai_model || status?.ai_model || ''
             if (!raw) return '—'
-            if (/claw402/i.test(raw)) return 'CLAW402'
             return raw.length > 16 ? raw.slice(0, 16).toUpperCase() : raw.toUpperCase()
           })()}</span>
           <span><span className="tm-sc">strategy </span>{config?.strategy_name || selectedTrader?.strategy_name || '—'}</span>
@@ -478,106 +325,6 @@ export function TerminalDashboard({
           </>
         )}
 
-        {/* ── row 1: cost/liq map · live L2 order book · signal matrix (instrument selector)
-              all three columns are locked to one fixed height so the row is always
-              balanced; the K-line flexes to fill any remaining space ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,0.95fr) minmax(0,1.05fr)' }}>
-          <div style={{ ...sc, borderRight: cellBorder, height: ROW1_H, overflow: 'hidden' }}>
-            {/* cost/liq heatmap works for both synthetic (hip3_perp) and crypto
-                (perp) markets — pass the likely marketType; the component falls
-                back to the other one if the guess is wrong */}
-            <LiquidationMap
-              symbol={activeSym}
-              demo={on}
-              marketType={activeMarketType}
-              height={ROW1_H - 130}
-            />
-          </div>
-          <div style={{ ...sc, borderRight: cellBorder, height: ROW1_H, overflow: 'hidden' }}>
-            <OrderBook symbol={activeRequestSymbol} demo={on} markPrice={positions?.find((p) => baseLabel(p.symbol) === activeSym)?.entry_price} />
-          </div>
-          <div style={{ ...sc, height: ROW1_H, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <SignalMatrix items={signalRank?.items} max={18} active={activeSym} onSelect={setSelectedSym} />
-            {/* the live K-line always sits under the selector and flexes to fill */}
-            <div className="tm-rule" style={{ margin: '10px 0 8px' }} />
-            <div style={{ flex: 1, minHeight: 0 }}>
-              <KlineChart symbol={activeRequestSymbol} fill demo={on} />
-            </div>
-          </div>
-        </div>
-        <div className="tm-rule" />
-
-        {/* ── win-rate matrix (holder cost × win-rate grid, claw402 paid data).
-              Full-width panel under row 1; long/short grids side by side with
-              click-to-drill address lists. ── */}
-        <div style={sc}>
-          <WinrateMatrix
-            symbol={activeSym}
-            demo={on}
-            marketType={activeMarketType}
-          />
-        </div>
-        <div className="tm-rule" />
-
-        {/* orchestration topology — second row, full width (the agent workflow) */}
-        <div style={sc}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
-            <span className="tm-px" style={{ fontSize: 12 }}>Orchestration topology</span>
-            <span className="tm-sc">Orchestration topology · net inflow → signal → execute → hold</span>
-          </div>
-          <OrchestrationTopology
-            layers={[
-              {
-                key: 'flow',
-                title: 'FLOW',
-                zh: 'flow',
-                items: [
-                  ...(flow?.data?.inflow ?? []).map((i) => ({ symbol: i.symbol, dir: 'long' as const })),
-                  ...(flow?.data?.outflow ?? []).map((i) => ({ symbol: i.symbol, dir: 'short' as const })),
-                ],
-              },
-              {
-                key: 'signal',
-                title: 'SIGNAL',
-                zh: 'signal',
-                items: (signalRank?.items ?? []).map((s) => ({
-                  symbol: s.symbol,
-                  dir: (s.bias || '').toLowerCase() === 'bearish' ? ('short' as const) : ('long' as const),
-                })),
-              },
-              {
-                // every candidate the AI actually judged this cycle (its full decision set)
-                key: 'decision',
-                title: 'DECISION',
-                zh: 'decision',
-                items: candidateCoins.map((c) => ({ symbol: c, dir: dirFor(c) })),
-              },
-              {
-                // executed & live: every open position is an executed order, so
-                // EXECUTE mirrors the live book (this cycle's fills plus anything
-                // still open from prior cycles) and flows straight into HOLD
-                key: 'exec',
-                title: 'EXECUTE',
-                zh: 'execute',
-                items: (positions ?? []).map((p) => ({
-                  symbol: p.symbol,
-                  dir: (p.side || '').toLowerCase().includes('short') ? ('short' as const) : ('long' as const),
-                })),
-              },
-              {
-                key: 'hold',
-                title: 'HOLD',
-                zh: 'hold',
-                items: (positions ?? []).map((p) => ({
-                  symbol: p.symbol,
-                  dir: (p.side || '').toLowerCase().includes('short') ? ('short' as const) : ('long' as const),
-                })),
-              },
-            ]}
-          />
-        </div>
-        <div className="tm-rule" />
-
         {/* ── row 3: execution log · risk radar · recent trades ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr)' }}>
           <div style={{ ...sc, borderRight: cellBorder }}>
@@ -592,7 +339,7 @@ export function TerminalDashboard({
               <span className="tm-px" style={{ fontSize: 11 }}>Positions</span>
               <span className="tm-sc">Current positions · live</span>
               <span className="tm-sc" style={{ marginLeft: 'auto' }}>{positions?.length ?? 0} open</span>
-              {traderId && !on && positions && positions.length > 0 && (
+              {traderId && positions && positions.length > 0 && (
                 <button
                   type="button"
                   onClick={() => void closeAllPositions(positions)}
@@ -623,7 +370,7 @@ export function TerminalDashboard({
                     <td style={{ padding: '0 0 3px', textAlign: 'right' }}>size</td>
                     <td style={{ padding: '0 0 3px', textAlign: 'right' }}>PnL</td>
                     <td style={{ padding: '0 0 3px', textAlign: 'right' }}>return%</td>
-                    {traderId && !on && <td style={{ padding: '0 0 3px' }} />}
+                    {traderId && <td style={{ padding: '0 0 3px' }} />}
                   </tr>
                 </thead>
                 <tbody>
@@ -639,7 +386,7 @@ export function TerminalDashboard({
                         <td style={{ padding: '5px 0', textAlign: 'right', color: 'var(--tm-ink-2)' }}>{fmtUsd(notional)}</td>
                         <td style={{ padding: '5px 0', textAlign: 'right' }} className={win ? 'tm-up' : 'tm-dn'}>{fmtUsd(p.unrealized_pnl, true)}</td>
                         <td style={{ padding: '5px 0', textAlign: 'right' }} className={win ? 'tm-up' : 'tm-dn'}>{(p.unrealized_pnl_pct ?? 0).toFixed(2)}%</td>
-                        {traderId && !on && (
+                        {traderId && (
                           <td style={{ padding: '5px 0 5px 8px', textAlign: 'right', width: 1 }}>
                             <button
                               type="button"
@@ -706,16 +453,8 @@ export function TerminalDashboard({
         </div>
         <div className="tm-rule" />
 
-        {/* market net inflow (Vergex) · by-symbol history · edge profile — footer */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,0.9fr) minmax(0,0.9fr)' }}>
-          <div style={{ ...sc, borderRight: cellBorder }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>
-              <span className="tm-px" style={{ fontSize: 12 }}>Market net inflow</span>
-              <span className="tm-sc">Market net inflow · {flow?.data?.window || '1h'} · Vergex</span>
-              <span className="tm-sc" style={{ marginLeft: 'auto' }}>{flowItems.length} markets</span>
-            </div>
-            <FlowMarkets items={flowItems} window={flow?.data?.window} />
-          </div>
+        {/* by-symbol history · edge profile — footer */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)' }}>
           <div style={{ ...sc, borderRight: cellBorder }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
               <span className="tm-px" style={{ fontSize: 11 }}>By symbol</span>

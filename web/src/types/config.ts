@@ -19,37 +19,17 @@ export interface TelegramConfig {
 }
 
 export interface Exchange {
-  id: string // UUID (empty for supported exchange templates)
-  exchange_type: string // "binance", "bybit", "okx", "hyperliquid", "aster", "lighter"
+  id: string // UUID
+  exchange_type: string // "alpaca_paper" or "cn_paper"
   account_name: string // User-defined account name
   name: string // Display name
-  type: 'cex' | 'dex'
+  type: string // "paper"
+  market?: string // "us_equity" or "cn_equity"
   enabled: boolean
   has_api_key?: boolean
   has_secret_key?: boolean
-  has_passphrase?: boolean
   apiKey?: string
   secretKey?: string
-  passphrase?: string // OKX specific
-  testnet?: boolean
-  // Hyperliquid specific
-  hyperliquidWalletAddr?: string
-  hyperliquidUnifiedAccount?: boolean
-  hyperliquidBuilderApproved?: boolean
-  hyperliquidAgentAddress?: string
-  has_hyperliquid_secret?: boolean
-  // Aster specific
-  asterUser?: string
-  asterSigner?: string
-  has_aster_private_key?: boolean
-  asterPrivateKey?: string
-  // LIGHTER specific
-  lighterWalletAddr?: string
-  has_lighter_private_key?: boolean
-  has_lighter_api_key_private_key?: boolean
-  lighterPrivateKey?: string
-  lighterApiKeyPrivateKey?: string
-  lighterApiKeyIndex?: number
 }
 
 export type ExchangeAccountStatus =
@@ -77,23 +57,11 @@ export interface ExchangeAccountStateResponse {
 }
 
 export interface CreateExchangeRequest {
-  exchange_type: string // "binance", "bybit", "okx", "hyperliquid", "aster", "lighter"
+  exchange_type: string // "alpaca_paper" or "cn_paper"
   account_name: string // User-defined account name
-  enabled: boolean
-  api_key?: string
+  enabled?: boolean
+  api_key: string
   secret_key?: string
-  passphrase?: string
-  testnet?: boolean
-  hyperliquid_wallet_addr?: string
-  hyperliquid_unified_account?: boolean
-  hyperliquid_builder_approved?: boolean
-  aster_user?: string
-  aster_signer?: string
-  aster_private_key?: string
-  lighter_wallet_addr?: string
-  lighter_private_key?: string
-  lighter_api_key_private_key?: string
-  lighter_api_key_index?: number
 }
 
 export interface CreateTraderRequest {
@@ -132,21 +100,6 @@ export interface UpdateExchangeConfigRequest {
       enabled: boolean
       api_key: string
       secret_key: string
-      passphrase?: string
-      testnet?: boolean
-      // Hyperliquid specific fields
-      hyperliquid_wallet_addr?: string
-      hyperliquid_unified_account?: boolean
-      hyperliquid_builder_approved?: boolean
-      // Aster specific fields
-      aster_user?: string
-      aster_signer?: string
-      aster_private_key?: string
-      // LIGHTER specific fields
-      lighter_wallet_addr?: string
-      lighter_private_key?: string
-      lighter_api_key_private_key?: string
-      lighter_api_key_index?: number
     }
   }
 }
@@ -171,5 +124,4 @@ export interface CurrentBeginnerWalletResponse {
   address?: string
   balance_usdc?: string
   source?: string
-  claw402_status?: string
 }

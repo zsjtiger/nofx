@@ -69,4 +69,17 @@ export const strategyApi = {
     if (!result.success) throw new Error('Failed to duplicate strategy')
     return result.data!
   },
+
+  // Builds the prompt the strategy would send for a market, without calling any AI.
+  async previewPrompt(
+    config: StrategyConfig,
+    market: 'us_equity' | 'cn_equity'
+  ): Promise<{ system_prompt: string }> {
+    const result = await httpClient.post<{ system_prompt: string }>(
+      `${API_BASE}/strategies/preview-prompt`,
+      { config, market }
+    )
+    if (!result.success) throw new Error('Failed to preview prompt')
+    return result.data!
+  },
 }

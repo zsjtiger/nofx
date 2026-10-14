@@ -11,7 +11,6 @@ export interface SystemStatus {
   stop_until: string
   last_reset_time: string
   ai_provider: string
-  strategy_type?: 'ai_trading' | 'grid_trading'
   grid_symbol?: string
   /** Runtime health: true when AI failed repeatedly and no new positions open. */
   safe_mode?: boolean
@@ -19,10 +18,6 @@ export interface SystemStatus {
   trading_blocked?: boolean
   trading_error?: string
   trading_checked_at?: string
-  /** Claw402 AI fee wallet health, observed by the run loop. */
-  ai_wallet_status?: 'ok' | 'low' | 'empty' | 'unknown'
-  ai_wallet_balance_usdc?: number
-  ai_wallet_checked_at?: string
 }
 
 export interface AccountInfo {

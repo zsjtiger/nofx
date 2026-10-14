@@ -8,14 +8,7 @@ import type {
 } from '../../types'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../i18n/translations'
-import {
-  Pencil,
-  Plus,
-  X as IconX,
-  Sparkles,
-  ExternalLink,
-  UserPlus,
-} from 'lucide-react'
+import { Pencil, Plus, X as IconX, Sparkles } from 'lucide-react'
 import { httpClient } from '../../lib/httpClient'
 import { NofxSelect } from '../ui/select'
 
@@ -26,41 +19,11 @@ function getShortName(fullName: string): string {
 }
 
 function getStrategyAIConfig(strategy: Strategy) {
-  return (
-    strategy.config.ai_config ||
-    (strategy.config.coin_source && strategy.config.risk_control
-      ? {
-          coin_source: strategy.config.coin_source,
-          risk_control: strategy.config.risk_control,
-        }
-      : null)
-  )
+  return strategy.config.ai_config ?? null
 }
 
-// Exchange registration link configuration
-const EXCHANGE_REGISTRATION_LINKS: Record<
-  string,
-  { url: string; hasReferral?: boolean }
-> = {
-  binance: {
-    url: 'https://www.binance.com/join?ref=NOFXENG',
-    hasReferral: true,
-  },
-  okx: { url: 'https://www.okx.com/join/1865360', hasReferral: true },
-  bybit: { url: 'https://partner.bybit.com/b/83856', hasReferral: true },
-  hyperliquid: {
-    url: 'https://app.hyperliquid.xyz/join/AITRADING',
-    hasReferral: true,
-  },
-  aster: {
-    url: 'https://www.asterdex.com/en/referral/fdfc0e',
-    hasReferral: true,
-  },
-  lighter: {
-    url: 'https://app.lighter.xyz/?referral=68151432',
-    hasReferral: true,
-  },
-}
+// Exchange registration links are not offered for paper accounts.
+
 // Internal form state type
 interface FormState {
   trader_id?: string
@@ -292,35 +255,6 @@ export function TraderConfigModal({
                           : ''),
                     }))}
                   />
-                  {/* Exchange Registration Link */}
-                  {formData.exchange_id &&
-                    (() => {
-                      // Find the selected exchange to get its type
-                      const selectedExchange = availableExchanges.find(
-                        (e) => e.id === formData.exchange_id
-                      )
-                      const exchangeType =
-                        selectedExchange?.exchange_type?.toLowerCase() || ''
-                      const regLink = EXCHANGE_REGISTRATION_LINKS[exchangeType]
-                      if (!regLink) return null
-                      return (
-                        <a
-                          href={regLink.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-2 inline-flex items-center gap-1.5 text-xs text-nofx-text-muted hover:text-nofx-gold transition-colors"
-                        >
-                          <UserPlus className="w-3.5 h-3.5" />
-                          <span>{t('noExchangeAccount', language)}</span>
-                          {regLink.hasReferral && (
-                            <span className="px-1.5 py-0.5 bg-nofx-gold/10 text-nofx-gold rounded text-[10px]">
-                              {t('discount', language)}
-                            </span>
-                          )}
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )
-                    })()}
                 </div>
               </div>
             </div>
@@ -381,73 +315,26 @@ export function TraderConfigModal({
                     {selectedStrategy.description ||
                       (language === 'zh' ? 'No description' : 'No description')}
                   </p>
-                  {selectedStrategy.config.strategy_type === 'grid_trading' &&
-                  selectedStrategy.config.grid_config ? (
-                    <div className="grid grid-cols-2 gap-2 text-xs text-nofx-text-muted">
-                      <div>
-                        {language === 'zh' ? 'Symbol' : 'Symbol'}:{' '}
-                        {selectedStrategy.config.grid_config.symbol || '-'}
-                      </div>
-                      <div>
-                        {language === 'zh' ? 'Grids' : 'Grids'}:{' '}
-                        {selectedStrategy.config.grid_config.grid_count}
-                      </div>
-                    </div>
-                  ) : (
-                    (() => {
+                  {(() => {
                       const aiConfig = getStrategyAIConfig(selectedStrategy)
                       if (!aiConfig) return null
                       return (
                         <div className="grid grid-cols-2 gap-2 text-xs text-nofx-text-muted">
                           <div>
                             {t('coinSource', language)}:{' '}
-                            {aiConfig.coin_source.source_type === 'static'
-                              ? language === 'zh'
-                                ? 'Fixed US stocks'
-                                : 'Fixed US stocks'
-                              : aiConfig.coin_source.source_type ===
-                                  'vergex_signal'
-                                ? language === 'zh'
-                                  ? 'Vergex signal board'
-                                  : 'Vergex signal board'
-                                : aiConfig.coin_source.source_type ===
-                                    'hyper_rank'
-                                  ? language === 'zh'
-                                    ? 'Claw402 board'
-                                    : 'Claw402 board'
-                                  : aiConfig.coin_source.source_type ===
-                                      'hyper_all'
-                                    ? language === 'zh'
-                                      ? 'Hyperliquid all markets'
-                                      : 'Hyperliquid all markets'
-                                    : aiConfig.coin_source.source_type ===
-                                        'hyper_main'
-                                      ? language === 'zh'
-                                        ? 'Hyperliquid main markets'
-                                        : 'Hyperliquid main markets'
-                                      : aiConfig.coin_source.source_type ===
-                                          'ai500'
-                                        ? 'AI500'
-                                        : aiConfig.coin_source.source_type ===
-                                            'oi_top'
-                                          ? 'OI Top'
-                                          : aiConfig.coin_source.source_type ===
-                                              'oi_low'
-                                            ? 'OI Low'
-                                            : '-'}
+                            {(aiConfig.coin_source.static_coins ?? []).join(', ') || '-'}
                           </div>
                           <div>
                             {t('marginLimit', language)}:{' '}
                             {(
-                              (aiConfig.risk_control?.max_margin_usage || 0.9) *
+                              (aiConfig.risk_control?.max_margin_usage || 1) *
                               100
                             ).toFixed(0)}
                             %
                           </div>
                         </div>
                       )
-                    })()
-                  )}
+                    })()}
                 </div>
               )}
             </div>

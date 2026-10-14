@@ -1,21 +1,10 @@
-import {
-  Brain,
-  Landmark,
-  Eye,
-  EyeOff,
-  Copy,
-  Check,
-} from 'lucide-react'
+import { Brain, Landmark } from 'lucide-react'
 import type { AIModel, Exchange, ExchangeAccountState } from '../../types'
 import type { Language } from '../../i18n/translations'
 import { t } from '../../i18n/translations'
 import { getModelIcon } from '../common/ModelIcons'
 import { getExchangeIcon } from '../common/ExchangeIcons'
-import {
-  getShortName,
-  AI_PROVIDER_CONFIG,
-  truncateAddress,
-} from './model-constants'
+import { getShortName, AI_PROVIDER_CONFIG } from './model-constants'
 
 interface UsageInfo {
   runningCount: number
@@ -27,15 +16,11 @@ interface ConfigStatusGridProps {
   configuredExchanges: Exchange[]
   exchangeAccountStates?: Record<string, ExchangeAccountState>
   isExchangeAccountStatesLoading?: boolean
-  visibleExchangeAddresses: Set<string>
-  copiedId: string | null
   language: Language
   getModelUsageInfo: (modelId: string) => UsageInfo
   getExchangeUsageInfo: (exchangeId: string) => UsageInfo
   onModelClick: (modelId: string) => void
   onExchangeClick: (exchangeId: string) => void
-  onToggleExchangeAddress: (exchangeId: string) => void
-  onCopyAddress: (id: string, address: string) => void
 }
 
 export function ConfigStatusGrid({
@@ -43,15 +28,11 @@ export function ConfigStatusGrid({
   configuredExchanges,
   exchangeAccountStates,
   isExchangeAccountStatesLoading,
-  visibleExchangeAddresses,
-  copiedId,
   language,
   getModelUsageInfo,
   getExchangeUsageInfo,
   onModelClick,
   onExchangeClick,
-  onToggleExchangeAddress,
-  onCopyAddress,
 }: ConfigStatusGridProps) {
   const getExchangeStateMeta = (state: ExchangeAccountState | undefined) => {
     if (!state) {
@@ -139,20 +120,6 @@ export function ConfigStatusGrid({
                     <div className="text-[10px] text-nofx-text-muted font-mono flex items-center gap-2">
                       {model.customModelName || AI_PROVIDER_CONFIG[model.provider]?.defaultModel || ''}
                     </div>
-                    {model.provider === 'claw402' && (model.balanceUsdc || model.walletAddress) ? (
-                      <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] font-mono">
-                        {model.balanceUsdc ? (
-                          <span className="rounded border border-nofx-success/20 bg-nofx-success/10 px-1.5 py-0.5 text-nofx-success">
-                            {model.balanceUsdc} USDC
-                          </span>
-                        ) : null}
-                        {model.walletAddress ? (
-                          <span className="rounded border border-nofx-gold/20 bg-nofx-gold/10 px-1.5 py-0.5 text-nofx-gold">
-                            {truncateAddress(model.walletAddress)}
-                          </span>
-                        ) : null}
-                      </div>
-                    ) : null}
                   </div>
                 </div>
 
@@ -244,33 +211,6 @@ export function ConfigStatusGrid({
                 </div>
 
                 <div className="flex flex-col items-end gap-1">
-                  {/* Wallet Address Display Logic */}
-                  {(() => {
-                    const walletAddr = exchange.hyperliquidWalletAddr || exchange.asterUser || exchange.lighterWalletAddr
-                    if (exchange.type !== 'dex' || !walletAddr) return null
-                    const isVisible = visibleExchangeAddresses.has(exchange.id)
-                    const isCopied = copiedId === `exchange-${exchange.id}`
-
-                    return (
-                      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                        <span className="text-[10px] font-mono text-nofx-text-muted bg-nofx-bg-deeper px-1.5 py-0.5 rounded border border-[rgba(26,24,19,0.14)]">
-                          {isVisible ? walletAddr : truncateAddress(walletAddr)}
-                        </span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onToggleExchangeAddress(exchange.id) }}
-                          className="text-nofx-text-muted hover:text-nofx-text"
-                        >
-                          {isVisible ? <EyeOff size={10} /> : <Eye size={10} />}
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onCopyAddress(`exchange-${exchange.id}`, walletAddr) }}
-                          className="text-nofx-text-muted hover:text-nofx-gold"
-                        >
-                          {isCopied ? <Check size={10} className="text-nofx-success" /> : <Copy size={10} />}
-                        </button>
-                      </div>
-                    )
-                  })()}
 
                   {usageInfo.totalCount > 0 ? (
                     <span className={`text-[10px] font-mono px-2 py-1 rounded border ${usageInfo.runningCount > 0

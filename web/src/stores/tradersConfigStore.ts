@@ -50,16 +50,9 @@ export const useTradersConfigStore = create<TradersConfigState>((set, get) => ({
   setAllExchanges: (exchanges) => {
     set({ allExchanges: exchanges })
     // Update configuredExchanges
-    const configuredExchanges = exchanges.filter((e) => {
-      if (e.id === 'aster') {
-        return e.asterUser && e.asterUser.trim() !== ''
-      }
-      if (e.id === 'hyperliquid') {
-        return e.hyperliquidWalletAddr && e.hyperliquidWalletAddr.trim() !== ''
-      }
-      // Fix: add enabled check to stay consistent with the original logic
-      return e.enabled || (e.apiKey && e.apiKey.trim() !== '')
-    })
+    const configuredExchanges = exchanges.filter(
+      (e) => e.enabled || (e.apiKey && e.apiKey.trim() !== '')
+    )
     set({ configuredExchanges })
   },
 

@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 import { api } from '../../lib/api'
 import { ApiError } from '../../lib/httpClient'
-import { ROUTES } from '../../router/paths'
 import type {
   TraderInfo,
   CreateTraderRequest,
@@ -21,7 +20,6 @@ import { TelegramConfigModal } from './TelegramConfigModal'
 import { ModelConfigModal } from './ModelConfigModal'
 import { ConfigStatusGrid } from './ConfigStatusGrid'
 import { TradersList } from './TradersList'
-import { AutopilotLaunchPanel } from './AutopilotLaunchPanel'
 import { Bot, Plus, MessageCircle } from 'lucide-react'
 import { confirmToast } from '../../lib/notify'
 import { toast } from 'sonner'
@@ -56,9 +54,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
     useState(false)
   const [supportedModels, setSupportedModels] = useState<AIModel[]>([])
   const [visibleTraderAddresses, setVisibleTraderAddresses] = useState<
-    Set<string>
-  >(new Set())
-  const [visibleExchangeAddresses, setVisibleExchangeAddresses] = useState<
     Set<string>
   >(new Set())
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -101,19 +96,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
     })
   }
 
-  // Toggle wallet address visibility for an exchange
-  const toggleExchangeAddressVisibility = (exchangeId: string) => {
-    setVisibleExchangeAddresses((prev) => {
-      const next = new Set(prev)
-      if (next.has(exchangeId)) {
-        next.delete(exchangeId)
-      } else {
-        next.add(exchangeId)
-      }
-      return next
-    })
-  }
-
   // Copy wallet address to clipboard
   const handleCopyAddress = async (id: string, address: string) => {
     try {
@@ -144,34 +126,10 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
       return m.enabled || (m.customApiUrl && m.customApiUrl.trim() !== '')
     }) || []
 
-  const configuredExchanges =
-    allExchanges?.filter((e) => {
-      if (e.id === 'aster') {
-        return e.asterUser && e.asterUser.trim() !== ''
-      }
-      if (e.id === 'hyperliquid') {
-        return e.hyperliquidWalletAddr && e.hyperliquidWalletAddr.trim() !== ''
-      }
-      return e.enabled
-    }) || []
+  const configuredExchanges = allExchanges?.filter((e) => e.enabled) || []
 
   const enabledModels = allModels?.filter((m) => m.enabled) || []
-  const enabledExchanges =
-    allExchanges?.filter((e) => {
-      if (!e.enabled) return false
-      if (e.id === 'aster') {
-        return (
-          e.asterUser &&
-          e.asterUser.trim() !== '' &&
-          e.asterSigner &&
-          e.asterSigner.trim() !== ''
-        )
-      }
-      if (e.id === 'hyperliquid') {
-        return e.hyperliquidWalletAddr && e.hyperliquidWalletAddr.trim() !== ''
-      }
-      return true
-    }) || []
+  const enabledExchanges = allExchanges?.filter((e) => e.enabled) || []
 
   const getModelUsageInfo = (modelId: string) => {
     const usingTraders = traders?.filter((tr) => tr.ai_model === modelId) || []
@@ -545,17 +503,7 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
     exchangeType: string,
     accountName: string,
     apiKey: string,
-    secretKey?: string,
-    passphrase?: string,
-    testnet?: boolean,
-    hyperliquidWalletAddr?: string,
-    asterUser?: string,
-    asterSigner?: string,
-    asterPrivateKey?: string,
-    lighterWalletAddr?: string,
-    lighterPrivateKey?: string,
-    lighterApiKeyPrivateKey?: string,
-    lighterApiKeyIndex?: number
+    secretKey?: string
   ) => {
     try {
       if (exchangeId) {
@@ -565,50 +513,24 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
           return
         }
 
-        const request = {
+        await api.updateExchangeConfigsEncrypted({
           exchanges: {
             [exchangeId]: {
               enabled: true,
               api_key: apiKey || '',
               secret_key: secretKey || '',
-              passphrase: passphrase || '',
-              testnet: testnet || false,
-              hyperliquid_wallet_addr: hyperliquidWalletAddr || '',
-              hyperliquid_unified_account: exchangeType === 'hyperliquid',
-              aster_user: asterUser || '',
-              aster_signer: asterSigner || '',
-              aster_private_key: asterPrivateKey || '',
-              lighter_wallet_addr: lighterWalletAddr || '',
-              lighter_private_key: lighterPrivateKey || '',
-              lighter_api_key_private_key: lighterApiKeyPrivateKey || '',
-              lighter_api_key_index: lighterApiKeyIndex || 0,
             },
           },
-        }
-
-        await api.updateExchangeConfigsEncrypted(request)
+        })
         toast.success(t('aiTradersToast.exchangeConfigUpdated', language))
       } else {
-        const createRequest = {
+        await api.createExchangeEncrypted({
           exchange_type: exchangeType,
           account_name: accountName,
           enabled: true,
           api_key: apiKey || '',
           secret_key: secretKey || '',
-          passphrase: passphrase || '',
-          testnet: testnet || false,
-          hyperliquid_wallet_addr: hyperliquidWalletAddr || '',
-          hyperliquid_unified_account: exchangeType === 'hyperliquid',
-          aster_user: asterUser || '',
-          aster_signer: asterSigner || '',
-          aster_private_key: asterPrivateKey || '',
-          lighter_wallet_addr: lighterWalletAddr || '',
-          lighter_private_key: lighterPrivateKey || '',
-          lighter_api_key_private_key: lighterApiKeyPrivateKey || '',
-          lighter_api_key_index: lighterApiKeyIndex || 0,
-        }
-
-        await api.createExchangeEncrypted(createRequest)
+        })
         toast.success(t('aiTradersToast.exchangeCreated', language))
       }
 
@@ -635,53 +557,21 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
     setShowExchangeModal(true)
   }
 
-  const handleOpenClaw402Config = () => {
-    const configuredClaw402 = allModels?.find(
-      (model) => model.provider === 'claw402'
-    )
-    const supportedClaw402 = supportedModels?.find(
-      (model) => model.provider === 'claw402'
-    )
-    const modelId = configuredClaw402?.id || supportedClaw402?.id || 'claw402'
-
-    setEditingModel(configuredClaw402?.id || null)
-    setInitialModelId(modelId)
-    setShowModelModal(true)
-  }
-
-  const handleOpenHyperliquidConfig = () => {
-    const existingHyperliquid = allExchanges?.find(
-      (exchange) =>
-        exchange.exchange_type === 'hyperliquid' ||
-        exchange.id === 'hyperliquid'
-    )
-
-    setEditingExchange(existingHyperliquid?.id || null)
-    setInitialExchangeType(existingHyperliquid ? null : 'hyperliquid')
-    setShowExchangeModal(true)
-  }
-
+  // Deep links from the setup flow: "?setup=model" opens the model settings.
   useEffect(() => {
     if (!user || !token) return
 
     const setupTarget = searchParams.get('setup')
     if (!setupTarget) return
 
-    if (setupTarget === 'claw402') {
-      // The welcome page shows the deposit QR, auto-creates the wallet if
-      // needed, and polls the balance — friendlier than the key-config modal.
-      navigate(ROUTES.welcome)
-    } else if (setupTarget === 'hyperliquid') {
-      handleOpenHyperliquidConfig()
-    } else if (setupTarget === 'hyperliquid-funds') {
-      // Funding shortfall: bring the guided launch panel (with the trading
-      // balance step and live preflight polling) into view.
-      document
-        .getElementById('autopilot-launch-panel')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      toast.info(
-        'Deposit USDC to your Hyperliquid account, the balance check updates automatically.'
-      )
+    if (setupTarget === 'model') {
+      setEditingModel(null)
+      setInitialModelId('custom')
+      setShowModelModal(true)
+    } else if (setupTarget === 'exchange') {
+      setEditingExchange(null)
+      setInitialExchangeType(null)
+      setShowExchangeModal(true)
     } else {
       return
     }
@@ -689,26 +579,7 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
     const nextParams = new URLSearchParams(searchParams)
     nextParams.delete('setup')
     setSearchParams(nextParams, { replace: true })
-  }, [allExchanges, allModels, searchParams, setSearchParams, supportedModels, token, user])
-
-  const refreshLaunchState = async () => {
-    await Promise.all([loadConfigs(), mutateTraders()])
-  }
-
-  const hasRunningTrader = (traders || []).some((trader) => trader.is_running)
-  const launchPanel = (
-    <AutopilotLaunchPanel
-      models={allModels}
-      exchanges={allExchanges}
-      exchangeAccountStates={exchangeAccountStates}
-      traders={traders || []}
-      isLoggedIn={Boolean(user && token)}
-      language={language}
-      onRefresh={refreshLaunchState}
-      onOpenClaw402Config={handleOpenClaw402Config}
-      onOpenHyperliquidConfig={handleOpenHyperliquidConfig}
-    />
-  )
+  }, [searchParams, setSearchParams, token, user])
 
   return (
     <DeepVoidBackground className="py-8" disableAnimation>
@@ -786,7 +657,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
 
         {/* Newcomers see the guided launch FIRST — the config grid is detail.
             Once an autopilot is running, the running bot takes back the top. */}
-        {!hasRunningTrader && launchPanel}
 
         {/* Configuration Status Grid */}
         <ConfigStatusGrid
@@ -794,18 +664,12 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
           configuredExchanges={configuredExchanges}
           exchangeAccountStates={exchangeAccountStates}
           isExchangeAccountStatesLoading={isExchangeAccountStatesLoading}
-          visibleExchangeAddresses={visibleExchangeAddresses}
-          copiedId={copiedId}
           language={language}
           getModelUsageInfo={getModelUsageInfo}
           getExchangeUsageInfo={getExchangeUsageInfo}
           onModelClick={handleModelClick}
           onExchangeClick={handleExchangeClick}
-          onToggleExchangeAddress={toggleExchangeAddressVisibility}
-          onCopyAddress={handleCopyAddress}
         />
-
-        {hasRunningTrader && launchPanel}
 
         {/* Traders List */}
         <TradersList
