@@ -24,7 +24,7 @@ func TestNewCNPaperTraderRequiresTokenAndUsesDefaultCash(t *testing.T) {
 	require.NoError(t, err)
 	bal, err := tr.GetBalance()
 	require.NoError(t, err)
-	assert.Equal(t, float64(defaultCNPaperCash), bal["totalWalletBalance"], "no positions means no quote calls")
+	assert.Equal(t, float64(DefaultCNPaperCash), bal["totalWalletBalance"], "no positions means no quote calls")
 
 	tr, err = newCNPaperTrader(AutoTraderConfig{Name: "t", TushareToken: "tok", PaperInitialCash: 250000})
 	require.NoError(t, err)

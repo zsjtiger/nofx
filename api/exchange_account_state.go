@@ -9,12 +9,15 @@ import (
 	"time"
 
 	"nofx/logger"
+	"nofx/provider/tushare"
 	"nofx/store"
 	"nofx/trader"
+	"nofx/trader/alpacapaper"
 	"nofx/trader/aster"
 	"nofx/trader/binance"
 	"nofx/trader/bitget"
 	"nofx/trader/bybit"
+	"nofx/trader/cnpaper"
 	"nofx/trader/gate"
 	hyperliquidtrader "nofx/trader/hyperliquid"
 	"nofx/trader/indodax"
@@ -238,6 +241,11 @@ func buildExchangeProbeTrader(exchangeCfg *store.Exchange, userID string) (trade
 		return kucoin.NewKuCoinTrader(string(exchangeCfg.APIKey), string(exchangeCfg.SecretKey), string(exchangeCfg.Passphrase)), nil
 	case "indodax":
 		return indodax.NewIndodaxTrader(string(exchangeCfg.APIKey), string(exchangeCfg.SecretKey)), nil
+	case "alpaca_paper":
+		return alpacapaper.New(string(exchangeCfg.APIKey), string(exchangeCfg.SecretKey), "", "")
+	case "cn_paper":
+		// The probe reads the paper account only, so the starting cash is the default.
+		return cnpaper.New(trader.DefaultCNPaperCash, cnpaper.NewTushareQuoter(tushare.NewClient(string(exchangeCfg.APIKey))))
 	case "hyperliquid":
 		return hyperliquidtrader.NewHyperliquidTrader(
 			string(exchangeCfg.APIKey),
@@ -311,6 +319,10 @@ func formatDisplayBalance(value float64, asset string) string {
 
 func accountAssetForExchange(exchangeType string) string {
 	switch exchangeType {
+	case "alpaca_paper":
+		return "USD"
+	case "cn_paper":
+		return "CNY"
 	case "hyperliquid", "aster", "lighter":
 		return "USDC"
 	default:

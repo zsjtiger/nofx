@@ -248,6 +248,10 @@ func getExchangeNameAndType(exchangeType string) (name string, typ string) {
 		return "LIGHTER DEX", "dex"
 	case "indodax":
 		return "Indodax", "cex"
+	case "alpaca_paper":
+		return "Alpaca Paper (US Equities)", "paper"
+	case "cn_paper":
+		return "A-Share Paper (CN)", "paper"
 	default:
 		return exchangeType + " Exchange", "cex"
 	}
@@ -281,6 +285,7 @@ func (s *ExchangeStore) Create(userID, exchangeType, accountName string, enabled
 		UserID:                     userID,
 		Name:                       name,
 		Type:                       typ,
+		Market:                     MarketForExchangeType(exchangeType),
 		Enabled:                    true,
 		APIKey:                     crypto.EncryptedString(apiKey),
 		SecretKey:                  crypto.EncryptedString(secretKey),

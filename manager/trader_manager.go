@@ -737,6 +737,11 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 		traderConfig.HyperliquidPrivateKey = string(exchangeCfg.APIKey)
 		traderConfig.HyperliquidWalletAddr = exchangeCfg.HyperliquidWalletAddr
 		traderConfig.HyperliquidUnifiedAcct = exchangeCfg.HyperliquidUnifiedAcct
+	case "alpaca_paper":
+		traderConfig.AlpacaAPIKey = string(exchangeCfg.APIKey)
+		traderConfig.AlpacaSecretKey = string(exchangeCfg.SecretKey)
+	case "cn_paper":
+		traderConfig.TushareToken = string(exchangeCfg.APIKey)
 	case "aster":
 		traderConfig.AsterUser = exchangeCfg.AsterUser
 		traderConfig.AsterSigner = exchangeCfg.AsterSigner

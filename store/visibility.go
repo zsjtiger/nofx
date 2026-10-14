@@ -31,6 +31,15 @@ func MissingRequiredExchangeCredentialFields(exchangeType, apiKey, secretKey, pa
 			namedField{"lighter_wallet_addr", lighterWalletAddr},
 			namedField{"lighter_api_key_private_key", lighterAPIKeyPrivateKey},
 		)
+	case "alpaca_paper":
+		return missingNamedFields(
+			namedField{"api_key", apiKey},
+			namedField{"secret_key", secretKey},
+		)
+	case "cn_paper":
+		return missingNamedFields(
+			namedField{"api_key (tushare token)", apiKey},
+		)
 	default:
 		return []string{"exchange_type"}
 	}
@@ -93,4 +102,17 @@ func IsVisibleStrategy(strategy *Strategy) bool {
 		return false
 	}
 	return strings.TrimSpace(strategy.Name) != ""
+}
+
+// MarketForExchangeType returns the market an exchange type trades. Exchanges
+// added before per-market support are perpetual crypto markets.
+func MarketForExchangeType(exchangeType string) string {
+	switch strings.ToLower(strings.TrimSpace(exchangeType)) {
+	case "alpaca_paper":
+		return "us_equity"
+	case "cn_paper":
+		return "cn_equity"
+	default:
+		return "crypto"
+	}
 }

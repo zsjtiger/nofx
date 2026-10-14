@@ -11,8 +11,8 @@ import (
 	"nofx/trader/cnpaper"
 )
 
-// defaultCNPaperCash is the starting cash for A-share paper accounts, in CNY.
-const defaultCNPaperCash = 1_000_000
+// DefaultCNPaperCash is the starting cash for A-share paper accounts, in CNY.
+const DefaultCNPaperCash = 1_000_000
 
 // newAlpacaPaperTrader builds a US-equity paper trader and registers its daily-bar source.
 func newAlpacaPaperTrader(config AutoTraderConfig) (Trader, error) {
@@ -35,7 +35,7 @@ func newCNPaperTrader(config AutoTraderConfig) (Trader, error) {
 	}
 	cash := config.PaperInitialCash
 	if cash <= 0 {
-		cash = defaultCNPaperCash
+		cash = DefaultCNPaperCash
 	}
 	client := tushare.NewClient(config.TushareToken)
 	t, err := cnpaper.New(cash, cnpaper.NewTushareQuoter(client))
