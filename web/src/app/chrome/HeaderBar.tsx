@@ -85,7 +85,11 @@ export default function HeaderBar({
               border: '1px solid rgba(26,24,19,0.12)',
             }}
           >
-            <img src="/icons/crux.svg" alt="Crux Logo" className="w-8 h-8" />
+            <img
+              src="/icons/crux-logo.png"
+              alt="Crux Logo"
+              className="w-8 h-8"
+            />
           </span>
           <span className="text-lg font-bold text-crux-gold tracking-wide">
             Crux

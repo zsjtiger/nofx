@@ -141,7 +141,7 @@ export function SetupPage() {
               <div className="relative">
                 <div className="absolute -inset-4 bg-crux-gold/20 rounded-full blur-2xl" />
                 <img
-                  src="/icons/crux.svg"
+                  src="/icons/crux-logo.png"
                   alt="Crux"
                   className="w-14 h-14 relative z-10"
                 />

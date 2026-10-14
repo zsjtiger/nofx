@@ -136,7 +136,7 @@ export function RegisterPage() {
           <div className="flex justify-center mb-6">
             <div className="relative">
               <img
-                src="/icons/crux.svg"
+                src="/icons/crux-logo.png"
                 alt="Crux Logo"
                 className="w-16 h-16 object-contain relative z-10 opacity-90"
               />
