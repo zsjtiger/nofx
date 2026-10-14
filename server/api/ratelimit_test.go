@@ -40,8 +40,10 @@ func TestIPRateLimiterIsolatesClients(t *testing.T) {
 	now := time.Unix(1_700_000_000, 0)
 
 	// Exhaust IP A.
-	if !l.allow("10.0.0.1", now) || !l.allow("10.0.0.1", now) {
-		t.Fatalf("IP A burst should be allowed")
+	for i := 0; i < 2; i++ {
+		if !l.allow("10.0.0.1", now) {
+			t.Fatalf("IP A burst should be allowed")
+		}
 	}
 	if l.allow("10.0.0.1", now) {
 		t.Fatalf("IP A should be throttled after burst")

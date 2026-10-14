@@ -189,25 +189,6 @@ func traderSetupReasonParams(err error, fallback string, kv ...string) map[strin
 	return params
 }
 
-func describeTraderLoadError(traderName string, err error) string {
-	if err == nil {
-		return formatTraderCreationError("The bot configuration was saved, but the runtime instance failed to initialize", "Please check that the model, strategy, and exchange configuration are complete, then try again")
-	}
-
-	reason := humanizeTraderSetupReason(SanitizeError(err, ""))
-	if reason == "" {
-		return formatTraderCreationError(
-			fmt.Sprintf("Bot \"%s\" failed to start when initializing its runtime instance", traderName),
-			"Please check that the model, strategy, and exchange configuration are complete, then try again",
-		)
-	}
-
-	return formatTraderCreationError(
-		fmt.Sprintf("Bot \"%s\" failed to start when initializing its runtime instance, because: %s", traderName, reason),
-		"Please check that the model, strategy, and exchange configuration are complete, then try again",
-	)
-}
-
 func describeTraderCreationWarning(traderName string, err error) string {
 	if err == nil {
 		return fmt.Sprintf("Bot \"%s\" has been saved, but it has not yet passed the pre-start validation. Please check the model, strategy, and exchange configuration first, then click start after fixing them.", traderName)

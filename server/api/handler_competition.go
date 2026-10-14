@@ -100,25 +100,6 @@ func (s *Server) handleStatistics(c *gin.Context) {
 	c.JSON(http.StatusOK, stats)
 }
 
-// handleCompetition Competition overview (compare all traders)
-func (s *Server) handleCompetition(c *gin.Context) {
-	userID := c.GetString("user_id")
-
-	// Ensure user's traders are loaded into memory
-	err := s.traderManager.LoadUserTradersFromStore(s.store, userID)
-	if err != nil {
-		logger.Infof("⚠️ Failed to load traders for user %s: %v", userID, err)
-	}
-
-	competition, err := s.traderManager.GetCompetitionData()
-	if err != nil {
-		SafeInternalError(c, "Get competition data", err)
-		return
-	}
-
-	c.JSON(http.StatusOK, competition)
-}
-
 // handleEquityHistory returns equity history for a trader. This endpoint is
 // PUBLIC (used by the competition leaderboard), so it cannot use the
 // authenticated getTraderFromQuery helper. Instead, it validates that the

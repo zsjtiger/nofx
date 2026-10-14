@@ -561,7 +561,7 @@ func (s *Server) getTraderFromQuery(c *gin.Context) (*manager.TraderManager, str
 		return nil, "", fmt.Errorf("failed to load traders for this account: %w", err)
 	}
 	if len(userTraders) == 0 {
-		return nil, "", fmt.Errorf("No available traders")
+		return nil, "", fmt.Errorf("no available traders")
 	}
 
 	if traderID == "" {

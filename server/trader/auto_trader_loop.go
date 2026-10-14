@@ -51,7 +51,7 @@ func (at *AutoTrader) runCycle() error {
 
 	// 1. Check if trading needs to be stopped
 	if time.Now().Before(at.stopUntil) {
-		remaining := at.stopUntil.Sub(time.Now())
+		remaining := time.Until(at.stopUntil)
 		at.logWarnf("⏸ Risk control: Trading paused, remaining %.0f minutes", remaining.Minutes())
 		record.Success = false
 		record.ErrorMessage = fmt.Sprintf("Risk control paused, remaining %.0f minutes", remaining.Minutes())

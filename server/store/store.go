@@ -304,11 +304,6 @@ func (s *Store) DBType() DBType {
 	return DBTypeSQLite
 }
 
-// q converts query placeholders for current database type (legacy helper)
-func (s *Store) q(query string) string {
-	return convertQuery(query, s.DBType())
-}
-
 // DB gets underlying database connection (for legacy code compatibility)
 // Deprecated: use GormDB() instead
 func (s *Store) DB() *sql.DB {

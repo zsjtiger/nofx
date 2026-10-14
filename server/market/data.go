@@ -4,7 +4,6 @@ import (
 	"crux/logger"
 	"fmt"
 	"math"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -202,22 +201,6 @@ func formatFloatSlice(values []float64) string {
 		strValues[i] = formatPriceWithDynamicPrecision(v)
 	}
 	return "[" + strings.Join(strValues, ", ") + "]"
-}
-
-// parseFloat parses float value
-func parseFloat(v interface{}) (float64, error) {
-	switch val := v.(type) {
-	case string:
-		return strconv.ParseFloat(val, 64)
-	case float64:
-		return val, nil
-	case int:
-		return float64(val), nil
-	case int64:
-		return float64(val), nil
-	default:
-		return 0, fmt.Errorf("unsupported type: %T", v)
-	}
 }
 
 func priceChangeFromSeries(series []Kline, duration time.Duration) float64 {

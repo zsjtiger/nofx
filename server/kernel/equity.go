@@ -67,7 +67,7 @@ func BuildEquitySystemPrompt(caps types.Capabilities, riskControl store.RiskCont
 	sb.WriteString("# Output\n")
 	sb.WriteString("First explain your reasoning briefly. Then output a JSON array with one object per decision, inside a ```json code block:\n")
 	sb.WriteString("```json\n[\n")
-	sb.WriteString(fmt.Sprintf("  {\"symbol\": \"EXAMPLE\", \"action\": \"open_long\", \"position_size_usd\": 1000, \"stop_loss\": 0, \"take_profit\": 0, \"confidence\": 80, \"risk_usd\": 50, \"reasoning\": \"...\"}\n"))
+	sb.WriteString("  {\"symbol\": \"EXAMPLE\", \"action\": \"open_long\", \"position_size_usd\": 1000, \"stop_loss\": 0, \"take_profit\": 0, \"confidence\": 80, \"risk_usd\": 50, \"reasoning\": \"...\"}\n")
 	sb.WriteString("]\n```\n")
 	sb.WriteString("- `action`: open_long | close_long | hold | wait")
 	if caps.AllowShort {

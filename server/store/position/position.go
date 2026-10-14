@@ -3,7 +3,6 @@ package position
 import (
 	"fmt"
 	"math"
-	"strconv"
 	"strings"
 	"time"
 
@@ -45,24 +44,6 @@ func adaptivePriceRound(price float64, referencePrices ...float64) float64 {
 	}
 
 	return math.Round(price*multiplier) / multiplier
-}
-
-// getPriceDecimalPlaces returns the number of decimal places in a price string
-func getPriceDecimalPlaces(price float64) int {
-	if price == 0 {
-		return 0
-	}
-	s := strconv.FormatFloat(price, 'f', -1, 64)
-	idx := strings.Index(s, ".")
-	if idx == -1 {
-		return 0
-	}
-	return len(s) - idx - 1
-}
-
-// formatDuration formats a duration
-func formatDuration(d time.Duration) string {
-	return formatDurationMs(d.Milliseconds())
 }
 
 // formatDurationMs formats a duration in milliseconds

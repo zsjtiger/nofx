@@ -257,7 +257,7 @@ func (c *ClaudeClient) ParseMCPResponseFull(body []byte) (*llm.LLMResponse, erro
 		return nil, fmt.Errorf("failed to parse Anthropic response: %w — body: %s", err, body)
 	}
 	if raw.Error != nil {
-		return nil, fmt.Errorf("Anthropic API error: %s — %s", raw.Error.Type, raw.Error.Message)
+		return nil, fmt.Errorf("anthropic API error: %s — %s", raw.Error.Type, raw.Error.Message)
 	}
 
 	total := raw.Usage.InputTokens + raw.Usage.OutputTokens

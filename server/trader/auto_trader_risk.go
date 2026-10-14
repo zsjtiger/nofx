@@ -19,7 +19,6 @@ const (
 	// Keep total planned margin below 100% so every configured slot retains
 	// room for exchange overhead and fees. This is an allocation target, not
 	// the per-position hard cap in RiskControlConfig.
-	autopilotBookMarginBudget = 0.96
 )
 
 // shouldDrawdownClose reports whether the profit-protection close should fire.
@@ -69,10 +68,6 @@ func (at *AutoTrader) checkPositionDrawdown() {
 		side := pos["side"].(string)
 		entryPrice := pos["entryPrice"].(float64)
 		markPrice := pos["markPrice"].(float64)
-		quantity := pos["positionAmt"].(float64)
-		if quantity < 0 {
-			quantity = -quantity // Short position quantity is negative, convert to positive
-		}
 
 		// Guard: skip if entry price is zero (prevents division by zero panic)
 		if entryPrice <= 0 {
@@ -301,18 +296,6 @@ func (at *AutoTrader) enforceMaxPositions(currentPositionCount int) error {
 		return fmt.Errorf("❌ [RISK CONTROL] Already at max positions (%d/%d)", currentPositionCount, maxPositions)
 	}
 	return nil
-}
-
-// getSideFromAction converts order action to side (BUY/SELL)
-func getSideFromAction(action string) string {
-	switch action {
-	case "open_long", "close_short":
-		return "BUY"
-	case "open_short", "close_long":
-		return "SELL"
-	default:
-		return "BUY"
-	}
 }
 
 // profitProtectionEnabled reports whether the strategy turns on profit protection.

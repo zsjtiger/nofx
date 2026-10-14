@@ -136,7 +136,7 @@ var (
 )
 
 func extractCoTTrace(response string) string {
-	if match := reReasoningTag.FindStringSubmatch(response); match != nil && len(match) > 1 {
+	if match := reReasoningTag.FindStringSubmatch(response); len(match) > 1 {
 		logger.Infof("✓ Extracted reasoning chain using <reasoning> tag")
 		return strings.TrimSpace(match[1])
 	}
@@ -161,7 +161,7 @@ func extractDecisions(response string) ([]Decision, error) {
 	s = fixMissingQuotes(s)
 
 	var jsonPart string
-	if match := reDecisionTag.FindStringSubmatch(s); match != nil && len(match) > 1 {
+	if match := reDecisionTag.FindStringSubmatch(s); len(match) > 1 {
 		jsonPart = strings.TrimSpace(match[1])
 		logger.Infof("✓ Extracted JSON using <decision> tag")
 	} else {
@@ -171,7 +171,7 @@ func extractDecisions(response string) ([]Decision, error) {
 
 	jsonPart = fixMissingQuotes(jsonPart)
 
-	if m := reJSONFence.FindStringSubmatch(jsonPart); m != nil && len(m) > 1 {
+	if m := reJSONFence.FindStringSubmatch(jsonPart); len(m) > 1 {
 		jsonContent := strings.TrimSpace(m[1])
 		jsonContent = compactArrayOpen(jsonContent)
 		jsonContent = fixMissingQuotes(jsonContent)
