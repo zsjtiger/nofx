@@ -686,9 +686,6 @@ export function TerminalDashboard({
                           className={long ? 'tm-up' : 'tm-dn'}
                         >
                           {long ? 'long' : 'short'}{' '}
-                          <span style={{ color: 'var(--tm-muted)' }}>
-                            {p.leverage}×
-                          </span>
                         </td>
                         <td
                           style={{

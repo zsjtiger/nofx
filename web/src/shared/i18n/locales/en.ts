@@ -46,7 +46,6 @@ const en = {
   markPrice: 'Mark Price',
   quantity: 'Quantity',
   positionValue: 'Position Value',
-  leverage: 'Leverage',
   unrealizedPnL: 'Unrealized P&L',
   liqPrice: 'Liq. Price',
   long: 'LONG',
@@ -173,8 +172,6 @@ const en = {
   secretKey: 'Secret Key',
   walletAddress: 'Wallet Address',
   user: 'User',
-
-  // LIGHTER Configuration
 
   // Exchange names
 
@@ -436,7 +433,6 @@ const en = {
     exit: 'Exit',
     qty: 'Qty',
     value: 'Value',
-    lev: 'Lev',
     pnl: 'P&L',
     duration: 'Duration',
     closedAt: 'Closed At',
@@ -501,7 +497,6 @@ const en = {
     mark: 'Mark',
     qty: 'Qty',
     value: 'Value',
-    lev: 'Lev.',
     uPnL: 'uPnL',
     liq: 'Liq.',
     closePosition: 'Close Position',

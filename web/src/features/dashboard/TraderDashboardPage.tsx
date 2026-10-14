@@ -633,12 +633,6 @@ export function TraderDashboardPage({
                             {t('traderDashboard.value', language)}
                           </th>
                           <th
-                            className="px-1 pb-3 font-semibold text-nofx-text-muted whitespace-nowrap text-center hidden md:table-cell"
-                            title={t('leverage', language)}
-                          >
-                            {t('traderDashboard.lev', language)}
-                          </th>
-                          <th
                             className="px-1 pb-3 font-semibold text-nofx-text-muted whitespace-nowrap text-right"
                             title={t('unrealizedPnL', language)}
                           >
@@ -709,9 +703,6 @@ export function TraderDashboardPage({
                             </td>
                             <td className="px-1 py-3 font-mono font-bold whitespace-nowrap text-right text-nofx-text-main hidden md:table-cell">
                               {(pos.quantity * pos.mark_price).toFixed(2)}
-                            </td>
-                            <td className="px-1 py-3 font-mono whitespace-nowrap text-center text-nofx-gold hidden md:table-cell">
-                              {pos.leverage}x
                             </td>
                             <td className="px-1 py-3 font-mono whitespace-nowrap text-right">
                               <span

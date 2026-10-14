@@ -200,19 +200,6 @@ function ActionCard({
               </div>
             )}
           </div>
-
-          {/* Leverage */}
-          <div className="text-center">
-            <div className="text-xs mb-1" style={{ color: '#8A8478' }}>
-              {t('leverage', language)}
-            </div>
-            <div
-              className="font-mono font-semibold"
-              style={{ color: '#E0483B' }}
-            >
-              {action.leverage}x
-            </div>
-          </div>
         </div>
       )}
 

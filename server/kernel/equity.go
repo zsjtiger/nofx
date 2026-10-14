@@ -91,7 +91,6 @@ func marketLabel(caps types.Capabilities) string {
 
 // ValidateEquityDecisions enforces the market rules on the model's decisions and
 // fails closed: a decision the market cannot take rejects the whole response.
-// Leverage is clamped to 1 when the market does not allow it, as the crypto path does.
 func ValidateEquityDecisions(decisions []Decision, caps types.Capabilities, accountEquity float64, riskControl store.RiskControlConfig) error {
 	ratio := riskControl.MaxPositionValueRatio
 	if ratio <= 0 {

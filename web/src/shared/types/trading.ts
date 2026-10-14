@@ -39,7 +39,6 @@ export interface Position {
   entry_price: number
   mark_price: number
   quantity: number
-  leverage: number
   unrealized_pnl: number
   unrealized_pnl_pct: number
   margin_used: number
@@ -49,7 +48,6 @@ export interface DecisionAction {
   action: string
   symbol: string
   quantity: number
-  leverage: number
   price: number
   stop_loss?: number // Stop loss price
   take_profit?: number // Take profit price
@@ -184,7 +182,6 @@ export interface HistoricalPosition {
   exit_time: number
   realized_pnl: number
   fee: number
-  leverage: number
   status: string
   close_reason: string
   created_at: string

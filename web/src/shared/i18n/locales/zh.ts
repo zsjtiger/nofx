@@ -46,7 +46,6 @@ const zh = {
   markPrice: '标记价',
   quantity: '数量',
   positionValue: '仓位价值',
-  leverage: '杠杆',
   unrealizedPnL: '未实现盈亏',
   liqPrice: '强平价',
   long: '多头',
@@ -169,8 +168,6 @@ const zh = {
   secretKey: '密钥',
   walletAddress: '钱包地址',
   user: '用户名',
-
-  // LIGHTER 配置
 
   // Exchange names
 
@@ -415,7 +412,6 @@ const zh = {
     exit: '平仓价',
     qty: '数量',
     value: '仓位价值',
-    lev: '杠杆',
     pnl: '盈亏',
     duration: '持仓时长',
     closedAt: '平仓时间',
@@ -478,7 +474,6 @@ const zh = {
     mark: '标记价',
     qty: '数量',
     value: '价值',
-    lev: '杠杆',
     uPnL: '未实现盈亏',
     liq: '强平价',
     closePosition: '平仓',

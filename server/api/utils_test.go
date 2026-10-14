@@ -124,7 +124,7 @@ func TestSanitizeExchangeConfigForLog(t *testing.T) {
 
 // TestSanitizeExchangeConfigForLog_NoPlaintextSecrets renders the sanitized log
 // output exactly as the handler does (`%+v`) and asserts that no plaintext
-// secret — including the passphrase and lighter API key private key that were
+// secret — including the passphrase and exchange API key private key that were
 // historically not redacted — survives into the log line.
 func TestSanitizeExchangeConfigForLog_NoPlaintextSecrets(t *testing.T) {
 	secrets := map[string]string{
