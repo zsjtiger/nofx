@@ -121,47 +121,6 @@ cd web && npx tsc --noEmit -p . && npx vitest run
 
 The FAQ inside the web app is the most current reference.
 
-## Community
-
-## Contributing
-
-Code, documentation and bug reports are welcome. See the [Contributing Guide](CONTRIBUTING.md), [Code of Conduct](CODE_OF_CONDUCT.md) and [Security Policy](SECURITY.md).
-
-Crux tracks meaningful contributions and intends to reward contributors as the ecosystem grows. Priority issues carry higher weight.
-
-| Contribution      | Weight |
-| :---------------- | :----: |
-| Pinned Issue PRs  | ★★★★★★ |
-| Code (Merged PRs) | ★★★★★  |
-| Bug Fixes         |  ★★★★  |
-| Feature Ideas     |  ★★★   |
-| Bug Reports       |   ★★   |
-| Documentation     |   ★★   |
-
-<a href="https://github.com/NoFxAiOS/nofx/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=NoFxAiOS/nofx" alt="Contributors"/>
-</a>
-
-## Sponsors
-
-<a href="https://github.com/pjl914335852-ux"><img src="https://github.com/pjl914335852-ux.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/cat9999aaa"><img src="https://github.com/cat9999aaa.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/1733055465"><img src="https://github.com/1733055465.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/kolal2020"><img src="https://github.com/kolal2020.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/CyberFFarm"><img src="https://github.com/CyberFFarm.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/vip3001003"><img src="https://github.com/vip3001003.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/mrtluh"><img src="https://github.com/mrtluh.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/cpcp1117-source"><img src="https://github.com/cpcp1117-source.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/match-007"><img src="https://github.com/match-007.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/leiwuhen1715"><img src="https://github.com/leiwuhen1715.png" width="50" height="50" style="border-radius:50%"/></a>
-<a href="https://github.com/SHAOXIA1991"><img src="https://github.com/SHAOXIA1991.png" width="50" height="50" style="border-radius:50%"/></a>
-
-[Become a sponsor](https://github.com/sponsors/NoFxAiOS)
-
-<br/>
-
-If Crux is useful to you, a star helps other traders find it.
-
 [![Star History Chart](https://star-history.dera.page/svg?repos=NoFxAiOS/nofx&type=Date)](https://star-history.dera.page/#NoFxAiOS/nofx&Date)
 
 ## License
