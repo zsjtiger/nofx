@@ -6,7 +6,7 @@ labels: bug
 assignees: ''
 ---
 
-> **⚠️ Before submitting:** Please check the [Troubleshooting Guide](../../docs/archive/guides/TROUBLESHOOTING.md) ([中文版](../../docs/archive/guides/TROUBLESHOOTING.zh-CN.md)) to see if your issue can be resolved quickly.
+> **⚠️ Before submitting:** Check the Local development section of the README to see if your issue can be resolved quickly.
 
 ## 🐛 Bug Description
 <!-- A clear and concise description of what the bug is -->

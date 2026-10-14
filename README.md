@@ -223,8 +223,6 @@ The backend exposes `GET /api/health`. The frontend exposes `GET /health`. Both 
 | `web/src/features` | Feature folders: auth, traders, dashboard, strategy, faq, settings |
 | `web/src/shared` | Shared UI, API client, i18n, types and config modals |
 
-The migration plan and the decisions behind it are in [docs/plans/2026-10-14-cn-us-equity-migration.md](docs/plans/2026-10-14-cn-us-equity-migration.md).
-
 ## Testing
 
 ```bash

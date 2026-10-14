@@ -133,9 +133,7 @@ We appreciate the security research community's efforts. Contributors who respon
 ### Documentation
 
 - [Getting Started Guide](../docs/getting-started/README.md)
-- [Architecture Documentation](../docs/archive/architecture/README.md)
 - [Docker Deployment Guide](../docs/getting-started/README.md)
-- [Troubleshooting Guide](../docs/archive/guides/TROUBLESHOOTING.md)
 
 ### Security Tools
 
