@@ -40,7 +40,7 @@ We provide security updates for the following versions:
 If you discover a security vulnerability in Crux, please **DO NOT**:
 - ❌ Open a public GitHub Issue
 - ❌ Discuss it on social media (Twitter, Reddit, etc.)
-- ❌ Share it in Telegram/Discord groups
+- ❌ Share it in Discord groups
 - ❌ Post it on security forums before we've had time to fix it
 
 Public disclosure before a fix is available puts all users at risk.
@@ -236,7 +236,6 @@ We thank the following security researchers for responsibly disclosing vulnerabi
 
 **For general questions:**
 - See [CONTRIBUTING.md](CONTRIBUTING.md)
-- Join [Telegram Community](https://t.me/nofx_dev_community)
 
 ---
 
@@ -280,7 +279,7 @@ Crux 是一个处理真实资金和 API 凭证的 AI 交易系统。我们非常
 如果您在 Crux 中发现安全漏洞，请**不要**：
 - ❌ 公开创建 GitHub Issue
 - ❌ 在社交媒体上讨论（Twitter、Reddit 等）
-- ❌ 在 Telegram/Discord 群组中分享
+- ❌ 在 Discord 群组中分享
 - ❌ 在我们有时间修复之前发布到安全论坛
 
 在修复可用之前公开披露会使所有用户面临风险。
@@ -462,7 +461,6 @@ go build -o crux
 - 🐦 **Twitter 私信：** [@Web3Tinkle](https://x.com/Web3Tinkle)
 
 **一般问题：**
-- 加入 [Telegram 社区](https://t.me/nofx_dev_community)
 
 ---
 

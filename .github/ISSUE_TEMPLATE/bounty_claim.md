@@ -24,7 +24,6 @@ assignees: ''
 
 **Contact:**
 - GitHub: @your_username
-- Telegram: @your_telegram (optional)
 - Email: your@email.com (optional)
 
 **Relevant Experience:**

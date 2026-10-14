@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
-import { ShieldAlert, ArrowLeft, Send, Lock } from 'lucide-react'
+import { ShieldAlert, ArrowLeft, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { OFFICIAL_LINKS } from '../../shared/constants/branding'
 
 interface WhitelistFullPageProps {
   onBack?: () => void
@@ -94,18 +93,6 @@ export function WhitelistFullPage({ onBack }: WhitelistFullPageProps) {
                 <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
                 RETURN TO LOGIN
               </button>
-
-              <div className="grid grid-cols-2 gap-3 mt-4">
-                <a
-                  href={OFFICIAL_LINKS.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 py-2 border border-[rgba(26,24,19,0.14)] bg-nofx-bg hover:bg-nofx-bg-deeper text-nofx-text-muted hover:text-nofx-text transition-colors text-[10px] uppercase"
-                >
-                  <Send className="w-3 h-3" />
-                  Support
-                </a>
-              </div>
             </div>
           </div>
 

@@ -7,13 +7,11 @@ const _e = (s: string) => btoa(s)
 
 // Encoded official links - tampering will break functionality
 const ENCODED_LINKS = {
-  telegram: 'aHR0cHM6Ly90Lm1lL25vZnhfZGV2X2NvbW11bml0eQ==', // https://t.me/nofx_dev_community
   github: 'aHR0cHM6Ly9naXRodWIuY29tL3RpbmtsZS1jb21tdW5pdHkvbm9meA==', // https://github.com/NoFxAiOS/nofx
 }
 
 // Integrity checksums (simple hash)
 const CHECKSUMS = {
-  telegram: 2039485761,
   github: 1293847562,
 }
 
@@ -37,7 +35,6 @@ function getVerifiedLink(key: keyof typeof ENCODED_LINKS): string {
   } catch {
     // Fallback to hardcoded values if decoding fails
     const fallbacks: Record<string, string> = {
-      telegram: 'https://t.me/nofx_dev_community',
       github: 'https://github.com/NoFxAiOS/nofx',
     }
     return fallbacks[key] || ''
@@ -46,9 +43,6 @@ function getVerifiedLink(key: keyof typeof ENCODED_LINKS): string {
 
 // Export verified official links
 export const OFFICIAL_LINKS = {
-  get telegram() {
-    return getVerifiedLink('telegram')
-  },
   get github() {
     return getVerifiedLink('github')
   },
@@ -61,7 +55,6 @@ export const BRAND_INFO = {
   version: '1.0.0',
   // Links embedded in multiple formats for redundancy
   social: {
-    tg: () => OFFICIAL_LINKS.telegram,
     gh: () => OFFICIAL_LINKS.github,
   },
 } as const

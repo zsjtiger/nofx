@@ -16,11 +16,10 @@ import { useAuth } from '../../shared/contexts/AuthContext'
 import { TraderConfigModal } from './TraderConfigModal'
 import { DeepVoidBackground } from '../../shared/ui/DeepVoidBackground'
 import { ExchangeConfigModal } from '../../shared/components/config/ExchangeConfigModal'
-import { TelegramConfigModal } from '../../shared/components/config/TelegramConfigModal'
 import { ModelConfigModal } from '../../shared/components/config/ModelConfigModal'
 import { ConfigStatusGrid } from './ConfigStatusGrid'
 import { TradersList } from './TradersList'
-import { Bot, Plus, MessageCircle } from 'lucide-react'
+import { Bot, Plus } from 'lucide-react'
 import { confirmToast } from '../../shared/lib/notify'
 import { toast } from 'sonner'
 
@@ -37,7 +36,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showModelModal, setShowModelModal] = useState(false)
   const [showExchangeModal, setShowExchangeModal] = useState(false)
-  const [showTelegramModal, setShowTelegramModal] = useState(false)
   const [editingModel, setEditingModel] = useState<string | null>(null)
   const [editingExchange, setEditingExchange] = useState<string | null>(null)
   const [initialModelId, setInitialModelId] = useState<string | null>(null)
@@ -600,16 +598,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
             </button>
 
             <button
-              onClick={() => setShowTelegramModal(true)}
-              className="px-4 py-2 rounded text-xs font-mono uppercase tracking-wider transition-all border border-nofx-accent/30 bg-nofx-bg-lighter text-nofx-accent hover:text-nofx-gold hover:border-nofx-accent/50 whitespace-nowrap"
-            >
-              <div className="flex items-center gap-2">
-                <MessageCircle className="w-3 h-3" />
-                <span>TELEGRAM_BOT</span>
-              </div>
-            </button>
-
-            <button
               onClick={() => setShowCreateModal(true)}
               disabled={
                 configuredModels.length === 0 ||
@@ -717,14 +705,6 @@ export function AITradersPage({ onTraderSelect }: AITradersPageProps) {
               setEditingExchange(null)
               setInitialExchangeType(null)
             }}
-            language={language}
-          />
-        )}
-
-        {/* Telegram Bot Modal */}
-        {showTelegramModal && (
-          <TelegramConfigModal
-            onClose={() => setShowTelegramModal(false)}
             language={language}
           />
         )}

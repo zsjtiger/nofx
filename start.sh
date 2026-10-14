@@ -232,7 +232,6 @@ start() {
     echo ""
     echo "  1. Open the web dashboard to register and configure"
     echo "  2. Add an AI model and exchange in Settings"
-    echo "  3. (Optional) Add a Telegram bot token in Settings → Telegram"
     echo ""
     echo -e "  Web dashboard: ${BLUE}http://localhost:${CRUX_FRONTEND_PORT}${NC}"
     echo -e "  View logs:     ${YELLOW}./start.sh logs${NC}"

@@ -19,16 +19,15 @@ type Store struct {
 	driver *DBDriver // Database driver for abstraction (legacy)
 
 	// Sub-stores (lazy initialization)
-	user           *UserStore
-	aiModel        *AIModelStore
-	exchange       *ExchangeStore
-	trader         *TraderStore
-	decision       *DecisionStore
-	position       *position.Store
-	strategy       *StrategyStore
-	equity         *EquityStore
-	order          *OrderStore
-	telegramConfig TelegramConfigStore
+	user     *UserStore
+	aiModel  *AIModelStore
+	exchange *ExchangeStore
+	trader   *TraderStore
+	decision *DecisionStore
+	position *position.Store
+	strategy *StrategyStore
+	equity   *EquityStore
+	order    *OrderStore
 
 	mu sync.RWMutex
 }
@@ -154,9 +153,6 @@ func (s *Store) initTables() error {
 	if err := s.Order().InitTables(); err != nil {
 		return fmt.Errorf("failed to initialize order tables: %w", err)
 	}
-	if err := s.TelegramConfig().(*telegramConfigStore).initTables(); err != nil {
-		return fmt.Errorf("failed to initialize telegram config tables: %w", err)
-	}
 	if err := s.dropRetiredColumns(); err != nil {
 		return err
 	}
@@ -268,16 +264,6 @@ func (s *Store) Order() *OrderStore {
 		s.order = NewOrderStore(s.gdb)
 	}
 	return s.order
-}
-
-// TelegramConfig gets Telegram bot configuration storage
-func (s *Store) TelegramConfig() TelegramConfigStore {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if s.telegramConfig == nil {
-		s.telegramConfig = NewTelegramConfigStore(s.gdb)
-	}
-	return s.telegramConfig
 }
 
 // Close closes database connection

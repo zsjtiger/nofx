@@ -26,8 +26,7 @@ type Server struct {
 	exchangeAccountStateCache *ExchangeAccountStateCache
 	httpServer                *http.Server
 	port                      int
-	telegramReloadCh          chan<- struct{} // signal Telegram bot to reload
-	authLimiter               *ipRateLimiter  // per-IP throttle for login/register
+	authLimiter               *ipRateLimiter // per-IP throttle for login/register
 }
 
 // NewServer Creates API server
@@ -285,22 +284,7 @@ Use this to enable/disable an exchange or update API credentials. The "id" field
 			s.routeWithSchema(protected, "DELETE", "/exchanges/:id", "Delete exchange account",
 				`:id = EXACT id from GET /api/exchanges. Permanently removes the exchange account and disconnects any traders using it.`,
 				s.handleDeleteExchange)
-
-			// Telegram bot configuration
 			s.route(protected, "GET", "/equity/klines", "Daily bars for a stock (market=us_equity|cn_equity, symbol, limit)", s.handleGetEquityKlines)
-			s.routeWithSchema(protected, "GET", "/telegram", "Get Telegram bot configuration",
-				`Returns: {"bot_token":"<string>","model_id":"<EXACT id of configured AI model>","chat_id":"<bound Telegram chat id, empty if not bound>"}`,
-				s.handleGetTelegramConfig)
-			s.routeWithSchema(protected, "POST", "/telegram", "Set Telegram bot token and AI model",
-				`Body: {"bot_token":"<string — Telegram BotFather token>","model_id":"<EXACT id from GET /api/models>"}
-Both fields are required. After saving, the user must send /start in Telegram to bind their account.`,
-				s.handleUpdateTelegramConfig)
-			s.routeWithSchema(protected, "POST", "/telegram/model", "Update Telegram bot AI model only",
-				`Body: {"model_id":"<EXACT id from GET /api/models>"}`,
-				s.handleUpdateTelegramModel)
-			s.routeWithSchema(protected, "DELETE", "/telegram/binding", "Unbind Telegram account",
-				`No body needed. Clears the Telegram chat_id binding so the user can re-bind with /start.`,
-				s.handleUnbindTelegram)
 
 			// Strategy management
 			s.routeWithSchema(protected, "GET", "/strategies", "List user's strategies",
@@ -681,9 +665,4 @@ func (s *Server) Shutdown() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	return s.httpServer.Shutdown(ctx)
-}
-
-// SetTelegramReloadCh sets the channel used to signal the Telegram bot to reload
-func (s *Server) SetTelegramReloadCh(ch chan<- struct{}) {
-	s.telegramReloadCh = ch
 }
