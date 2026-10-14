@@ -55,7 +55,6 @@ type TokenUsage struct {
 	TotalTokens      int
 }
 
-
 // Client AI API configuration
 type Client struct {
 	Provider   string

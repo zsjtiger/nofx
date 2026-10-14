@@ -369,7 +369,6 @@ func (at *AutoTrader) Run() error {
 
 	// Start Lighter order sync if using Lighter exchange
 
-
 	// Start Bybit order sync if using Bybit exchange
 
 	// Start OKX order sync if using OKX exchange
