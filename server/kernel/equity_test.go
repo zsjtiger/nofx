@@ -18,7 +18,7 @@ func equityCaps(t *testing.T, m types.Market) types.Capabilities {
 }
 
 func testRisk() store.RiskControlConfig {
-	return store.RiskControlConfig{MaxPositions: 3, AltcoinMaxPositionValueRatio: 0.5, MinConfidence: 70}
+	return store.RiskControlConfig{MaxPositions: 3, MaxPositionValueRatio: 0.5, MinConfidence: 70}
 }
 
 func TestEngineRequiresStockMarket(t *testing.T) {
@@ -39,7 +39,6 @@ func TestCNEquityPromptStatesRules(t *testing.T) {
 	assert.Contains(t, prompt, "A-share equity trader")
 	assert.Contains(t, prompt, "Short selling is NOT allowed")
 	assert.NotContains(t, prompt, "open_short |", "short actions are not offered as options")
-	assert.Contains(t, prompt, "Leverage is NOT allowed")
 	assert.Contains(t, prompt, "whole lots of 100 shares")
 	assert.Contains(t, prompt, "T+1")
 	assert.Contains(t, prompt, "CNY")
@@ -67,52 +66,45 @@ func TestEngineBuildsEquityPromptForStockMarket(t *testing.T) {
 
 func TestValidateEquityRejectsShortOnCN(t *testing.T) {
 	caps := equityCaps(t, types.MarketCNEquity)
-	decisions := []Decision{{Symbol: "600519.SH", Action: "open_short", Leverage: 1, PositionSizeUSD: 1000, StopLoss: 110, Confidence: 80}}
+	decisions := []Decision{{Symbol: "600519.SH", Action: "open_short", PositionSizeUSD: 1000, StopLoss: 110, Confidence: 80}}
 	err := ValidateEquityDecisions(decisions, caps, 100000, testRisk())
 	assert.ErrorContains(t, err, "open_short is not allowed in cn_equity")
 
-	decisions = []Decision{{Symbol: "600519.SH", Action: "close_short", Leverage: 1}}
+	decisions = []Decision{{Symbol: "600519.SH", Action: "close_short"}}
 	assert.Error(t, ValidateEquityDecisions(decisions, caps, 100000, testRisk()))
-}
-
-func TestValidateEquityClampsLeverageToOne(t *testing.T) {
-	caps := equityCaps(t, types.MarketCNEquity)
-	decisions := []Decision{{Symbol: "600519.SH", Action: "open_long", Leverage: 5, PositionSizeUSD: 10000, StopLoss: 95}}
-	require.NoError(t, ValidateEquityDecisions(decisions, caps, 100000, testRisk()))
-	assert.Equal(t, 1, decisions[0].Leverage)
 }
 
 func TestValidateEquityRequiresStopAndSize(t *testing.T) {
 	caps := equityCaps(t, types.MarketUSEquity)
-	noStop := []Decision{{Symbol: "AAPL", Action: "open_long", Leverage: 1, PositionSizeUSD: 1000, Confidence: 80}}
+	noStop := []Decision{{Symbol: "AAPL", Action: "open_long", PositionSizeUSD: 1000, Confidence: 80}}
 	assert.ErrorContains(t, ValidateEquityDecisions(noStop, caps, 10000, testRisk()), "stop_loss")
 
-	noSize := []Decision{{Symbol: "AAPL", Action: "open_long", Leverage: 1, StopLoss: 90, Confidence: 80}}
+	noSize := []Decision{{Symbol: "AAPL", Action: "open_long", StopLoss: 90, Confidence: 80}}
 	assert.ErrorContains(t, ValidateEquityDecisions(noSize, caps, 10000, testRisk()), "position_size_usd")
 }
 
 func TestValidateEquityCapsPositionValue(t *testing.T) {
 	caps := equityCaps(t, types.MarketUSEquity)
-	decisions := []Decision{{Symbol: "AAPL", Action: "open_long", Leverage: 1, PositionSizeUSD: 9000, StopLoss: 90, Confidence: 80}}
+	decisions := []Decision{{Symbol: "AAPL", Action: "open_long", PositionSizeUSD: 9000, StopLoss: 90, Confidence: 80}}
 	require.NoError(t, ValidateEquityDecisions(decisions, caps, 10000, testRisk()))
 	assert.InDelta(t, 5000, decisions[0].PositionSizeUSD, 0.001, "capped at equity x 0.5")
 }
 
 func TestValidateEquityAllowsUSShort(t *testing.T) {
 	caps := equityCaps(t, types.MarketUSEquity)
-	decisions := []Decision{{Symbol: "TSLA", Action: "open_short", Leverage: 1, PositionSizeUSD: 1000, StopLoss: 260, Confidence: 80}}
+	decisions := []Decision{{Symbol: "TSLA", Action: "open_short", PositionSizeUSD: 1000, StopLoss: 260, Confidence: 80}}
 	assert.NoError(t, ValidateEquityDecisions(decisions, caps, 10000, testRisk()))
 }
 
 func TestValidateEquityHoldPassesThrough(t *testing.T) {
 	caps := equityCaps(t, types.MarketCNEquity)
-	decisions := []Decision{{Symbol: "600519.SH", Action: "hold", Leverage: 1}, {Symbol: "000001.SZ", Action: "wait"}}
+	decisions := []Decision{{Symbol: "600519.SH", Action: "hold"}, {Symbol: "000001.SZ", Action: "wait"}}
 	assert.NoError(t, ValidateEquityDecisions(decisions, caps, 100000, testRisk()))
 }
 
 func TestValidateEquityLowConfidenceOpenBecomesWait(t *testing.T) {
 	caps := equityCaps(t, types.MarketUSEquity)
-	decisions := []Decision{{Symbol: "AAPL", Action: "open_long", Leverage: 1, PositionSizeUSD: 1000, StopLoss: 90, Confidence: 40}}
+	decisions := []Decision{{Symbol: "AAPL", Action: "open_long", PositionSizeUSD: 1000, StopLoss: 90, Confidence: 40}}
 	require.NoError(t, ValidateEquityDecisions(decisions, caps, 10000, testRisk()))
 	assert.Equal(t, "wait", decisions[0].Action, "confidence below the minimum must not open a position")
 }
@@ -121,7 +113,7 @@ func TestValidateEquityMinConfidenceZeroAcceptsAny(t *testing.T) {
 	caps := equityCaps(t, types.MarketUSEquity)
 	risk := testRisk()
 	risk.MinConfidence = 0
-	decisions := []Decision{{Symbol: "AAPL", Action: "open_long", Leverage: 1, PositionSizeUSD: 1000, StopLoss: 90}}
+	decisions := []Decision{{Symbol: "AAPL", Action: "open_long", PositionSizeUSD: 1000, StopLoss: 90}}
 	require.NoError(t, ValidateEquityDecisions(decisions, caps, 10000, risk))
 	assert.Equal(t, "open_long", decisions[0].Action)
 }

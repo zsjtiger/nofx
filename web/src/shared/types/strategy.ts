@@ -91,7 +91,7 @@ export interface ExternalDataSource {
 
 export interface RiskControlConfig {
   max_positions: number
-  altcoin_max_position_value_ratio: number // single position value cap, multiple of equity
+  max_position_value_ratio: number // single position value cap, multiple of equity
   max_margin_usage: number
   min_position_size: number
   min_risk_reward_ratio: number

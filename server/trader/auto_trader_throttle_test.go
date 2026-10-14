@@ -15,17 +15,12 @@ func usAutoTrader() *AutoTrader {
 }
 
 func throttleContext(symbol, side string, heldFor time.Duration, pnlPct float64) *kernel.Context {
-	return leveragedThrottleContext(symbol, side, heldFor, pnlPct, 1)
-}
-
-func leveragedThrottleContext(symbol, side string, heldFor time.Duration, pnlPct float64, leverage int) *kernel.Context {
 	return &kernel.Context{
 		Positions: []kernel.PositionInfo{
 			{
 				Symbol:           symbol,
 				Side:             side,
 				UnrealizedPnLPct: pnlPct,
-				Leverage:         leverage,
 				UpdateTime:       time.Now().Add(-heldFor).UnixMilli(),
 			},
 		},
@@ -53,34 +48,33 @@ func TestTradeThrottleAllowsEarlyHardStop(t *testing.T) {
 	}
 }
 
-func TestTradeThrottleBypassIsPriceBasisNotMarginBasis(t *testing.T) {
+func TestTradeThrottleBypassUsesPriceMove(t *testing.T) {
 	at := usAutoTrader()
-	// At 10x leverage the exchange reports margin-based PnL: -6% margin is
-	// only a -0.6% price move — noise, must NOT bypass the min hold.
-	ctx := leveragedThrottleContext("INTC", "long", 20*time.Minute, -6.0, 10)
+	// A -0.6% price move is noise and must NOT bypass the min hold.
+	ctx := throttleContext("INTC", "long", 20*time.Minute, -0.6)
 
 	reason := at.tradeThrottleReason(kernel.Decision{Symbol: "INTC", Action: "close_long"}, ctx)
 	if !strings.Contains(reason, "min AI-managed hold") {
-		t.Fatalf("expected -0.6%% price move to stay blocked at 10x, got %q", reason)
+		t.Fatalf("expected a -0.6%% price move to stay blocked, got %q", reason)
 	}
 
-	// -60% margin at 10x is a real -6% price move — bypass allowed.
-	ctx = leveragedThrottleContext("INTC", "long", 20*time.Minute, -60.0, 10)
+	// A -6% price move is real and bypasses the min hold.
+	ctx = throttleContext("INTC", "long", 20*time.Minute, -6.0)
 	reason = at.tradeThrottleReason(kernel.Decision{Symbol: "INTC", Action: "close_long"}, ctx)
 	if reason != "" {
-		t.Fatalf("expected -6%% price move to bypass min hold at 10x, got %q", reason)
+		t.Fatalf("expected a -6%% price move to bypass the min hold, got %q", reason)
 	}
 }
 
-func TestTradeThrottleNoiseBandIsPriceBasisNotMarginBasis(t *testing.T) {
+func TestTradeThrottleNoiseBandUsesPriceMove(t *testing.T) {
 	at := usAutoTrader()
-	// Past min hold at 10x: +20% margin is only a +2% price move, still
-	// inside the default -2%..+3% noise band — flat close must stay blocked.
-	ctx := leveragedThrottleContext("INTC", "long", 2*time.Hour, 20.0, 10)
+	// Past the min hold, a +2% price move is still inside the default
+	// -2%..+3% noise band, so a flat close must stay blocked.
+	ctx := throttleContext("INTC", "long", 2*time.Hour, 2.0)
 
 	reason := at.tradeThrottleReason(kernel.Decision{Symbol: "INTC", Action: "close_long"}, ctx)
 	if !strings.Contains(reason, "noise band") {
-		t.Fatalf("expected +2%% price move to be blocked inside noise band at 10x, got %q", reason)
+		t.Fatalf("expected a +2%% price move to be blocked inside the noise band, got %q", reason)
 	}
 }
 

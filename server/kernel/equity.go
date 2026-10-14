@@ -24,7 +24,6 @@ func BuildEquitySystemPrompt(caps types.Capabilities, riskControl store.RiskCont
 	} else {
 		sb.WriteString("- Short selling is NOT allowed. Never output `open_short`.\n")
 	}
-	sb.WriteString("- Leverage is NOT allowed. Always set `leverage` to 1.\n")
 	if caps.LotSize > 0 {
 		sb.WriteString(fmt.Sprintf("- Buys are in whole lots of %d shares. Size positions so they round to a whole lot.\n", caps.LotSize))
 	}
@@ -40,7 +39,7 @@ func BuildEquitySystemPrompt(caps types.Capabilities, riskControl store.RiskCont
 		maxPositions = 3
 	}
 	sb.WriteString(fmt.Sprintf("- At most %d open positions at once.\n", maxPositions))
-	ratio := riskControl.AltcoinMaxPositionValueRatio
+	ratio := riskControl.MaxPositionValueRatio
 	if ratio <= 0 {
 		ratio = 1
 	}
@@ -68,13 +67,13 @@ func BuildEquitySystemPrompt(caps types.Capabilities, riskControl store.RiskCont
 	sb.WriteString("# Output\n")
 	sb.WriteString("First explain your reasoning briefly. Then output a JSON array with one object per decision, inside a ```json code block:\n")
 	sb.WriteString("```json\n[\n")
-	sb.WriteString(fmt.Sprintf("  {\"symbol\": \"EXAMPLE\", \"action\": \"open_long\", \"leverage\": 1, \"position_size_usd\": 1000, \"stop_loss\": 0, \"take_profit\": 0, \"confidence\": 80, \"risk_usd\": 50, \"reasoning\": \"...\"}\n"))
+	sb.WriteString(fmt.Sprintf("  {\"symbol\": \"EXAMPLE\", \"action\": \"open_long\", \"position_size_usd\": 1000, \"stop_loss\": 0, \"take_profit\": 0, \"confidence\": 80, \"risk_usd\": 50, \"reasoning\": \"...\"}\n"))
 	sb.WriteString("]\n```\n")
 	sb.WriteString("- `action`: open_long | close_long | hold | wait")
 	if caps.AllowShort {
 		sb.WriteString(" | open_short | close_short")
 	}
-	sb.WriteString("\n- Required when opening: leverage (1), position_size_usd, stop_loss, take_profit, confidence, risk_usd\n")
+	sb.WriteString("\n- Required when opening: position_size_usd, stop_loss, take_profit, confidence, risk_usd\n")
 	sb.WriteString("- Prices are in the market currency. Never copy the example values.\n")
 	return sb.String()
 }
@@ -94,7 +93,7 @@ func marketLabel(caps types.Capabilities) string {
 // fails closed: a decision the market cannot take rejects the whole response.
 // Leverage is clamped to 1 when the market does not allow it, as the crypto path does.
 func ValidateEquityDecisions(decisions []Decision, caps types.Capabilities, accountEquity float64, riskControl store.RiskControlConfig) error {
-	ratio := riskControl.AltcoinMaxPositionValueRatio
+	ratio := riskControl.MaxPositionValueRatio
 	if ratio <= 0 {
 		ratio = 1
 	}
@@ -105,12 +104,6 @@ func ValidateEquityDecisions(decisions []Decision, caps types.Capabilities, acco
 			if !caps.AllowShort {
 				return fmt.Errorf("decision #%d: %s is not allowed in %s", i+1, d.Action, caps.Market)
 			}
-		}
-		if !caps.AllowLeverage && d.Leverage != 1 {
-			if d.Leverage > 1 {
-				logger.Infof("⚠️  [Equity] %s leverage %dx not allowed in %s, using 1x", d.Symbol, d.Leverage, caps.Market)
-			}
-			d.Leverage = 1
 		}
 		if d.Action != "open_long" && d.Action != "open_short" {
 			continue

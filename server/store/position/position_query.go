@@ -157,9 +157,9 @@ func (s *Store) GetRecentTrades(traderID string, limit int) ([]RecentTrade, erro
 
 		if pos.EntryPrice > 0 {
 			if t.Side == "long" {
-				t.PnLPct = (pos.ExitPrice - pos.EntryPrice) / pos.EntryPrice * 100 * float64(pos.Leverage)
+				t.PnLPct = (pos.ExitPrice - pos.EntryPrice) / pos.EntryPrice * 100
 			} else {
-				t.PnLPct = (pos.EntryPrice - pos.ExitPrice) / pos.EntryPrice * 100 * float64(pos.Leverage)
+				t.PnLPct = (pos.EntryPrice - pos.ExitPrice) / pos.EntryPrice * 100
 			}
 		}
 

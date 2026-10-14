@@ -213,7 +213,7 @@ IMPORTANT: ai_model_id and exchange_id must be the full "id" value from the Acco
 				s.handleCreateTrader)
 			s.routeWithSchema(protected, "PUT", "/traders/:id", "Update trader configuration",
 				`:id = trader_id from GET /api/my-traders
-Body: {"name":"<string>","ai_model_id":"<EXACT id from GET /api/models>","exchange_id":"<EXACT id from GET /api/exchanges>","strategy_id":"<EXACT id from GET /api/strategies>","scan_interval_minutes":<int, min 3>,"is_cross_margin":<bool>}
+Body: {"name":"<string>","ai_model_id":"<EXACT id from GET /api/models>","exchange_id":"<EXACT id from GET /api/exchanges>","strategy_id":"<EXACT id from GET /api/strategies>","scan_interval_minutes":<int, min 3>}
 Only include fields you want to change.`,
 				s.handleUpdateTrader)
 			s.routeWithSchema(protected, "DELETE", "/traders/:id", "Delete trader",
@@ -318,7 +318,7 @@ CRITICAL: Always use the "id" field for strategy_id.`,
 			s.route(protected, "GET", "/strategies/:id", "Get strategy by ID", s.handleGetStrategy)
 			s.routeWithSchema(protected, "POST", "/strategies", "Create a new trading strategy",
 				`Body: {"name":"<string, required>","description":"<string, optional>","lang":"zh|en","config":<StrategyConfig object, OPTIONAL — if omitted the system applies complete working defaults automatically (ai500 top coins, all standard indicators, standard risk control)>}
-IMPORTANT: For most use cases just POST {"name":"<name>"} — the backend fills everything in. Only include "config" when the user explicitly requests custom settings (specific coins, custom leverage, custom timeframes).
+IMPORTANT: For most use cases just POST {"name":"<name>"} — the backend fills everything in. Only include "config" when the user explicitly requests custom settings (specific symbols, custom indicators, custom risk limits).
 
 StrategyConfig fields (stock markets; the market comes from the exchange account):
   coin_source.source_type: "static" (the only supported source)
@@ -331,7 +331,7 @@ StrategyConfig fields (stock markets; the market comes from the exchange account
   indicators.ema_periods: [20,50] default; rsi_periods: [14] default; atr_periods: [14]; boll_periods: [20]
   indicators.external_data_sources: optional HTTP JSON feeds
   risk_control.max_positions: max simultaneous positions (default 3, max 8)
-  risk_control.altcoin_max_position_value_ratio: max position value as a multiple of equity (default 1)
+  risk_control.max_position_value_ratio: max position value as a multiple of equity (default 1)
   risk_control.max_margin_usage: 0.1-1.0 (default 1.0; stocks are not levered)
   risk_control.min_position_size: minimum position value (default 1)
   risk_control.min_risk_reward_ratio: minimum profit/loss ratio (default 2)
@@ -370,7 +370,7 @@ Returns: {"balance":<float>,"equity":<float>,"unrealized_pnl":<float>,"initial_b
 				s.handleAccount)
 			s.routeWithSchema(protected, "GET", "/positions", "Current open positions",
 				`Query: ?trader_id=<EXACT trader_id from GET /api/my-traders>
-Returns: [{"symbol":"<string>","side":"long|short","size":<float>,"entry_price":<float>,"mark_price":<float>,"unrealized_pnl":<float>,"leverage":<int>}]`,
+Returns: [{"symbol":"<string>","side":"long|short","size":<float>,"entry_price":<float>,"mark_price":<float>,"unrealized_pnl":<float>}]`,
 				s.handlePositions)
 			s.routeWithSchema(protected, "GET", "/positions/history", "Closed position history",
 				`Query: ?trader_id=<EXACT trader_id from GET /api/my-traders>&limit=<int, default 20>`,

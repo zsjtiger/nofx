@@ -207,8 +207,6 @@ func (t *Trader) GetPositions() ([]map[string]interface{}, error) {
 			"entryPrice":       parseF(p.AvgEntryPrice),
 			"markPrice":        parseF(p.CurrentPrice),
 			"unRealizedProfit": parseF(p.UnrealizedPL),
-			"leverage":         1,
-			"liquidationPrice": 0.0,
 			"createdTime":      createdMs,
 		})
 	}
@@ -249,16 +247,16 @@ func (t *Trader) enforceTakeProfit() error {
 }
 
 // OpenLong buys with a market order. Fractional share quantities are allowed.
-func (t *Trader) OpenLong(symbol string, quantity float64, leverage int) (map[string]interface{}, error) {
-	if err := types.ValidateSideAllowed(t.caps, leverage, false); err != nil {
+func (t *Trader) OpenLong(symbol string, quantity float64) (map[string]interface{}, error) {
+	if err := types.ValidateSideAllowed(t.caps, false); err != nil {
 		return nil, err
 	}
 	return t.submitMarket(symbol, "buy", quantity)
 }
 
 // OpenShort sells short with a market order. The margin account must allow shorting.
-func (t *Trader) OpenShort(symbol string, quantity float64, leverage int) (map[string]interface{}, error) {
-	if err := types.ValidateSideAllowed(t.caps, leverage, true); err != nil {
+func (t *Trader) OpenShort(symbol string, quantity float64) (map[string]interface{}, error) {
+	if err := types.ValidateSideAllowed(t.caps, true); err != nil {
 		return nil, err
 	}
 	return t.submitMarket(symbol, "sell", quantity)
@@ -317,14 +315,6 @@ func (t *Trader) submitMarket(symbol, side string, qty float64) (map[string]inte
 	}
 	return map[string]interface{}{"orderId": order.ID, "status": order.Status}, nil
 }
-
-// SetLeverage accepts only 1x, since equities here are unlevered.
-func (t *Trader) SetLeverage(symbol string, leverage int) error {
-	return types.ValidateSideAllowed(t.caps, leverage, false)
-}
-
-// SetMarginMode is a no-op: the margin mode is set on the Alpaca account.
-func (t *Trader) SetMarginMode(symbol string, isCrossMargin bool) error { return nil }
 
 // GetMarketPrice returns the latest trade price from the data API.
 func (t *Trader) GetMarketPrice(symbol string) (float64, error) {

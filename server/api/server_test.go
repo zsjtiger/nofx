@@ -52,7 +52,6 @@ func TestUpdateTraderRequest_SystemPromptTemplate(t *testing.T) {
 				"trading_symbols": "BTC,ETH",
 				"custom_prompt": "test",
 				"override_base_prompt": false,
-				"is_cross_margin": true,
 				"system_prompt_template": "nof1"
 			}`,
 			expectedPromptTemplate: "nof1",
@@ -68,7 +67,6 @@ func TestUpdateTraderRequest_SystemPromptTemplate(t *testing.T) {
 				"trading_symbols": "BTC,ETH",
 				"custom_prompt": "test",
 				"override_base_prompt": false,
-				"is_cross_margin": true,
 				"system_prompt_template": "default"
 			}`,
 			expectedPromptTemplate: "default",
@@ -84,7 +82,6 @@ func TestUpdateTraderRequest_SystemPromptTemplate(t *testing.T) {
 				"trading_symbols": "BTC,ETH",
 				"custom_prompt": "test",
 				"override_base_prompt": false,
-				"is_cross_margin": true,
 				"system_prompt_template": "custom"
 			}`,
 			expectedPromptTemplate: "custom",
@@ -138,7 +135,6 @@ func TestGetTraderConfigResponse_SystemPromptTemplate(t *testing.T) {
 				CustomPrompt:         "test",
 				OverrideBasePrompt:   false,
 				SystemPromptTemplate: "nof1",
-				IsCrossMargin:        true,
 				IsRunning:            false,
 			},
 			expectedTemplate: "nof1",
@@ -157,7 +153,6 @@ func TestGetTraderConfigResponse_SystemPromptTemplate(t *testing.T) {
 				CustomPrompt:         "",
 				OverrideBasePrompt:   false,
 				SystemPromptTemplate: "default",
-				IsCrossMargin:        false,
 				IsRunning:            false,
 			},
 			expectedTemplate: "default",
@@ -178,7 +173,6 @@ func TestGetTraderConfigResponse_SystemPromptTemplate(t *testing.T) {
 				"custom_prompt":          tt.traderConfig.CustomPrompt,
 				"override_base_prompt":   tt.traderConfig.OverrideBasePrompt,
 				"system_prompt_template": tt.traderConfig.SystemPromptTemplate,
-				"is_cross_margin":        tt.traderConfig.IsCrossMargin,
 				"is_running":             tt.traderConfig.IsRunning,
 			}
 
@@ -215,7 +209,6 @@ func TestUpdateTraderRequest_CompleteFields(t *testing.T) {
 		"trading_symbols": "BTC,ETH",
 		"custom_prompt": "test",
 		"override_base_prompt": false,
-		"is_cross_margin": true,
 		"system_prompt_template": "nof1"
 	}`
 

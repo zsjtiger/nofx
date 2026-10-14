@@ -250,8 +250,6 @@ func (t *Trader) GetPositions() ([]map[string]interface{}, error) {
 			"entryPrice":       p.avgCost,
 			"markPrice":        q.Price,
 			"unRealizedProfit": p.quantity * (q.Price - p.avgCost),
-			"leverage":         1,
-			"liquidationPrice": 0.0,
 			"createdTime":      p.entryTime.UnixMilli(),
 		})
 	}
@@ -259,11 +257,11 @@ func (t *Trader) GetPositions() ([]map[string]interface{}, error) {
 }
 
 // OpenLong buys whole lots at the latest price, subject to limit-up and suspension.
-func (t *Trader) OpenLong(symbol string, quantity float64, leverage int) (map[string]interface{}, error) {
+func (t *Trader) OpenLong(symbol string, quantity float64) (map[string]interface{}, error) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	if err := types.ValidateSideAllowed(t.caps, leverage, false); err != nil {
+	if err := types.ValidateSideAllowed(t.caps, false); err != nil {
 		return nil, err
 	}
 	if err := types.ValidateOrderQuantity(t.caps, quantity, true, false); err != nil {
@@ -298,8 +296,8 @@ func (t *Trader) OpenLong(symbol string, quantity float64, leverage int) (map[st
 }
 
 // OpenShort is always rejected: A-share cash accounts cannot sell short.
-func (t *Trader) OpenShort(symbol string, quantity float64, leverage int) (map[string]interface{}, error) {
-	return nil, types.ValidateSideAllowed(t.caps, leverage, true)
+func (t *Trader) OpenShort(symbol string, quantity float64) (map[string]interface{}, error) {
+	return nil, types.ValidateSideAllowed(t.caps, true)
 }
 
 // CloseLong sells shares. quantity 0 closes the whole position.
@@ -311,7 +309,7 @@ func (t *Trader) CloseLong(symbol string, quantity float64) (map[string]interfac
 
 // CloseShort is always rejected: there are no short positions to close.
 func (t *Trader) CloseShort(symbol string, quantity float64) (map[string]interface{}, error) {
-	return nil, types.ValidateSideAllowed(t.caps, 1, true)
+	return nil, types.ValidateSideAllowed(t.caps, true)
 }
 
 func (t *Trader) closeLocked(symbol string, quantity float64, reason string) (map[string]interface{}, error) {
@@ -355,7 +353,6 @@ func (t *Trader) closeLocked(symbol string, quantity float64, reason string) (ma
 		Quantity:    quantity,
 		RealizedPnL: proceeds - quantity*p.avgCost,
 		Fee:         fee,
-		Leverage:    1,
 		EntryTime:   p.entryTime,
 		ExitTime:    t.now(),
 		OrderID:     id,
@@ -412,14 +409,6 @@ func (t *Trader) checkProtectionsLocked() {
 		_, _ = t.closeLocked(symbol, 0, reason)
 	}
 }
-
-// SetLeverage accepts only 1x, since A-shares are unlevered.
-func (t *Trader) SetLeverage(symbol string, leverage int) error {
-	return types.ValidateSideAllowed(t.caps, leverage, false)
-}
-
-// SetMarginMode is a no-op: cash accounts have no margin mode.
-func (t *Trader) SetMarginMode(symbol string, isCrossMargin bool) error { return nil }
 
 // GetMarketPrice returns the latest quote price.
 func (t *Trader) GetMarketPrice(symbol string) (float64, error) {

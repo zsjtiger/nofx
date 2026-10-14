@@ -23,7 +23,6 @@ type CreateTraderRequest struct {
 	StrategyID          string  `json:"strategy_id"` // Strategy ID (new version)
 	InitialBalance      float64 `json:"initial_balance"`
 	ScanIntervalMinutes int     `json:"scan_interval_minutes"`
-	IsCrossMargin       *bool   `json:"is_cross_margin"`     // Pointer type, nil means use default value true
 	ShowInCompetition   *bool   `json:"show_in_competition"` // Pointer type, nil means use default value true
 	// The following fields are kept for backward compatibility, new version uses strategy config
 	TradingSymbols       string `json:"trading_symbols"`
@@ -40,7 +39,6 @@ type UpdateTraderRequest struct {
 	StrategyID          string  `json:"strategy_id"` // Strategy ID (new version)
 	InitialBalance      float64 `json:"initial_balance"`
 	ScanIntervalMinutes int     `json:"scan_interval_minutes"`
-	IsCrossMargin       *bool   `json:"is_cross_margin"`
 	ShowInCompetition   *bool   `json:"show_in_competition"`
 	// The following fields are kept for backward compatibility, new version uses strategy config
 	TradingSymbols       string `json:"trading_symbols"`
@@ -327,10 +325,6 @@ func (s *Server) handleCreateTrader(c *gin.Context) {
 	traderID := fmt.Sprintf("%s_%s_%d", exchangeIDShort, req.AIModelID, time.Now().Unix())
 
 	// Set default values
-	isCrossMargin := true // Default to cross margin mode
-	if req.IsCrossMargin != nil {
-		isCrossMargin = *req.IsCrossMargin
-	}
 
 	showInCompetition := true // Default to show in competition
 	if req.ShowInCompetition != nil {
@@ -417,7 +411,6 @@ func (s *Server) handleCreateTrader(c *gin.Context) {
 		CustomPrompt:         req.CustomPrompt,
 		OverrideBasePrompt:   req.OverrideBasePrompt,
 		SystemPromptTemplate: systemPromptTemplate,
-		IsCrossMargin:        isCrossMargin,
 		ShowInCompetition:    showInCompetition,
 		ScanIntervalMinutes:  scanIntervalMinutes,
 		IsRunning:            false,
@@ -505,10 +498,6 @@ func (s *Server) handleUpdateTrader(c *gin.Context) {
 	}
 
 	// Set default values
-	isCrossMargin := existingTrader.IsCrossMargin // Keep original value
-	if req.IsCrossMargin != nil {
-		isCrossMargin = *req.IsCrossMargin
-	}
 
 	showInCompetition := existingTrader.ShowInCompetition // Keep original value
 	if req.ShowInCompetition != nil {
@@ -561,7 +550,6 @@ func (s *Server) handleUpdateTrader(c *gin.Context) {
 		CustomPrompt:         req.CustomPrompt,
 		OverrideBasePrompt:   req.OverrideBasePrompt,
 		SystemPromptTemplate: systemPromptTemplate,
-		IsCrossMargin:        isCrossMargin,
 		ShowInCompetition:    showInCompetition,
 		ScanIntervalMinutes:  scanIntervalMinutes,
 		IsRunning:            existingTrader.IsRunning, // Keep original value

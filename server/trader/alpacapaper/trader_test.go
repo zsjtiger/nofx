@@ -186,7 +186,7 @@ func TestGetPositionsLongAndShort(t *testing.T) {
 
 func TestOpenLongSendsMarketBuy(t *testing.T) {
 	tr, f := newFake(t)
-	res, err := tr.OpenLong("AAPL", 2.5, 1)
+	res, err := tr.OpenLong("AAPL", 2.5)
 	require.NoError(t, err)
 	assert.Equal(t, "order-1", res["orderId"])
 
@@ -199,16 +199,12 @@ func TestOpenLongSendsMarketBuy(t *testing.T) {
 	assert.Equal(t, "day", req.Body["time_in_force"])
 }
 
-func TestOpenShortSendsSellAndRespectsLeverage(t *testing.T) {
+func TestOpenShortSendsSell(t *testing.T) {
 	tr, f := newFake(t)
-	_, err := tr.OpenShort("TSLA", 3, 1)
+	_, err := tr.OpenShort("TSLA", 3)
 	require.NoError(t, err)
 	assert.Equal(t, "sell", f.last().Body["side"])
 
-	count := len(f.requests)
-	_, err = tr.OpenLong("AAPL", 1, 5)
-	assert.ErrorContains(t, err, "not allowed")
-	assert.Len(t, f.requests, count, "a rejected leverage must not reach the API")
 }
 
 func TestCloseLongAllAndRejectsMissing(t *testing.T) {
@@ -326,6 +322,6 @@ func TestFormatQuantity(t *testing.T) {
 func TestOrderRejectionSurfaces(t *testing.T) {
 	tr, f := newFake(t)
 	f.forceErr = 1
-	_, err := tr.OpenLong("AAPL", 1, 1)
+	_, err := tr.OpenLong("AAPL", 1)
 	assert.ErrorContains(t, err, "insufficient buying power")
 }

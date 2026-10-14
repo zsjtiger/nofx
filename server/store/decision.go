@@ -74,8 +74,6 @@ type PositionSnapshot struct {
 	EntryPrice       float64 `json:"entry_price"`
 	MarkPrice        float64 `json:"mark_price"`
 	UnrealizedProfit float64 `json:"unrealized_profit"`
-	Leverage         float64 `json:"leverage"`
-	LiquidationPrice float64 `json:"liquidation_price"`
 }
 
 // DecisionAction decision action
@@ -83,7 +81,6 @@ type DecisionAction struct {
 	Action     string    `json:"action"`
 	Symbol     string    `json:"symbol"`
 	Quantity   float64   `json:"quantity"`
-	Leverage   int       `json:"leverage"`
 	Price      float64   `json:"price"`
 	StopLoss   float64   `json:"stop_loss,omitempty"`   // Stop loss price
 	TakeProfit float64   `json:"take_profit,omitempty"` // Take profit price

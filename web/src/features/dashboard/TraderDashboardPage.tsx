@@ -3,7 +3,10 @@ import { mutate } from 'swr'
 import { api } from '../../shared/lib/api'
 import { EquityChart } from '../../shared/charts/EquityChart'
 import { EquityKlineChart } from '../../shared/charts/EquityKlineChart'
-import { inferEquityMarket } from '../../shared/lib/equityMarket'
+import {
+  currencyForExchangeType,
+  inferEquityMarket,
+} from '../../shared/lib/equityMarket'
 import { DecisionCard } from './DecisionCard'
 import { PositionHistory } from './PositionHistory'
 import { PunkAvatar, getTraderAvatar } from '../../shared/ui/PunkAvatar'
@@ -187,7 +190,7 @@ export function TraderDashboardPage({
     setClosingAll(true)
     let failed = 0
     // Sequential on purpose: parallel closes on the same account can race
-    // on exchange nonces (Hyperliquid) and rate limits.
+    // on broker order handling and rate limits.
     for (const pos of positions) {
       try {
         await api.closePosition(
@@ -534,7 +537,11 @@ export function TraderDashboardPage({
               className="chart-container animate-slide-in scroll-mt-32 backdrop-blur-sm"
               style={{ animationDelay: '0.1s' }}
             >
-              <EquityChart traderId={selectedTrader.trader_id} embedded />
+              <EquityChart
+                traderId={selectedTrader.trader_id}
+                embedded
+                currency={currencyForExchangeType(selectedTrader.exchange_type)}
+              />
             </div>
 
             {/* Daily price for the first open position */}
@@ -637,12 +644,6 @@ export function TraderDashboardPage({
                           >
                             {t('traderDashboard.uPnL', language)}
                           </th>
-                          <th
-                            className="px-1 pb-3 font-semibold text-nofx-text-muted whitespace-nowrap text-right hidden md:table-cell"
-                            title={t('liqPrice', language)}
-                          >
-                            {t('traderDashboard.liq', language)}
-                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -719,9 +720,6 @@ export function TraderDashboardPage({
                                 {pos.unrealized_pnl >= 0 ? '+' : ''}
                                 {pos.unrealized_pnl.toFixed(2)}
                               </span>
-                            </td>
-                            <td className="px-1 py-3 font-mono whitespace-nowrap text-right text-nofx-text-muted hidden md:table-cell">
-                              {formatPrice(pos.liquidation_price)}
                             </td>
                           </tr>
                         ))}

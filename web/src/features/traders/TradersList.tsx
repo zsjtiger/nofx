@@ -49,7 +49,7 @@ export function TradersList({
   onDeleteTrader,
 }: TradersListProps) {
   return (
-    <div className="binance-card p-4 md:p-6">
+    <div className="crux-card p-4 md:p-6">
       <div className="flex items-center justify-between mb-4 md:mb-5">
         <h2
           className="text-lg md:text-xl font-bold flex items-center gap-2"

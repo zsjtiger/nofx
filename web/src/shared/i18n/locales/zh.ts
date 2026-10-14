@@ -152,9 +152,6 @@ const zh = {
   coinSource: '币种来源',
   marginLimit: '保证金上限',
   tradingParams: '交易参数',
-  marginMode: '保证金模式',
-  crossMargin: '全仓',
-  isolatedMargin: '逐仓',
   competitionDisplay: '竞技场显示',
   show: '显示',
   hide: '隐藏',
@@ -172,8 +169,6 @@ const zh = {
   secretKey: '密钥',
   walletAddress: '钱包地址',
   user: '用户名',
-  // Hyperliquid 代理钱包 (新安全模型)
-  // Aster API Pro 配置
 
   // LIGHTER 配置
 
@@ -428,21 +423,6 @@ const zh = {
 
   // Data Page
 
-  // Strategy Market Page
-  strategyMarket: {
-    title: '策略市场',
-    subtitle: 'STRATEGY MARKETPLACE',
-    description: '发现、学习并复用社区精英交易员的策略配置',
-    search: '搜索参数...',
-    all: '全部协议',
-    recent: '最新提交',
-    createdAt: 'TIMESTAMP',
-    copied: 'COPIED',
-    indicators: 'INDICATORS',
-    maxPositions: 'POS_LIMIT',
-    loading: 'INITIALIZING...',
-  },
-
   // Strategy Studio Page
 
   // Metric Tooltip
@@ -612,9 +592,6 @@ const zh = {
     aiModel: 'AI模型',
     exchange: '交易所',
     initialBalance: '初始余额',
-    marginMode: '保证金模式',
-    crossMargin: '全仓',
-    isolatedMargin: '逐仓',
     scanInterval: '{minutes} 分钟',
     scanIntervalLabel: '扫描间隔',
     strategyUsed: '使用策略',

@@ -49,11 +49,7 @@ function fmtPx(n: number | undefined): string {
 }
 function baseLabel(raw?: string): string {
   if (!raw) return ''
-  return raw
-    .toUpperCase()
-    .replace(/^XYZ:/, '')
-    .replace(/[-_]/g, '')
-    .replace(/(USDT|USDC|USD)$/, '')
+  return raw.toUpperCase().replace(/[-_]/g, '')
 }
 function parseScanMinutes(scan?: string): number {
   if (!scan) return 15

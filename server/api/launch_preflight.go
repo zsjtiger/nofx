@@ -34,7 +34,7 @@ type LaunchCheck struct {
 	Status  string `json:"status"`
 	Code    string `json:"code,omitempty"`
 	Message string `json:"message,omitempty"`
-	// Numeric context so the UI can render progress like "8.40 / 12 USDC".
+	// Numeric context so the UI can render progress like "8.40 / 12 USD".
 	Required float64  `json:"required,omitempty"`
 	Actual   *float64 `json:"actual,omitempty"`
 	Asset    string   `json:"asset,omitempty"`

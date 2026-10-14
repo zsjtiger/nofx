@@ -28,7 +28,6 @@ type Trader struct {
 	InitialBalance      float64   `gorm:"column:initial_balance;not null" json:"initial_balance"`
 	ScanIntervalMinutes int       `gorm:"column:scan_interval_minutes;default:15" json:"scan_interval_minutes"`
 	IsRunning           bool      `gorm:"column:is_running;default:false" json:"is_running"`
-	IsCrossMargin       bool      `gorm:"column:is_cross_margin;default:true" json:"is_cross_margin"`
 	ShowInCompetition   bool      `gorm:"column:show_in_competition;default:true" json:"show_in_competition"`
 	CreatedAt           time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt           time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
@@ -110,7 +109,6 @@ func (s *TraderStore) Update(trader *Trader) error {
 		"ai_model_id":            trader.AIModelID,
 		"exchange_id":            trader.ExchangeID,
 		"strategy_id":            trader.StrategyID,
-		"is_cross_margin":        trader.IsCrossMargin,
 		"show_in_competition":    trader.ShowInCompetition,
 		"trading_symbols":        trader.TradingSymbols,
 		"custom_prompt":          trader.CustomPrompt,

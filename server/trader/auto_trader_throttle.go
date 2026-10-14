@@ -14,7 +14,7 @@ const (
 	// Exit gates, validated by decision replay (2026-07-26, 4154 cycles,
 	// 3-fold robustness): gates beat no-gates by 34 pts and the old rigid
 	// 4h/8h by 16 pts of worst-fold score; the searched optimum sits at these
-	// values. Thresholds are PRICE-move percentages (leverage-independent).
+	// values. Thresholds are price-move percentages.
 	autopilotMinHoldDuration        = 90 * time.Minute
 	autopilotNoiseCloseHoldDuration = 3 * time.Hour
 	// Re-entering a just-closed symbol was a consistent loss source: the
@@ -78,7 +78,7 @@ func (at *AutoTrader) closeThrottleReason(decision kernel.Decision, ctx *kernel.
 	pnlPct := 0.0
 	entryTime := int64(0)
 	if pos != nil {
-		pnlPct = rules.PositionPricePnLPct(pos)
+		pnlPct = pos.UnrealizedPnLPct
 		entryTime = pos.UpdateTime
 	}
 

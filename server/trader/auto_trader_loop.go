@@ -205,8 +205,6 @@ func (at *AutoTrader) runCycle() error {
 	// for i, d := range kernel.Decisions {
 	//     logger.Infof("  [%d] %s: %s - %s", i+1, d.Symbol, d.Action, d.Reasoning)
 	//     if d.Action == "open_long" || d.Action == "open_short" {
-	//        logger.Infof("      Leverage: %dx | Position: %.2f USDT | Stop loss: %.4f | Take profit: %.4f",
-	//           d.Leverage, d.PositionSizeUSD, d.StopLoss, d.TakeProfit)
 	//     }
 	// }
 	logger.Info()
@@ -266,7 +264,6 @@ func (at *AutoTrader) runCycle() error {
 			Action:     d.Action,
 			Symbol:     d.Symbol,
 			Quantity:   0,
-			Leverage:   d.Leverage,
 			Price:      0,
 			StopLoss:   d.StopLoss,
 			TakeProfit: d.TakeProfit,
@@ -364,8 +361,8 @@ func (at *AutoTrader) filterDecisionsToStrategyUniverse(decisions []kernel.Decis
 			continue
 		}
 
-		// Fall back to base-level match so AI outputs like "QNTUSDC" still
-		// resolve to candidate "xyz:QNT". Rewrite the decision's symbol to
+		// Fall back to a base-level match so AI outputs such as "600519" still
+		// resolve to candidate "600519.SH". Rewrite the decision's symbol to
 		// the canonical form so downstream order placement works.
 		if base := universeBaseKey(d.Symbol); base != "" {
 			if allowedBases[base] || positionBases[base] {
@@ -388,7 +385,7 @@ func (at *AutoTrader) filterDecisionsToStrategyUniverse(decisions []kernel.Decis
 
 // canonicalUniverseSymbolForBase finds the canonical candidate or position
 // symbol that has the given base. Used to rewrite an AI decision's symbol
-// (e.g. "QNTUSDC") to the form our order pipeline expects ("xyz:QNT").
+// (e.g. "600519") to the form our order pipeline expects ("600519.SH").
 func canonicalUniverseSymbolForBase(ctx *kernel.Context, base string) string {
 	for _, coin := range ctx.CandidateCoins {
 		if universeBaseKey(coin.Symbol) == base {
@@ -463,17 +460,12 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 		}
 
 		unrealizedPnl := pos["unRealizedProfit"].(float64)
-		liquidationPrice := pos["liquidationPrice"].(float64)
 
-		// Calculate margin used (estimated)
-		leverage := 10 // Default value, should actually be fetched from position info
-		if lev, ok := pos["leverage"].(float64); ok {
-			leverage = int(lev)
-		}
-		marginUsed := (quantity * markPrice) / float64(leverage)
+		// Stock positions are cash positions: the margin used is the position value.
+		marginUsed := quantity * markPrice
 		totalMarginUsed += marginUsed
 
-		// Calculate P&L percentage (based on margin, considering leverage)
+		// Calculate P&L percentage (based on the position value)
 		pnlPct := calculatePnLPercentage(unrealizedPnl, marginUsed)
 
 		// Get position open time from exchange (preferred) or fallback to local tracking
@@ -514,11 +506,9 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 			EntryPrice:       entryPrice,
 			MarkPrice:        markPrice,
 			Quantity:         quantity,
-			Leverage:         leverage,
 			UnrealizedPnL:    unrealizedPnl,
 			UnrealizedPnLPct: pnlPct,
 			PeakPnLPct:       peakPnlPct,
-			LiquidationPrice: liquidationPrice,
 			MarginUsed:       marginUsed,
 			UpdateTime:       updateTime,
 		})

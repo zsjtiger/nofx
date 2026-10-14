@@ -11,12 +11,9 @@ import (
 )
 
 const (
-	// marginOverheadFactor and takerFeeRate approximate the total funds an
-	// exchange reserves when opening a position:
-	// totalRequired ≈ positionSize/leverage + positionSize*takerFeeRate + positionSize/leverage*1%
-	//              = positionSize * (marginOverheadFactor/leverage + takerFeeRate)
-	marginOverheadFactor = 1.01
-	takerFeeRate         = 0.001
+	// takerFeeRate approximates the commission on a buy. Stock accounts are cash
+	// accounts, so the funds needed are the position value plus that fee.
+	takerFeeRate = 0.001
 
 	// positionSizeSafetyFactor leaves a buffer below the maximum affordable
 	// position size so a price move between sizing and execution cannot
@@ -105,7 +102,7 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 	}
 
 	// ⚠️ Auto-adjust position size if insufficient margin
-	marginFactor := marginOverheadFactor/float64(decision.Leverage) + takerFeeRate
+	marginFactor := 1 + takerFeeRate
 	maxAffordablePositionSize := availableBalance / marginFactor
 
 	actualPositionSize := decision.PositionSizeUSD
@@ -135,13 +132,7 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 	actionRecord.Quantity = quantity
 	actionRecord.Price = marketData.CurrentPrice
 
-	// Set margin mode
-	if err := at.trader.SetMarginMode(decision.Symbol, at.config.IsCrossMargin); err != nil {
-		logger.Infof("  ⚠️ Failed to set margin mode: %v", err)
-		// Continue execution, doesn't affect trading
-	}
-
-	// [CODE ENFORCED] Market rules: shorting, leverage and lot size
+	// [CODE ENFORCED] Market rules: shorting and lot size
 	quantity, err = at.applyMarketRules(decision, quantity, false, time.Now())
 	if err != nil {
 		return err
@@ -149,7 +140,7 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 	actionRecord.Quantity = quantity
 
 	// Open position
-	order, err := at.trader.OpenLong(decision.Symbol, quantity, decision.Leverage)
+	order, err := at.trader.OpenLong(decision.Symbol, quantity)
 	if err != nil {
 		return fmt.Errorf("failed to open long position for %s: %w", decision.Symbol, err)
 	}
@@ -162,7 +153,7 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 	logger.Infof("  ✓ Position opened successfully, order ID: %v, quantity: %.4f", order["orderId"], quantity)
 
 	// Record order to database and poll for confirmation
-	at.recordAndConfirmOrder(order, decision.Symbol, "open_long", quantity, marketData.CurrentPrice, decision.Leverage, 0)
+	at.recordAndConfirmOrder(order, decision.Symbol, "open_long", quantity, marketData.CurrentPrice, 0)
 
 	// Record position opening time
 	posKey := decision.Symbol + "_long"
@@ -240,7 +231,7 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 	}
 
 	// ⚠️ Auto-adjust position size if insufficient margin
-	marginFactor := marginOverheadFactor/float64(decision.Leverage) + takerFeeRate
+	marginFactor := 1 + takerFeeRate
 	maxAffordablePositionSize := availableBalance / marginFactor
 
 	actualPositionSize := decision.PositionSizeUSD
@@ -270,13 +261,7 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 	actionRecord.Quantity = quantity
 	actionRecord.Price = marketData.CurrentPrice
 
-	// Set margin mode
-	if err := at.trader.SetMarginMode(decision.Symbol, at.config.IsCrossMargin); err != nil {
-		logger.Infof("  ⚠️ Failed to set margin mode: %v", err)
-		// Continue execution, doesn't affect trading
-	}
-
-	// [CODE ENFORCED] Market rules: shorting, leverage and lot size
+	// [CODE ENFORCED] Market rules: shorting and lot size
 	quantity, err = at.applyMarketRules(decision, quantity, true, time.Now())
 	if err != nil {
 		return err
@@ -284,7 +269,7 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 	actionRecord.Quantity = quantity
 
 	// Open position
-	order, err := at.trader.OpenShort(decision.Symbol, quantity, decision.Leverage)
+	order, err := at.trader.OpenShort(decision.Symbol, quantity)
 	if err != nil {
 		return fmt.Errorf("failed to open short position for %s: %w", decision.Symbol, err)
 	}
@@ -297,7 +282,7 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 	logger.Infof("  ✓ Position opened successfully, order ID: %v, quantity: %.4f", order["orderId"], quantity)
 
 	// Record order to database and poll for confirmation
-	at.recordAndConfirmOrder(order, decision.Symbol, "open_short", quantity, marketData.CurrentPrice, decision.Leverage, 0)
+	at.recordAndConfirmOrder(order, decision.Symbol, "open_short", quantity, marketData.CurrentPrice, 0)
 
 	// Record position opening time
 	posKey := decision.Symbol + "_short"
@@ -381,7 +366,7 @@ func (at *AutoTrader) executeCloseLongWithRecord(decision *kernel.Decision, acti
 	}
 
 	// Record order to database and poll for confirmation
-	at.recordAndConfirmOrder(order, decision.Symbol, "close_long", quantity, marketData.CurrentPrice, 0, entryPrice)
+	at.recordAndConfirmOrder(order, decision.Symbol, "close_long", quantity, marketData.CurrentPrice, entryPrice)
 
 	logger.Infof("  ✓ Position closed successfully")
 	return nil
@@ -445,7 +430,7 @@ func (at *AutoTrader) executeCloseShortWithRecord(decision *kernel.Decision, act
 	}
 
 	// Record order to database and poll for confirmation
-	at.recordAndConfirmOrder(order, decision.Symbol, "close_short", quantity, marketData.CurrentPrice, 0, entryPrice)
+	at.recordAndConfirmOrder(order, decision.Symbol, "close_short", quantity, marketData.CurrentPrice, entryPrice)
 
 	logger.Infof("  ✓ Position closed successfully")
 	return nil

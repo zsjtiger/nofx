@@ -8,7 +8,7 @@ import (
 )
 
 // marketCapabilities returns the rules for this trader's market. A trader with
-// no market has zero capabilities, which allow no shorts and no leverage.
+// no market has zero capabilities, which allow no shorts.
 func (at *AutoTrader) marketCapabilities() types.Capabilities {
 	return at.capabilities
 }
@@ -26,7 +26,7 @@ func marketCurrency(m types.Market) string {
 // It returns the quantity to send: buys are floored to the market's lot size.
 func (at *AutoTrader) applyMarketRules(decision *kernel.Decision, quantity float64, isShort bool, now time.Time) (float64, error) {
 	caps := at.marketCapabilities()
-	if err := types.ValidateSideAllowed(caps, decision.Leverage, isShort); err != nil {
+	if err := types.ValidateSideAllowed(caps, isShort); err != nil {
 		return 0, err
 	}
 	open, err := caps.InTradingSession(now)

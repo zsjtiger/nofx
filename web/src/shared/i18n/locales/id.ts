@@ -154,9 +154,6 @@ const id = {
   coinSource: 'Sumber Koin',
   marginLimit: 'Batas Margin',
   tradingParams: 'Parameter Trading',
-  marginMode: 'Mode Margin',
-  crossMargin: 'Cross Margin',
-  isolatedMargin: 'Isolated Margin',
   competitionDisplay: 'Tampilkan di Kompetisi',
   show: 'Tampilkan',
   hide: 'Sembunyikan',
@@ -382,22 +379,6 @@ const id = {
 
   // Data Page
 
-  // Strategy Market Page
-  strategyMarket: {
-    title: 'PASAR STRATEGI',
-    subtitle: 'DATABASE STRATEGI GLOBAL',
-    description:
-      'Temukan, analisis, dan kloning algoritma trading berperforma tinggi',
-    search: 'CARI PARAMETER...',
-    all: 'SEMUA PROTOKOL',
-    recent: 'TERBARU',
-    createdAt: 'TIMESTAMP',
-    copied: 'DISALIN',
-    indicators: 'INDIKATOR',
-    maxPositions: 'BATAS_POS',
-    loading: 'MENGINISIALISASI...',
-  },
-
   // Strategy Studio Page
 
   // Metric Tooltip
@@ -575,9 +556,6 @@ const id = {
     aiModel: 'Model AI',
     exchange: 'Exchange',
     initialBalance: 'Saldo Awal',
-    marginMode: 'Mode Margin',
-    crossMargin: 'Cross',
-    isolatedMargin: 'Isolated',
     scanInterval: '{minutes} menit',
     scanIntervalLabel: 'Interval Scan',
     strategyUsed: 'Strategi Digunakan',

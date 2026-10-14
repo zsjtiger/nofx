@@ -183,7 +183,6 @@ type ClosedPnLRecord struct {
 	Quantity    float64
 	RealizedPnL float64
 	Fee         float64
-	Leverage    int
 	EntryTime   int64 // Unix milliseconds UTC
 	ExitTime    int64 // Unix milliseconds UTC
 	OrderID     string
@@ -255,7 +254,6 @@ func (s *Store) CreateFromClosedPnL(traderID, exchangeID, exchangeType string, r
 		ExitTime:           exitTimeMs,
 		RealizedPnL:        record.RealizedPnL,
 		Fee:                record.Fee,
-		Leverage:           record.Leverage,
 		Status:             "CLOSED",
 		CloseReason:        record.CloseType,
 		Source:             "sync",

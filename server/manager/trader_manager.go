@@ -632,7 +632,7 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 		// Sizing comes from the strategy's RiskControl. Autopilot separately
 		// distributes its margin budget across the configured slots while the
 		// per-position ratio remains a hard safety cap.
-		logger.Infof("✓ Trader %s loaded strategy config: %s (maxPos=%d, posRatio=%.1f)", traderCfg.Name, strategy.Name, strategyConfig.RiskControl.MaxPositions, strategyConfig.RiskControl.AltcoinMaxPositionValueRatio)
+		logger.Infof("✓ Trader %s loaded strategy config: %s (maxPos=%d, posRatio=%.1f)", traderCfg.Name, strategy.Name, strategyConfig.RiskControl.MaxPositions, strategyConfig.RiskControl.MaxPositionValueRatio)
 	} else {
 		return fmt.Errorf("trader %s has no strategy configured", traderCfg.Name)
 	}
@@ -653,7 +653,6 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 		CustomModelName:   aiModelCfg.CustomModelName,
 		ScanInterval:      time.Duration(traderCfg.ScanIntervalMinutes) * time.Minute,
 		InitialBalance:    traderCfg.InitialBalance,
-		IsCrossMargin:     traderCfg.IsCrossMargin,
 		ShowInCompetition: traderCfg.ShowInCompetition,
 		StrategyConfig:    strategyConfig,
 		StrategyConfigRaw: strategyConfigRaw,

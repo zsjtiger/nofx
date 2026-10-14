@@ -31,7 +31,6 @@ interface FormState {
   ai_model: string
   exchange_id: string
   strategy_id: string
-  is_cross_margin: boolean
   show_in_competition: boolean
   scan_interval_minutes: number
 }
@@ -61,7 +60,6 @@ export function TraderConfigModal({
     ai_model: '',
     exchange_id: '',
     strategy_id: '',
-    is_cross_margin: true,
     show_in_competition: true,
     scan_interval_minutes: 15,
   })
@@ -115,7 +113,6 @@ export function TraderConfigModal({
         ai_model: availableModels[0]?.id || '',
         exchange_id: availableExchanges[0]?.id || '',
         strategy_id: '',
-        is_cross_margin: true,
         show_in_competition: true,
         scan_interval_minutes: 15,
       })
@@ -142,7 +139,6 @@ export function TraderConfigModal({
         ai_model_id: formData.ai_model,
         exchange_id: formData.exchange_id,
         strategy_id: formData.strategy_id,
-        is_cross_margin: formData.is_cross_margin,
         show_in_competition: formData.show_in_competition,
         scan_interval_minutes: formData.scan_interval_minutes,
       }
@@ -349,37 +345,6 @@ export function TraderConfigModal({
             </h3>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm text-nofx-text block mb-2">
-                    {t('marginMode', language)}
-                  </label>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleInputChange('is_cross_margin', true)}
-                      className={`flex-1 px-3 py-2 rounded text-sm ${
-                        formData.is_cross_margin
-                          ? 'bg-nofx-gold text-white'
-                          : 'bg-nofx-bg-lighter text-nofx-text-muted border border-nofx-gold/20'
-                      }`}
-                    >
-                      {t('crossMargin', language)}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleInputChange('is_cross_margin', false)
-                      }
-                      className={`flex-1 px-3 py-2 rounded text-sm ${
-                        !formData.is_cross_margin
-                          ? 'bg-nofx-gold text-white'
-                          : 'bg-nofx-bg-lighter text-nofx-text-muted border border-nofx-gold/20'
-                      }`}
-                    >
-                      {t('isolatedMargin', language)}
-                    </button>
-                  </div>
-                </div>
                 <div>
                   <label className="text-sm text-nofx-text block mb-2">
                     {t('aiScanInterval', language)}

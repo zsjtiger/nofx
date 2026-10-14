@@ -166,13 +166,40 @@ type ExternalDataSource struct {
 }
 
 // RiskControlConfig holds the limits enforced in code. Stock markets take no leverage.
+// legacyMaxPositionValueRatioKey is the JSON key used before the field was
+// renamed. Strategies saved earlier still carry it.
+const legacyMaxPositionValueRatioKey = "altcoin_max_position_value_ratio"
+
+// UnmarshalJSON reads the current key and falls back to the legacy key, so
+// stored strategies keep their position value ratio after the rename.
+func (rc *RiskControlConfig) UnmarshalJSON(data []byte) error {
+	type plain RiskControlConfig
+	aux := plain(*rc)
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	var legacy map[string]json.RawMessage
+	if err := json.Unmarshal(data, &legacy); err != nil {
+		return err
+	}
+	if _, hasCurrent := legacy["max_position_value_ratio"]; !hasCurrent {
+		if raw, ok := legacy[legacyMaxPositionValueRatioKey]; ok {
+			if err := json.Unmarshal(raw, &aux.MaxPositionValueRatio); err != nil {
+				return err
+			}
+		}
+	}
+	*rc = RiskControlConfig(aux)
+	return nil
+}
+
 type RiskControlConfig struct {
-	MaxPositions                 int     `json:"max_positions"`
-	AltcoinMaxPositionValueRatio float64 `json:"altcoin_max_position_value_ratio"` // single position value cap, as a multiple of equity
-	MaxMarginUsage               float64 `json:"max_margin_usage"`
-	MinPositionSize              float64 `json:"min_position_size"`
-	MinRiskRewardRatio           float64 `json:"min_risk_reward_ratio"`
-	MinConfidence                int     `json:"min_confidence"`
+	MaxPositions          int     `json:"max_positions"`
+	MaxPositionValueRatio float64 `json:"max_position_value_ratio"` // single position value cap, as a multiple of equity
+	MaxMarginUsage        float64 `json:"max_margin_usage"`
+	MinPositionSize       float64 `json:"min_position_size"`
+	MinRiskRewardRatio    float64 `json:"min_risk_reward_ratio"`
+	MinConfidence         int     `json:"min_confidence"`
 	// ProfitProtection closes a position that gives back 40% of its peak gain
 	// after a 5% move. It runs outside the model's decisions, so it is off by default.
 	ProfitProtection bool `json:"profit_protection"`
@@ -190,7 +217,7 @@ type PromptSectionsConfig struct {
 func (c *StrategyConfig) ClampLimits() {
 	rc := &c.RiskControl
 	rc.MaxPositions = clampInt(rc.MaxPositions, 1, MaxPositions, DefaultMaxPositions)
-	rc.AltcoinMaxPositionValueRatio = clampFloat(rc.AltcoinMaxPositionValueRatio, 0.1, MaxPositionValue, DefaultPositionValueCap)
+	rc.MaxPositionValueRatio = clampFloat(rc.MaxPositionValueRatio, 0.1, MaxPositionValue, DefaultPositionValueCap)
 	rc.MaxMarginUsage = clampFloat(rc.MaxMarginUsage, 0.1, 1.0, 1.0)
 	rc.MinRiskRewardRatio = clampFloat(rc.MinRiskRewardRatio, 1.0, 10.0, 2.0)
 	rc.MinConfidence = clampInt(rc.MinConfidence, MinConfidence, MaxConfidence, 70)
@@ -329,12 +356,12 @@ func GetDefaultStrategyConfig(lang string) StrategyConfig {
 			BOLLPeriods:     []int{20},
 		},
 		RiskControl: RiskControlConfig{
-			MaxPositions:                 DefaultMaxPositions,
-			AltcoinMaxPositionValueRatio: DefaultPositionValueCap,
-			MaxMarginUsage:               1.0,
-			MinPositionSize:              MinPositionValue,
-			MinRiskRewardRatio:           2.0,
-			MinConfidence:                70,
+			MaxPositions:          DefaultMaxPositions,
+			MaxPositionValueRatio: DefaultPositionValueCap,
+			MaxMarginUsage:        1.0,
+			MinPositionSize:       MinPositionValue,
+			MinRiskRewardRatio:    2.0,
+			MinConfidence:         70,
 		},
 	}
 
@@ -711,7 +738,7 @@ func StrategyClampWarnings(before, after StrategyConfig, lang string) []string {
 	}
 
 	appendInt("Max Positions", "max_positions", before.RiskControl.MaxPositions, after.RiskControl.MaxPositions)
-	appendFloat("Max Position Value Ratio", "altcoin_max_position_value_ratio", before.RiskControl.AltcoinMaxPositionValueRatio, after.RiskControl.AltcoinMaxPositionValueRatio)
+	appendFloat("Max Position Value Ratio", "max_position_value_ratio", before.RiskControl.MaxPositionValueRatio, after.RiskControl.MaxPositionValueRatio)
 	appendFloat("Min Risk/Reward Ratio", "min_risk_reward_ratio", before.RiskControl.MinRiskRewardRatio, after.RiskControl.MinRiskRewardRatio)
 	appendFloat("Max Margin Usage", "max_margin_usage", before.RiskControl.MaxMarginUsage, after.RiskControl.MaxMarginUsage)
 	appendFloat("Min Position Size", "min_position_size", before.RiskControl.MinPositionSize, after.RiskControl.MinPositionSize)

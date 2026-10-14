@@ -538,12 +538,11 @@ export function StrategyStudioPage() {
                     min={0.1}
                     max={10}
                     value={
-                      draft.ai_config.risk_control
-                        .altcoin_max_position_value_ratio
+                      draft.ai_config.risk_control.max_position_value_ratio
                     }
                     onChange={(e) =>
                       updateRisk({
-                        altcoin_max_position_value_ratio: clampNumber(
+                        max_position_value_ratio: clampNumber(
                           Number(e.target.value),
                           0.1,
                           10

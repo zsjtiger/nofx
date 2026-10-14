@@ -56,7 +56,6 @@ func CreatePositionSnapshot(traderID, exchangeID, exchangeType string, trader Tr
 		positionAmt, _ := posMap["positionAmt"].(float64)
 		entryPrice, _ := posMap["entryPrice"].(float64)
 		markPrice, _ := posMap["markPrice"].(float64)
-		leverage, _ := posMap["leverage"].(float64)
 
 		// Skip positions with 0 quantity
 		if positionAmt == 0 {
@@ -86,7 +85,6 @@ func CreatePositionSnapshot(traderID, exchangeID, exchangeType string, trader Tr
 			EntryPrice:         entryPrice,
 			EntryOrderID:       "snapshot", // Mark as snapshot
 			EntryTime:          nowMs,
-			Leverage:           int(leverage),
 			Status:             "OPEN",
 			Source:             "snapshot", // Mark source as snapshot
 			CreatedAt:          nowMs,
@@ -98,8 +96,8 @@ func CreatePositionSnapshot(traderID, exchangeID, exchangeType string, trader Tr
 			continue
 		}
 
-		logger.Infof("  ✅ Created snapshot: %s %s %.6f @ %.2f (leverage: %dx)",
-			symbol, side, positionAmt, entryPrice, int(leverage))
+		logger.Infof("  ✅ Created snapshot: %s %s %.6f @ %.2f",
+			symbol, side, positionAmt, entryPrice)
 		createdCount++
 	}
 

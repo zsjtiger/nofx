@@ -6,18 +6,17 @@ import (
 
 // ClosedPnLRecord represents a single closed position record from exchange
 type ClosedPnLRecord struct {
-	Symbol      string    // Trading pair (e.g., "BTCUSDT")
+	Symbol      string    // Instrument (e.g., "AAPL", "600519.SH")
 	Side        string    // "long" or "short"
 	EntryPrice  float64   // Entry price
 	ExitPrice   float64   // Exit/close price
 	Quantity    float64   // Position size
 	RealizedPnL float64   // Realized profit/loss
 	Fee         float64   // Trading fee/commission
-	Leverage    int       // Leverage used
 	EntryTime   time.Time // Position open time
 	ExitTime    time.Time // Position close time
 	OrderID     string    // Close order ID
-	CloseType   string    // "manual", "stop_loss", "take_profit", "liquidation", "unknown"
+	CloseType   string    // "manual", "stop_loss", "take_profit", "unknown"
 	ExchangeID  string    // Exchange-specific position ID
 }
 
@@ -25,7 +24,7 @@ type ClosedPnLRecord struct {
 // Used for reconstructing position history with unified algorithm
 type TradeRecord struct {
 	TradeID      string    // Unique trade ID from exchange
-	Symbol       string    // Trading pair (e.g., "BTCUSDT")
+	Symbol       string    // Instrument (e.g., "AAPL", "600519.SH")
 	Side         string    // "BUY" or "SELL"
 	PositionSide string    // "LONG", "SHORT", or "BOTH" (for one-way mode)
 	OrderAction  string    // "open_long", "open_short", "close_long", "close_short" (from exchange Dir field)
@@ -46,22 +45,16 @@ type Trader interface {
 	GetPositions() ([]map[string]interface{}, error)
 
 	// OpenLong Open long position
-	OpenLong(symbol string, quantity float64, leverage int) (map[string]interface{}, error)
+	OpenLong(symbol string, quantity float64) (map[string]interface{}, error)
 
 	// OpenShort Open short position
-	OpenShort(symbol string, quantity float64, leverage int) (map[string]interface{}, error)
+	OpenShort(symbol string, quantity float64) (map[string]interface{}, error)
 
 	// CloseLong Close long position (quantity=0 means close all)
 	CloseLong(symbol string, quantity float64) (map[string]interface{}, error)
 
 	// CloseShort Close short position (quantity=0 means close all)
 	CloseShort(symbol string, quantity float64) (map[string]interface{}, error)
-
-	// SetLeverage Set leverage
-	SetLeverage(symbol string, leverage int) error
-
-	// SetMarginMode Set position mode (true=cross margin, false=isolated margin)
-	SetMarginMode(symbol string, isCrossMargin bool) error
 
 	// GetMarketPrice Get market price
 	GetMarketPrice(symbol string) (float64, error)

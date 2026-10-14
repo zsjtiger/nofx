@@ -68,18 +68,6 @@ func TestValidateProtectionPrices(t *testing.T) {
 	}
 }
 
-func TestPositionPricePnLPct(t *testing.T) {
-	if got := PositionPricePnLPct(nil); got != 0 {
-		t.Errorf("nil position = %v, want 0", got)
-	}
-	if got := PositionPricePnLPct(&kernel.PositionInfo{UnrealizedPnLPct: 10, Leverage: 5}); got != 2 {
-		t.Errorf("leveraged = %v, want 2", got)
-	}
-	if got := PositionPricePnLPct(&kernel.PositionInfo{UnrealizedPnLPct: 10, Leverage: 1}); got != 10 {
-		t.Errorf("unleveraged = %v, want 10", got)
-	}
-}
-
 func TestCanonicalPositionSymbol(t *testing.T) {
 	if got := CanonicalPositionSymbol("  aapl "); got != "AAPL" {
 		t.Errorf("got %q, want AAPL", got)

@@ -32,7 +32,6 @@ type TradeEvent struct {
 	TradeType string
 	Symbol    string
 	AmountUSD float64
-	Leverage  int
 	UserID    string
 	TraderID  string
 }
@@ -129,7 +128,6 @@ func sendTradeEvent(event TradeEvent) error {
 					"trade_type":           event.TradeType,
 					"symbol":               event.Symbol,
 					"amount_usd":           event.AmountUSD,
-					"leverage":             event.Leverage,
 					"installation_id":      installationID, // For counting active installations
 					"user_id":              event.UserID,   // For counting active users
 					"trader_id":            event.TraderID, // For counting active traders

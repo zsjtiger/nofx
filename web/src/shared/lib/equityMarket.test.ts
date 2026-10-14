@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { inferEquityMarket } from './equityMarket'
+import { currencyForExchangeType, inferEquityMarket } from './equityMarket'
 
 describe('inferEquityMarket', () => {
   it('treats A-share codes as cn_equity', () => {
@@ -11,5 +11,14 @@ describe('inferEquityMarket', () => {
   it('treats tickers as us_equity', () => {
     expect(inferEquityMarket('AAPL')).toBe('us_equity')
     expect(inferEquityMarket('brk.b')).toBe('us_equity')
+  })
+})
+
+describe('currencyForExchangeType', () => {
+  it('maps each broker to its account currency', () => {
+    expect(currencyForExchangeType('alpaca_paper')).toBe('USD')
+    expect(currencyForExchangeType('cn_paper')).toBe('CNY')
+    expect(currencyForExchangeType('unknown')).toBe('')
+    expect(currencyForExchangeType(undefined)).toBe('')
   })
 })

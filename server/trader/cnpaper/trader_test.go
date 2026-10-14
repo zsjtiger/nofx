@@ -51,7 +51,7 @@ func TestNewValidatesArguments(t *testing.T) {
 func TestOpenLongFillsWholeLotsAndChargesFees(t *testing.T) {
 	tr := newTestTrader(t, morning, fakeQuoter{"600519.SH": normalQuote})
 
-	res, err := tr.OpenLong("600519.SH", 300, 1)
+	res, err := tr.OpenLong("600519.SH", 300)
 	require.NoError(t, err)
 	assert.Equal(t, "FILLED", res["status"])
 	assert.Equal(t, 300.0, res["executedQty"])
@@ -69,20 +69,18 @@ func TestOpenLongFillsWholeLotsAndChargesFees(t *testing.T) {
 	assert.Equal(t, int64(morning.UnixMilli()), pos[0]["createdTime"])
 }
 
-func TestOpenLongRejectsOddLotAndLeverage(t *testing.T) {
+func TestOpenLongRejectsOddLot(t *testing.T) {
 	tr := newTestTrader(t, morning, fakeQuoter{"600519.SH": normalQuote})
 
-	_, err := tr.OpenLong("600519.SH", 150, 1)
+	_, err := tr.OpenLong("600519.SH", 150)
 	assert.ErrorContains(t, err, "multiple of 100")
 
-	_, err = tr.OpenLong("600519.SH", 100, 3)
-	assert.ErrorContains(t, err, "not allowed")
 }
 
 func TestShortingIsRejected(t *testing.T) {
 	tr := newTestTrader(t, morning, fakeQuoter{"600519.SH": normalQuote})
 
-	_, err := tr.OpenShort("600519.SH", 100, 1)
+	_, err := tr.OpenShort("600519.SH", 100)
 	assert.ErrorContains(t, err, "short selling is not allowed")
 
 	_, err = tr.CloseShort("600519.SH", 0)
@@ -92,12 +90,12 @@ func TestShortingIsRejected(t *testing.T) {
 func TestOpenLongBlockedAtLimitUpAndWhenSuspended(t *testing.T) {
 	limitUp := Quote{Price: 110, PrevClose: 100, UpLimit: 110, DownLimit: 90, Volume: 5000}
 	tr := newTestTrader(t, morning, fakeQuoter{"600519.SH": limitUp})
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	assert.ErrorContains(t, err, "limit-up")
 
 	suspended := Quote{Price: 100, PrevClose: 100, UpLimit: 110, DownLimit: 90, Volume: 0}
 	tr2 := newTestTrader(t, morning, fakeQuoter{"600519.SH": suspended})
-	_, err = tr2.OpenLong("600519.SH", 100, 1)
+	_, err = tr2.OpenLong("600519.SH", 100)
 	assert.ErrorContains(t, err, "suspended")
 }
 
@@ -105,14 +103,14 @@ func TestOpenLongRejectsInsufficientCash(t *testing.T) {
 	tr, err := New(1000, fakeQuoter{"600519.SH": normalQuote})
 	require.NoError(t, err)
 	tr.now = func() time.Time { return morning }
-	_, err = tr.OpenLong("600519.SH", 100, 1)
+	_, err = tr.OpenLong("600519.SH", 100)
 	assert.ErrorContains(t, err, "insufficient cash")
 }
 
 func TestSameDaySellBlockedByT1(t *testing.T) {
 	quotes := fakeQuoter{"600519.SH": normalQuote}
 	tr := newTestTrader(t, morning, quotes)
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 
 	_, err = tr.CloseLong("600519.SH", 0)
@@ -126,7 +124,7 @@ func TestSameDaySellBlockedByT1(t *testing.T) {
 func TestCloseLongRecordsRealizedPnLAndStampDuty(t *testing.T) {
 	quotes := fakeQuoter{"600519.SH": normalQuote}
 	tr := newTestTrader(t, morning, quotes)
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 
 	tr.now = func() time.Time { return nextDay }
@@ -150,7 +148,7 @@ func TestCloseLongRecordsRealizedPnLAndStampDuty(t *testing.T) {
 
 func TestCloseLongRejectsOverSelling(t *testing.T) {
 	tr := newTestTrader(t, morning, fakeQuoter{"600519.SH": normalQuote})
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 
 	tr.now = func() time.Time { return nextDay }
@@ -161,7 +159,7 @@ func TestCloseLongRejectsOverSelling(t *testing.T) {
 func TestPartialSellLeavesOddLotRemainder(t *testing.T) {
 	quotes := fakeQuoter{"600519.SH": normalQuote}
 	tr := newTestTrader(t, morning, quotes)
-	_, err := tr.OpenLong("600519.SH", 300, 1)
+	_, err := tr.OpenLong("600519.SH", 300)
 	require.NoError(t, err)
 
 	tr.now = func() time.Time { return nextDay }
@@ -178,7 +176,7 @@ func TestPartialSellLeavesOddLotRemainder(t *testing.T) {
 func TestCloseSellAtLimitDownBlocked(t *testing.T) {
 	quotes := fakeQuoter{"600519.SH": normalQuote}
 	tr := newTestTrader(t, morning, quotes)
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 
 	tr.now = func() time.Time { return nextDay }
@@ -190,7 +188,7 @@ func TestCloseSellAtLimitDownBlocked(t *testing.T) {
 func TestStopLossTriggersOnRead(t *testing.T) {
 	quotes := fakeQuoter{"600519.SH": normalQuote}
 	tr := newTestTrader(t, morning, quotes)
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 	require.NoError(t, tr.SetStopLoss("600519.SH", "LONG", 100, 95))
 
@@ -214,7 +212,7 @@ func TestStopLossTriggersOnRead(t *testing.T) {
 func TestStopBlockedByT1StaysPending(t *testing.T) {
 	quotes := fakeQuoter{"600519.SH": normalQuote}
 	tr := newTestTrader(t, morning, quotes)
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 	require.NoError(t, tr.SetStopLoss("600519.SH", "LONG", 100, 95))
 
@@ -228,7 +226,7 @@ func TestStopBlockedByT1StaysPending(t *testing.T) {
 func TestTakeProfitAndCancel(t *testing.T) {
 	quotes := fakeQuoter{"600519.SH": normalQuote}
 	tr := newTestTrader(t, morning, quotes)
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 	require.NoError(t, tr.SetTakeProfit("600519.SH", "LONG", 100, 108))
 
@@ -245,7 +243,7 @@ func TestProtectionRequiresOpenPosition(t *testing.T) {
 
 func TestGetOrderStatusAfterFill(t *testing.T) {
 	tr := newTestTrader(t, morning, fakeQuoter{"600519.SH": normalQuote})
-	res, err := tr.OpenLong("600519.SH", 100, 1)
+	res, err := tr.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 
 	st, err := tr.GetOrderStatus("600519.SH", res["orderId"].(string))
@@ -267,13 +265,10 @@ func TestSessionAndFormatHelpers(t *testing.T) {
 	price, err := tr.GetMarketPrice("600519.SH")
 	require.NoError(t, err)
 	assert.Equal(t, 100.0, price)
-
-	assert.NoError(t, tr.SetLeverage("600519.SH", 1))
-	assert.Error(t, tr.SetLeverage("600519.SH", 2))
 }
 
 func TestNoPriceMeansNoFill(t *testing.T) {
 	tr := newTestTrader(t, morning, fakeQuoter{})
-	_, err := tr.OpenLong("600519.SH", 100, 1)
+	_, err := tr.OpenLong("600519.SH", 100)
 	assert.ErrorContains(t, err, "no quote")
 }

@@ -22,7 +22,6 @@ func TestCapabilitiesOf(t *testing.T) {
 	assert.Equal(t, "CNY", cn.Currency)
 	assert.Equal(t, "Asia/Shanghai", cn.Timezone)
 	assert.False(t, cn.AllowShort)
-	assert.False(t, cn.AllowLeverage)
 	assert.Equal(t, 100, cn.LotSize)
 	assert.True(t, cn.TPlusOne)
 
@@ -112,11 +111,10 @@ func TestValidateSideAllowed(t *testing.T) {
 	cn, _ := CapabilitiesOf(MarketCNEquity)
 	us, _ := CapabilitiesOf(MarketUSEquity)
 
-	assert.Error(t, ValidateSideAllowed(cn, 1, true), "A-shares cannot short")
-	assert.Error(t, ValidateSideAllowed(cn, 2, false), "A-shares cannot use leverage")
-	assert.NoError(t, ValidateSideAllowed(cn, 1, false))
-	assert.NoError(t, ValidateSideAllowed(us, 1, true), "US equities can short")
-	assert.Error(t, ValidateSideAllowed(us, 2, false), "US equities here are unlevered")
+	assert.Error(t, ValidateSideAllowed(cn, true), "A-shares cannot short")
+	assert.NoError(t, ValidateSideAllowed(cn, false))
+	assert.NoError(t, ValidateSideAllowed(us, true), "US equities can short")
+	assert.NoError(t, ValidateSideAllowed(us, false))
 }
 
 func TestResolveMarket(t *testing.T) {

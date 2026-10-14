@@ -17,7 +17,7 @@ func TestLedgerSurvivesRestart(t *testing.T) {
 	first, err := NewPersistent(1_000_000, quotes, path)
 	require.NoError(t, err)
 	first.now = func() time.Time { return morning }
-	_, err = first.OpenLong("600519.SH", 100, 1)
+	_, err = first.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 	require.NoError(t, first.SetStopLoss("600519.SH", "LONG", 100, 95))
 
@@ -47,7 +47,7 @@ func TestClosedTradesPersistAndIDsContinue(t *testing.T) {
 	first, err := NewPersistent(1_000_000, quotes, path)
 	require.NoError(t, err)
 	first.now = func() time.Time { return morning }
-	_, err = first.OpenLong("600519.SH", 100, 1)
+	_, err = first.OpenLong("600519.SH", 100)
 	require.NoError(t, err)
 
 	second, err := NewPersistent(1_000_000, quotes, path)

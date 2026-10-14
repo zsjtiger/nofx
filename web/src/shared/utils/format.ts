@@ -46,7 +46,7 @@ export function formatPrice(
     // Normal price
     decimals = 4
   } else {
-    // Large price (e.g. BTC)
+    // Large price (e.g. 600519)
     decimals = 2
   }
 

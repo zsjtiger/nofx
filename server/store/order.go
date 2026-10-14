@@ -29,8 +29,7 @@ type TraderOrder struct {
 	FilledQuantity    float64 `gorm:"column:filled_quantity;default:0" json:"filled_quantity"`
 	AvgFillPrice      float64 `gorm:"column:avg_fill_price;default:0" json:"avg_fill_price"`
 	Commission        float64 `gorm:"column:commission;default:0" json:"commission"`
-	CommissionAsset   string  `gorm:"column:commission_asset;default:USDT" json:"commission_asset"`
-	Leverage          int     `gorm:"column:leverage;default:1" json:"leverage"`
+	CommissionAsset   string  `gorm:"column:commission_asset" json:"commission_asset"`
 	ReduceOnly        bool    `gorm:"column:reduce_only;default:false" json:"reduce_only"`
 	ClosePosition     bool    `gorm:"column:close_position;default:false" json:"close_position"`
 	WorkingType       string  `gorm:"column:working_type;default:CONTRACT_PRICE" json:"working_type"`

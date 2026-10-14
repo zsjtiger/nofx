@@ -18,10 +18,7 @@ const C_AMBER = '#c8860b' // throttle / block warnings
 
 // Strip dex prefix + quote suffix to the bare base ticker.
 function baseSymbol(raw: string): string {
-  return raw
-    .toUpperCase()
-    .replace(/^XYZ:/, '')
-    .replace(/(USDT|USDC|USD)$/, '')
+  return raw.toUpperCase()
 }
 
 // Include the local date: old sessions must not appear to be today's trades.

@@ -165,7 +165,7 @@ func formatTimeframeData(sb *strings.Builder, data *TimeframeSeriesData) {
 }
 
 // formatPriceWithDynamicPrecision dynamically selects precision based on price range
-// This perfectly supports all coins from ultra-low price meme coins (< 0.0001) to BTC/ETH
+// This supports prices from very small values up to large ones
 func formatPriceWithDynamicPrecision(price float64) string {
 	switch {
 	case price < 0.0001:
@@ -239,7 +239,7 @@ func priceChangeFromSeries(series []Kline, duration time.Duration) float64 {
 }
 
 // isStaleData detects stale data (consecutive price freeze)
-// Fix DOGEUSDT-style issue: consecutive N periods with completely unchanged prices indicate data source anomaly
+// Consecutive N periods with completely unchanged prices indicate a data source anomaly
 func isStaleData(klines []Kline, symbol string) bool {
 	if len(klines) < 5 {
 		return false // Insufficient data to determine

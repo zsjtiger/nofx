@@ -38,18 +38,6 @@ func ValidateProtectionPrices(action string, marketPrice, stopLoss, takeProfit f
 	return nil
 }
 
-// PositionPricePnLPct converts the margin-based UnrealizedPnLPct reported for
-// a position into the underlying price-move percentage.
-func PositionPricePnLPct(pos *kernel.PositionInfo) float64 {
-	if pos == nil {
-		return 0
-	}
-	if pos.Leverage > 1 {
-		return pos.UnrealizedPnLPct / float64(pos.Leverage)
-	}
-	return pos.UnrealizedPnLPct
-}
-
 func IsOpenAction(action string) bool {
 	switch strings.ToLower(strings.TrimSpace(action)) {
 	case "open_long", "open_short":

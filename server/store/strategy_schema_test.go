@@ -50,12 +50,12 @@ func TestNormalizeProductSchemaCleansSymbols(t *testing.T) {
 func TestClampLimitsBoundsRiskSettings(t *testing.T) {
 	cfg := GetDefaultStrategyConfig("en")
 	cfg.RiskControl.MaxPositions = 99
-	cfg.RiskControl.AltcoinMaxPositionValueRatio = 50
+	cfg.RiskControl.MaxPositionValueRatio = 50
 	cfg.RiskControl.MinConfidence = 5
 	cfg.ClampLimits()
 
 	assert.Equal(t, MaxPositions, cfg.RiskControl.MaxPositions)
-	assert.Equal(t, MaxPositionValue, cfg.RiskControl.AltcoinMaxPositionValueRatio)
+	assert.Equal(t, MaxPositionValue, cfg.RiskControl.MaxPositionValueRatio)
 	assert.Equal(t, MinConfidence, cfg.RiskControl.MinConfidence)
 }
 

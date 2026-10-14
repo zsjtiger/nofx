@@ -21,11 +21,9 @@ type PositionInfo struct {
 	EntryPrice       float64 `json:"entry_price"`
 	MarkPrice        float64 `json:"mark_price"`
 	Quantity         float64 `json:"quantity"`
-	Leverage         int     `json:"leverage"`
 	UnrealizedPnL    float64 `json:"unrealized_pnl"`
 	UnrealizedPnLPct float64 `json:"unrealized_pnl_pct"`
 	PeakPnLPct       float64 `json:"peak_pnl_pct"` // Historical peak profit percentage
-	LiquidationPrice float64 `json:"liquidation_price"`
 	MarginUsed       float64 `json:"margin_used"`
 	UpdateTime       int64   `json:"update_time"` // Position update timestamp (milliseconds)
 }
@@ -95,7 +93,6 @@ type Decision struct {
 	Action string `json:"action"` // "open_long", "open_short", "close_long", "close_short", "hold", "wait"
 
 	// Opening position parameters
-	Leverage        int     `json:"leverage,omitempty"`
 	PositionSizeUSD float64 `json:"position_size_usd,omitempty"`
 	StopLoss        float64 `json:"stop_loss,omitempty"`
 	TakeProfit      float64 `json:"take_profit,omitempty"`

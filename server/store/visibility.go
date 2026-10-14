@@ -72,7 +72,7 @@ func IsVisibleStrategy(strategy *Strategy) bool {
 }
 
 // MarketForExchangeType returns the market an exchange type trades. Exchanges
-// added before per-market support are perpetual crypto markets.
+// added before per-market support were crypto markets.
 
 // MarketForExchangeType returns the market an exchange type trades, or an empty
 // string for an unknown exchange type.

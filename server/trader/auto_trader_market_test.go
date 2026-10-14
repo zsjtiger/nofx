@@ -28,39 +28,35 @@ func newMarketTestTrader(t *testing.T, m types.Market) *AutoTrader {
 func TestApplyMarketRulesCNEquity(t *testing.T) {
 	at := newMarketTestTrader(t, types.MarketCNEquity)
 
-	qty, err := at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH", Leverage: 1}, 350, false, cnOpenTime)
+	qty, err := at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH"}, 350, false, cnOpenTime)
 	require.NoError(t, err)
 	assert.Equal(t, 300.0, qty, "buys are floored to whole lots")
 
-	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH", Leverage: 1}, 99, false, cnOpenTime)
+	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH"}, 99, false, cnOpenTime)
 	assert.Error(t, err, "less than one lot cannot be bought")
 
-	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH", Leverage: 1}, 300, true, cnOpenTime)
+	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH"}, 300, true, cnOpenTime)
 	assert.Error(t, err, "A-shares cannot be shorted")
 
-	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH", Leverage: 3}, 300, false, cnOpenTime)
-	assert.Error(t, err, "A-shares cannot use leverage")
 }
 
 func TestApplyMarketRulesUSEquityKeepsFractionalShares(t *testing.T) {
 	at := newMarketTestTrader(t, types.MarketUSEquity)
 
-	qty, err := at.applyMarketRules(&kernel.Decision{Symbol: "AAPL", Leverage: 1}, 1.5, false, usOpenTime)
+	qty, err := at.applyMarketRules(&kernel.Decision{Symbol: "AAPL"}, 1.5, false, usOpenTime)
 	require.NoError(t, err)
 	assert.Equal(t, 1.5, qty)
 
-	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "AAPL", Leverage: 1}, 2, true, usOpenTime)
+	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "AAPL"}, 2, true, usOpenTime)
 	assert.NoError(t, err, "US equities may be shorted")
 }
 
 func TestApplyMarketRulesWithoutMarketFailsClosed(t *testing.T) {
 	at := &AutoTrader{}
 
-	_, err := at.applyMarketRules(&kernel.Decision{Symbol: "AAPL", Leverage: 1}, 1, true, usOpenTime)
+	_, err := at.applyMarketRules(&kernel.Decision{Symbol: "AAPL"}, 1, true, usOpenTime)
 	assert.Error(t, err, "a trader with no market allows no shorts")
 
-	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "AAPL", Leverage: 3}, 1, false, usOpenTime)
-	assert.Error(t, err, "a trader with no market allows no leverage")
 }
 
 func TestEnforceSettlementCNBlocksSameDaySell(t *testing.T) {
@@ -85,6 +81,6 @@ func TestApplyMarketRulesRejectsClosedSession(t *testing.T) {
 	at := newMarketTestTrader(t, types.MarketCNEquity)
 	closed := time.Date(2026, 10, 14, 4, 0, 0, 0, time.UTC) // 12:00 Beijing, lunch break
 
-	_, err := at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH", Leverage: 1}, 100, false, closed)
+	_, err := at.applyMarketRules(&kernel.Decision{Symbol: "600519.SH"}, 100, false, closed)
 	assert.Error(t, err, "orders during the lunch break are rejected")
 }

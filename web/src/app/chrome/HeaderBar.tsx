@@ -104,18 +104,6 @@ export default function HeaderBar({
                   hidden?: boolean
                 }[] = [
                   {
-                    page: 'strategy-market',
-                    path: ROUTES.strategyMarket,
-                    label:
-                      language === 'zh'
-                        ? 'Market'
-                        : language === 'id'
-                          ? 'Pasar'
-                          : 'Market',
-                    requiresAuth: true,
-                    hidden: true,
-                  },
-                  {
                     page: 'traders',
                     path: ROUTES.traders,
                     label: t('configNav', language),
@@ -362,18 +350,6 @@ export default function HeaderBar({
                             ? 'Data'
                             : 'Data',
                       requiresAuth: false,
-                    },
-                    {
-                      page: 'strategy-market',
-                      path: ROUTES.strategyMarket,
-                      label:
-                        language === 'zh'
-                          ? 'Market'
-                          : language === 'id'
-                            ? 'Pasar'
-                            : 'Market',
-                      requiresAuth: true,
-                      hidden: true,
                     },
                     {
                       page: 'traders',

@@ -68,7 +68,6 @@ func (pb *Builder) handleOpen(
 			EntryPrice:         price,
 			EntryOrderID:       orderID,
 			EntryTime:          tradeTimeMs,
-			Leverage:           1,
 			Status:             "OPEN",
 			Source:             "sync",
 			Fee:                fee,

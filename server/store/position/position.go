@@ -112,7 +112,6 @@ type TraderPosition struct {
 	ExitTime           int64   `gorm:"column:exit_time;index:idx_positions_exit" json:"exit_time"` // Unix milliseconds UTC, 0 means not set
 	RealizedPnL        float64 `gorm:"column:realized_pnl;default:0" json:"realized_pnl"`
 	Fee                float64 `gorm:"column:fee;default:0" json:"fee"`
-	Leverage           int     `gorm:"column:leverage;default:1" json:"leverage"`
 	Status             string  `gorm:"column:status;default:OPEN;index:idx_positions_status" json:"status"`
 	CloseReason        string  `gorm:"column:close_reason;default:''" json:"close_reason"`
 	Source             string  `gorm:"column:source;default:system" json:"source"`
@@ -383,19 +382,6 @@ func (s *Store) GetOpenPositionBySymbol(traderID, symbol, side string) (*TraderP
 	}
 
 	if err == gorm.ErrRecordNotFound {
-		// Try without USDT suffix for backward compatibility
-		if strings.HasSuffix(symbol, "USDT") {
-			baseSymbol := strings.TrimSuffix(symbol, "USDT")
-			err = s.db.Where("trader_id = ? AND symbol = ? AND UPPER(side) = UPPER(?) AND status = ?", traderID, baseSymbol, side, "OPEN").
-				Order("entry_time DESC").
-				First(&pos).Error
-			if err == nil {
-				if pos.EntryQuantity == 0 {
-					pos.EntryQuantity = pos.Quantity
-				}
-				return &pos, nil
-			}
-		}
 		return nil, nil
 	}
 	return nil, err

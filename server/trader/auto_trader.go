@@ -97,9 +97,6 @@ type AutoTraderConfig struct {
 	MaxDrawdown     float64       // Maximum drawdown percentage (hint)
 	StopTradingTime time.Duration // Pause duration after risk control triggers
 
-	// Position mode
-	IsCrossMargin bool // true=cross margin mode, false=isolated margin mode
-
 	// Competition visibility
 	ShowInCompetition bool // Whether to show in competition page
 
@@ -115,7 +112,7 @@ type AutoTrader struct {
 	aiModel               string             // AI model name
 	exchange              string             // Broker type (e.g. alpaca_paper, cn_paper)
 	exchangeID            string             // Exchange account UUID
-	capabilities          types.Capabilities // Market rules: shorting, leverage, lot size, T+1
+	capabilities          types.Capabilities // Market rules: shorting, lot size, T+1
 	showInCompetition     bool               // Whether to show in competition page
 	config                AutoTraderConfig
 	trader                Trader // Use Trader interface (supports multiple platforms)
@@ -224,13 +221,6 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 	// Create corresponding trader based on configuration
 	var trader Trader
 
-	// Record position mode (general)
-	marginModeStr := "Cross Margin"
-	if !config.IsCrossMargin {
-		marginModeStr = "Isolated Margin"
-	}
-	logger.Infof("📊 [%s] Position mode: %s", config.Name, marginModeStr)
-
 	switch config.Exchange {
 	case "alpaca_paper":
 		trader, err = newAlpacaPaperTrader(config)
@@ -337,7 +327,7 @@ func (at *AutoTrader) reloadStrategyConfigIfChanged() error {
 	// NOTE: this used to hardcode the Autopilot book shape (6 positions ×
 	// equity×1.2 notional), silently overriding whatever the user configured in
 	// their strategy. Sizing now comes from the strategy's own RiskControl —
-	// ClampLimits above bounds it (ratio 0.5–10, leverage caps), and the
+	// ClampLimits above bounds it (ratio 0.5–10), and the
 	// margin auto-reduce at order time keeps the book solvent.
 
 	at.config.StrategyConfig = strategyConfig
@@ -359,7 +349,7 @@ func (at *AutoTrader) Run() error {
 	logger.Info("🚀 AI-driven automatic trading system started")
 	at.logInfof("💰 Initial balance: %.2f %s", at.initialBalance, at.marketCapabilities().Currency)
 	at.logInfof("⚙️  Scan interval: %v", at.config.ScanInterval)
-	logger.Info("🤖 AI will make full decisions on leverage, position size, stop loss/take profit, etc.")
+	logger.Info("🤖 AI will make full decisions on position size, stop loss/take profit, etc.")
 
 	at.monitorWg.Add(1)
 	defer at.monitorWg.Done()
@@ -499,7 +489,7 @@ func (at *AutoTrader) GetStore() *store.Store {
 	return at.store
 }
 
-// calculatePnLPercentage calculates P&L percentage (based on margin, automatically considers leverage)
+// calculatePnLPercentage calculates P&L percentage (based on the position value)
 // Return rate = Unrealized P&L / Margin x 100%
 func calculatePnLPercentage(unrealizedPnl, marginUsed float64) float64 {
 	if marginUsed > 0 {

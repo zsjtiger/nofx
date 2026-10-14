@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"nofx/trader/types"
 	"strings"
 	"time"
 
@@ -68,8 +69,8 @@ func (s *Server) handleSyncBalance(c *gin.Context) {
 		changeType = "decrease"
 	}
 
-	logger.Infof("✓ Queried actual exchange balance: %.2f USDT (current config: %.2f USDT, change: %.2f%%)",
-		actualBalance, oldBalance, changePercent)
+	logger.Infof("✓ Queried actual exchange balance: %.2f %s (current config: %.2f %s, change: %.2f%%)",
+		actualBalance, brokerCurrency(exchangeCfg.ExchangeType), oldBalance, brokerCurrency(exchangeCfg.ExchangeType), changePercent)
 
 	// Update initial_balance in database
 	err = s.store.Trader().UpdateInitialBalance(userID, traderID, actualBalance)
@@ -85,7 +86,7 @@ func (s *Server) handleSyncBalance(c *gin.Context) {
 		logger.Infof("⚠️ Failed to reload user traders into memory: %v", err)
 	}
 
-	logger.Infof("✅ Synced balance: %.2f → %.2f USDT (%s %.2f%%)", oldBalance, actualBalance, changeType, changePercent)
+	logger.Infof("✅ Synced balance: %.2f → %.2f %s (%s %.2f%%)", oldBalance, actualBalance, brokerCurrency(exchangeCfg.ExchangeType), changeType, changePercent)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":        "Balance synced successfully",
@@ -310,7 +311,7 @@ func (s *Server) recordClosePositionOrder(traderID, exchangeID, exchangeType, sy
 		Quantity:        quantity,
 		QuoteQuantity:   exitPrice * quantity,
 		Commission:      fee,
-		CommissionAsset: "USDT",
+		CommissionAsset: brokerCurrency(exchangeType),
 		RealizedPnL:     0,
 		IsMaker:         false,
 		CreatedAt:       time.Now().UTC().UnixMilli(),
@@ -379,7 +380,7 @@ func (s *Server) pollAndUpdateOrderStatus(orderRecordID int64, traderID, exchang
 					Quantity:        actualQty,
 					QuoteQuantity:   actualPrice * actualQty,
 					Commission:      fee,
-					CommissionAsset: "USDT",
+					CommissionAsset: brokerCurrency(exchangeType),
 					RealizedPnL:     0,
 					IsMaker:         false,
 					CreatedAt:       time.Now().UTC().UnixMilli(),
@@ -414,4 +415,13 @@ func getSideFromAction(action string) string {
 	default:
 		return "BUY"
 	}
+}
+
+// brokerCurrency returns the account currency of a broker type, or "" when unknown.
+func brokerCurrency(exchangeType string) string {
+	caps, err := types.CapabilitiesOf(types.Market(store.MarketForExchangeType(exchangeType)))
+	if err != nil {
+		return ""
+	}
+	return caps.Currency
 }

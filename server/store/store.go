@@ -157,6 +157,9 @@ func (s *Store) initTables() error {
 	if err := s.TelegramConfig().(*telegramConfigStore).initTables(); err != nil {
 		return fmt.Errorf("failed to initialize telegram config tables: %w", err)
 	}
+	if err := s.dropRetiredColumns(); err != nil {
+		return err
+	}
 	return nil
 }
 

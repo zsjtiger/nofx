@@ -170,11 +170,7 @@ func (at *AutoTrader) GetAccountInfo() (map[string]interface{}, error) {
 		unrealizedPnl := pos["unRealizedProfit"].(float64)
 		totalUnrealizedPnLCalculated += unrealizedPnl
 
-		leverage := 10
-		if lev, ok := pos["leverage"].(float64); ok {
-			leverage = int(lev)
-		}
-		marginUsed := (quantity * markPrice) / float64(leverage)
+		marginUsed := quantity * markPrice
 		totalMarginUsed += marginUsed
 	}
 
@@ -236,15 +232,9 @@ func (at *AutoTrader) GetPositions() ([]map[string]interface{}, error) {
 			quantity = -quantity
 		}
 		unrealizedPnl := pos["unRealizedProfit"].(float64)
-		liquidationPrice := pos["liquidationPrice"].(float64)
 
-		leverage := 10
-		if lev, ok := pos["leverage"].(float64); ok {
-			leverage = int(lev)
-		}
-
-		// Calculate margin used
-		marginUsed := (quantity * markPrice) / float64(leverage)
+		// Stock positions are cash positions: the margin used is the position value.
+		marginUsed := quantity * markPrice
 
 		// Calculate P&L percentage (based on margin)
 		pnlPct := calculatePnLPercentage(unrealizedPnl, marginUsed)
@@ -255,10 +245,8 @@ func (at *AutoTrader) GetPositions() ([]map[string]interface{}, error) {
 			"entry_price":        entryPrice,
 			"mark_price":         markPrice,
 			"quantity":           quantity,
-			"leverage":           leverage,
 			"unrealized_pnl":     unrealizedPnl,
 			"unrealized_pnl_pct": pnlPct,
-			"liquidation_price":  liquidationPrice,
 			"margin_used":        marginUsed,
 		})
 	}
@@ -269,7 +257,7 @@ func (at *AutoTrader) GetPositions() ([]map[string]interface{}, error) {
 // recordAndConfirmOrder polls order status for actual fill data and records position
 // action: open_long, open_short, close_long, close_short
 // entryPrice: entry price when closing (0 when opening)
-func (at *AutoTrader) recordAndConfirmOrder(orderResult map[string]interface{}, symbol, action string, quantity float64, price float64, leverage int, entryPrice float64) {
+func (at *AutoTrader) recordAndConfirmOrder(orderResult map[string]interface{}, symbol, action string, quantity float64, price float64, entryPrice float64) {
 	if at.store == nil {
 		return
 	}
@@ -306,7 +294,7 @@ func (at *AutoTrader) recordAndConfirmOrder(orderResult map[string]interface{}, 
 	var fee float64
 
 	// Paper brokers fill synchronously, so the order is recorded here.
-	orderRecord := at.createOrderRecord(orderID, symbol, action, positionSide, quantity, price, leverage)
+	orderRecord := at.createOrderRecord(orderID, symbol, action, positionSide, quantity, price)
 	if err := at.store.Order().CreateOrder(orderRecord); err != nil {
 		logger.Infof("  ⚠️ Failed to record order: %v", err)
 	} else {
@@ -361,7 +349,7 @@ func (at *AutoTrader) recordAndConfirmOrder(orderResult map[string]interface{}, 
 		orderID, action, actualPrice, actualQty, fee)
 
 	// Record position change with actual fill data (use normalized symbol)
-	at.recordPositionChange(orderID, normalizedSymbolForPosition, positionSide, action, actualQty, actualPrice, leverage, entryPrice, fee)
+	at.recordPositionChange(orderID, normalizedSymbolForPosition, positionSide, action, actualQty, actualPrice, entryPrice, fee)
 
 	// Send anonymous trade statistics for experience improvement (async, non-blocking)
 	// This helps us understand overall product usage across all deployments
@@ -370,14 +358,13 @@ func (at *AutoTrader) recordAndConfirmOrder(orderResult map[string]interface{}, 
 		TradeType: action,
 		Symbol:    symbol,
 		AmountUSD: actualPrice * actualQty,
-		Leverage:  leverage,
 		UserID:    at.userID,
 		TraderID:  at.id,
 	})
 }
 
 // recordPositionChange records position change (create record on open, update record on close)
-func (at *AutoTrader) recordPositionChange(orderID, symbol, side, action string, quantity, price float64, leverage int, entryPrice float64, fee float64) {
+func (at *AutoTrader) recordPositionChange(orderID, symbol, side, action string, quantity, price float64, entryPrice float64, fee float64) {
 	if at.store == nil {
 		return
 	}
@@ -396,7 +383,6 @@ func (at *AutoTrader) recordPositionChange(orderID, symbol, side, action string,
 			EntryPrice:   price,
 			EntryOrderID: orderID,
 			EntryTime:    nowMs,
-			Leverage:     leverage,
 			Status:       "OPEN",
 			CreatedAt:    nowMs,
 			UpdatedAt:    nowMs,
@@ -427,7 +413,7 @@ func (at *AutoTrader) recordPositionChange(orderID, symbol, side, action string,
 }
 
 // createOrderRecord creates an order record struct from order details
-func (at *AutoTrader) createOrderRecord(orderID, symbol, action, positionSide string, quantity, price float64, leverage int) *store.TraderOrder {
+func (at *AutoTrader) createOrderRecord(orderID, symbol, action, positionSide string, quantity, price float64) *store.TraderOrder {
 	// Determine order type (market for auto trader)
 	orderType := "MARKET"
 
@@ -466,7 +452,6 @@ func (at *AutoTrader) createOrderRecord(orderID, symbol, action, positionSide st
 		AvgFillPrice:    0,
 		Commission:      0,
 		CommissionAsset: at.marketCapabilities().Currency,
-		Leverage:        leverage,
 		ReduceOnly:      reduceOnly,
 		ClosePosition:   reduceOnly,
 		OrderAction:     orderAction,

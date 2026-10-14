@@ -20,31 +20,28 @@ const (
 // Capabilities describes what a market allows. Risk and decision code reads
 // these instead of hard-coding per-exchange behaviour.
 type Capabilities struct {
-	Market        Market
-	Currency      string
-	Timezone      string // IANA name, e.g. "Asia/Shanghai"
-	AllowShort    bool   // false: opening a short position is rejected
-	AllowLeverage bool   // false: leverage must be 1
-	LotSize       int    // minimum buy increment in shares; 0 means no lot rule
-	TPlusOne      bool   // shares bought today cannot be sold today
+	Market     Market
+	Currency   string
+	Timezone   string // IANA name, e.g. "Asia/Shanghai"
+	AllowShort bool   // false: opening a short position is rejected
+	LotSize    int    // minimum buy increment in shares; 0 means no lot rule
+	TPlusOne   bool   // shares bought today cannot be sold today
 }
 
 var capabilityTable = map[Market]Capabilities{
 	MarketUSEquity: {
-		Market:        MarketUSEquity,
-		Currency:      "USD",
-		Timezone:      "America/New_York",
-		AllowShort:    true,
-		AllowLeverage: false,
+		Market:     MarketUSEquity,
+		Currency:   "USD",
+		Timezone:   "America/New_York",
+		AllowShort: true,
 	},
 	MarketCNEquity: {
-		Market:        MarketCNEquity,
-		Currency:      "CNY",
-		Timezone:      "Asia/Shanghai",
-		AllowShort:    false,
-		AllowLeverage: false,
-		LotSize:       100,
-		TPlusOne:      true,
+		Market:     MarketCNEquity,
+		Currency:   "CNY",
+		Timezone:   "Asia/Shanghai",
+		AllowShort: false,
+		LotSize:    100,
+		TPlusOne:   true,
 	},
 }
 
@@ -143,12 +140,9 @@ func ValidateOrderQuantity(c Capabilities, qty float64, isBuy, closesPosition bo
 }
 
 // ValidateSideAllowed rejects actions the market does not permit.
-func ValidateSideAllowed(c Capabilities, leverage int, isShort bool) error {
+func ValidateSideAllowed(c Capabilities, isShort bool) error {
 	if isShort && !c.AllowShort {
 		return fmt.Errorf("short selling is not allowed in %s", c.Market)
-	}
-	if leverage > 1 && !c.AllowLeverage {
-		return fmt.Errorf("leverage %dx is not allowed in %s", leverage, c.Market)
 	}
 	return nil
 }

@@ -11,7 +11,7 @@ import (
 
 const (
 	// The monitor arms only once the underlying PRICE has moved +5% in the
-	// position's favor (leverage-independent — at 10x the old margin-basis
+	// position's favor (a price move; there is no leverage).
 	// check armed at a +0.5% price wiggle and strangled every winner), then
 	// closes if the position gives back 40% of its peak profit.
 	drawdownClosePriceGainPct = 5.0
@@ -81,22 +81,14 @@ func (at *AutoTrader) checkPositionDrawdown() {
 		}
 
 		// Calculate current P&L percentage
-		leverage := 10 // Default value
-		if lev, ok := pos["leverage"].(float64); ok {
-			leverage = int(lev)
-		}
-
-		// Price-basis move drives the close decision so the trigger point does
-		// not tighten as leverage grows; the margin-basis (leveraged) value is
-		// only kept for the peak cache shown alongside margin-based PnL% in
-		// prompts.
+		// The price move drives the close decision and the peak cache.
 		var pricePnLPct float64
 		if side == "long" {
 			pricePnLPct = ((markPrice - entryPrice) / entryPrice) * 100
 		} else {
 			pricePnLPct = ((entryPrice - markPrice) / entryPrice) * 100
 		}
-		currentPnLPct := pricePnLPct * float64(leverage)
+		currentPnLPct := pricePnLPct
 
 		// Construct unique position identifier (distinguish long/short)
 		posKey := symbol + "_" + side
@@ -219,8 +211,8 @@ func (at *AutoTrader) enforcePositionValueRatio(positionSizeUSD float64, equity 
 
 	riskControl := at.config.StrategyConfig.RiskControl
 
-	// Stocks use one position-value tier: equity times the altcoin ratio.
-	maxPositionValueRatio := riskControl.AltcoinMaxPositionValueRatio
+	// One position-value tier for stocks: equity times the position value ratio.
+	maxPositionValueRatio := riskControl.MaxPositionValueRatio
 	if maxPositionValueRatio <= 0 {
 		maxPositionValueRatio = 1.0
 	}

@@ -41,13 +41,13 @@ html {
   --text-disabled: #b4b2a9;
 
   /* Trading Colors (forest green / crimson on paper) */
-  --binance-green: #2e8b57;
-  --binance-green-bg: rgba(46, 139, 87, 0.12);
-  --binance-green-border: rgba(46, 139, 87, 0.35);
-  --binance-red: #d6433a;
-  --binance-red-bg: rgba(214, 67, 58, 0.12);
-  --binance-red-border: rgba(214, 67, 58, 0.35);
-  --binance-yellow: #e0483b;
+  --crux-green: #2e8b57;
+  --crux-green-bg: rgba(46, 139, 87, 0.12);
+  --crux-green-border: rgba(46, 139, 87, 0.35);
+  --crux-red: #d6433a;
+  --crux-red-bg: rgba(214, 67, 58, 0.12);
+  --crux-red-border: rgba(214, 67, 58, 0.35);
+  --crux-yellow: #e0483b;
 
   /* Shadows (subtle on paper) */
   --shadow-sm: 0 1px 2px rgba(26, 24, 19, 0.08);
@@ -148,7 +148,7 @@ body {
   margin: 0 auto;
 }
 
-/* Scrollbar - Binance style */
+/* Scrollbar - Crux style */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -270,7 +270,7 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Glass effect - Binance header style */
+/* Glass effect - Crux header style */
 .header-bar {
   background: var(--header-bg);
   border-bottom: 1px solid var(--glass-border);
@@ -278,7 +278,7 @@ body {
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Sonner (toast) - Binance theme overrides */
+/* Sonner (toast) - Crux theme overrides */
 .sonner-toaster {
   z-index: 9999;
 }
@@ -360,7 +360,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Button styles - Binance */
+/* Button styles - Crux */
 button {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
@@ -457,7 +457,7 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--binance-yellow);
+  border-color: var(--crux-yellow);
   box-shadow: 0 0 0 2px rgba(252, 213, 53, 0.15);
   outline: none;
   background-color: var(--panel-bg-hover);
@@ -492,15 +492,15 @@ textarea::placeholder {
 }
 
 .premium-input:focus {
-  border-color: var(--binance-yellow);
+  border-color: var(--crux-yellow);
   box-shadow:
     0 0 0 1px rgba(240, 185, 11, 0.2),
     0 0 15px rgba(240, 185, 11, 0.1);
   background: rgba(11, 14, 17, 0.9);
 }
 
-/* Binance Card - Premium Polish */
-.binance-card {
+/* Crux Card - Premium Polish */
+.crux-card {
   background: rgba(30, 35, 41, 0.4);
   /* More transparent for glass feel */
   backdrop-filter: blur(12px);
@@ -590,7 +590,7 @@ textarea::placeholder {
 
 .dev-toast-controller__actions button:first-child {
   background: rgba(240, 185, 11, 0.15);
-  color: var(--binance-yellow);
+  color: var(--crux-yellow);
   border: 1px solid rgba(240, 185, 11, 0.4);
 }
 
@@ -623,30 +623,30 @@ textarea::placeholder {
   opacity: 0.8;
 }
 
-.binance-card:hover {
+.crux-card:hover {
   border-color: var(--panel-border-hover);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
   background: var(--panel-bg-hover);
 }
 
-.binance-card-no-hover {
+.crux-card-no-hover {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 4px;
   box-shadow: var(--shadow-sm);
 }
 
-/* Binance gradient backgrounds */
-.binance-gradient {
+/* Crux gradient backgrounds */
+.crux-gradient {
   background: linear-gradient(
     135deg,
-    var(--binance-yellow) 0%,
-    var(--binance-yellow-light) 100%
+    var(--crux-yellow) 0%,
+    var(--crux-yellow-light) 100%
   );
 }
 
-.binance-gradient-subtle {
+.crux-gradient-subtle {
   background: linear-gradient(
     135deg,
     rgba(240, 185, 11, 0.15) 0%,
@@ -655,31 +655,31 @@ textarea::placeholder {
   border: 1px solid rgba(240, 185, 11, 0.2);
 }
 
-.binance-glow {
-  box-shadow: 0 0 20px var(--binance-yellow-glow);
+.crux-glow {
+  box-shadow: 0 0 20px var(--crux-yellow-glow);
 }
 
 /* Status colors */
 .text-profit {
-  color: var(--binance-green);
+  color: var(--crux-green);
   font-weight: 700;
 }
 
 .text-loss {
-  color: var(--binance-red);
+  color: var(--crux-red);
   font-weight: 700;
 }
 
 .bg-profit {
-  background-color: var(--binance-green-bg);
-  color: var(--binance-green);
-  border: 1px solid var(--binance-green-border);
+  background-color: var(--crux-green-bg);
+  color: var(--crux-green);
+  border: 1px solid var(--crux-green-border);
 }
 
 .bg-loss {
-  background-color: var(--binance-red-bg);
-  color: var(--binance-red);
-  border: 1px solid var(--binance-red-border);
+  background-color: var(--crux-red-bg);
+  color: var(--crux-red);
+  border: 1px solid var(--crux-red-border);
 }
 
 /* Skeleton loading */
@@ -696,9 +696,9 @@ textarea::placeholder {
   border-radius: 4px;
 }
 
-/* Binance button variants */
-.btn-binance {
-  background: var(--binance-yellow);
+/* Crux button variants */
+.btn-crux {
+  background: var(--crux-yellow);
   color: #000;
   font-weight: 700;
   border: none;
@@ -709,21 +709,21 @@ textarea::placeholder {
   box-shadow: 0 2px 4px rgba(240, 185, 11, 0.3);
 }
 
-.btn-binance:hover {
-  background: var(--binance-yellow-light);
+.btn-crux:hover {
+  background: var(--crux-yellow-light);
   box-shadow: 0 4px 8px rgba(240, 185, 11, 0.4);
   transform: translateY(-2px);
 }
 
-.btn-binance:active {
-  background: var(--binance-yellow-dark);
+.btn-crux:active {
+  background: var(--crux-yellow-dark);
   transform: translateY(0);
 }
 
 .btn-outline {
   background: transparent;
-  color: var(--binance-yellow);
-  border: 1.5px solid var(--binance-yellow);
+  color: var(--crux-yellow);
+  border: 1.5px solid var(--crux-yellow);
   border-radius: 4px;
   padding: 0.5rem 1rem;
   cursor: pointer;
@@ -733,10 +733,10 @@ textarea::placeholder {
 
 .btn-outline:hover {
   background: rgba(240, 185, 11, 0.1);
-  border-color: var(--binance-yellow-light);
+  border-color: var(--crux-yellow-light);
 }
 
-/* Table styles - Binance */
+/* Table styles - Crux */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -784,28 +784,28 @@ tr:hover {
 .badge-yellow {
   background: rgba(240, 185, 11, 0.1);
   border-color: rgba(240, 185, 11, 0.3);
-  color: var(--binance-yellow);
+  color: var(--crux-yellow);
 }
 
 .badge-green {
-  background: var(--binance-green-bg);
-  border-color: var(--binance-green-border);
-  color: var(--binance-green);
+  background: var(--crux-green-bg);
+  border-color: var(--crux-green-border);
+  color: var(--crux-green);
 }
 
 .badge-red {
-  background: var(--binance-red-bg);
-  border-color: var(--binance-red-border);
-  color: var(--binance-red);
+  background: var(--crux-red-bg);
+  border-color: var(--crux-red-border);
+  color: var(--crux-red);
 }
 
 /* Number formatting */
 .number-up {
-  color: var(--binance-green);
+  color: var(--crux-green);
 }
 
 .number-down {
-  color: var(--binance-red);
+  color: var(--crux-red);
 }
 
 /* Scrollbar Hiding for sleek horizontal scrolls */
@@ -862,7 +862,7 @@ tr:hover {
 
 .spinner {
   border: 2px solid var(--panel-border);
-  border-top-color: var(--binance-yellow);
+  border-top-color: var(--crux-yellow);
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -890,7 +890,7 @@ tr:hover {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--binance-yellow),
+    var(--crux-yellow),
     transparent
   );
   opacity: 0;
@@ -918,7 +918,7 @@ tr:hover {
 
 /* Responsive utilities */
 @media (max-width: 768px) {
-  .binance-card {
+  .crux-card {
     padding: 1rem;
   }
 

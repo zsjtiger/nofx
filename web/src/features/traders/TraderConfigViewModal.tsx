@@ -119,14 +119,6 @@ export function TraderConfigViewModal({
                 value={`$${traderData.initial_balance.toLocaleString()}`}
               />
               <InfoRow
-                label={t('traderConfigView.marginMode', language)}
-                value={
-                  traderData.is_cross_margin
-                    ? t('traderConfigView.crossMargin', language)
-                    : t('traderConfigView.isolatedMargin', language)
-                }
-              />
-              <InfoRow
                 label={t('traderConfigView.scanIntervalLabel', language)}
                 value={t('traderConfigView.scanInterval', language, {
                   minutes: traderData.scan_interval_minutes || 15,

@@ -235,7 +235,7 @@ func (s *Server) createDefaultStrategies(userID string, lang string) error {
 			c.CoinSource.SourceType = "static"
 			c.CoinSource.StaticCoins = append([]string(nil), symbols...)
 			c.RiskControl.MaxPositions = 3
-			c.RiskControl.AltcoinMaxPositionValueRatio = 1.0
+			c.RiskControl.MaxPositionValueRatio = 1.0
 			c.RiskControl.MaxMarginUsage = 1.0
 			c.RiskControl.MinConfidence = 70
 			c.RiskControl.MinRiskRewardRatio = 2.0

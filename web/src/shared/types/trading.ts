@@ -11,7 +11,6 @@ export interface SystemStatus {
   stop_until: string
   last_reset_time: string
   ai_provider: string
-  grid_symbol?: string
   /** Runtime health: true when AI failed repeatedly and no new positions open. */
   safe_mode?: boolean
   safe_mode_reason?: string
@@ -43,7 +42,6 @@ export interface Position {
   leverage: number
   unrealized_pnl: number
   unrealized_pnl_pct: number
-  liquidation_price: number
   margin_used: number
 }
 
@@ -118,14 +116,13 @@ export interface TraderInfo {
   trader_name: string
   ai_model: string
   exchange_id?: string
+  exchange_type?: string
   is_running?: boolean
   startup_warning?: string
   show_in_competition?: boolean
   strategy_id?: string
   strategy_name?: string
   custom_prompt?: string
-  use_ai500?: boolean
-  use_oi_top?: boolean
   system_prompt_template?: string
 }
 
@@ -156,7 +153,6 @@ export interface TraderConfigData {
   exchange_id: string
   strategy_id?: string // Strategy ID
   strategy_name?: string // Strategy name
-  is_cross_margin: boolean
   show_in_competition: boolean // Whether to show in the competition arena
   scan_interval_minutes: number
   initial_balance: number
@@ -166,8 +162,6 @@ export interface TraderConfigData {
   custom_prompt?: string
   override_base_prompt?: boolean
   system_prompt_template?: string
-  use_ai500?: boolean
-  use_oi_top?: boolean
 }
 
 // Position History Types

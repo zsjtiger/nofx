@@ -6,3 +6,15 @@ export function inferEquityMarket(symbol: string): EquityMarket {
   const s = symbol.trim().toUpperCase()
   return /^\d{6}(\.(SH|SZ|BJ))?$/.test(s) ? 'cn_equity' : 'us_equity'
 }
+
+// Account currency for a broker type, e.g. alpaca_paper -> USD, cn_paper -> CNY.
+export function currencyForExchangeType(exchangeType?: string): string {
+  switch (exchangeType) {
+    case 'alpaca_paper':
+      return 'USD'
+    case 'cn_paper':
+      return 'CNY'
+    default:
+      return ''
+  }
+}

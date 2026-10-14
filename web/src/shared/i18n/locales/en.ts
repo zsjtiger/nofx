@@ -154,9 +154,6 @@ const en = {
   coinSource: 'Coin Source',
   marginLimit: 'Margin Limit',
   tradingParams: 'Trading Parameters',
-  marginMode: 'Margin Mode',
-  crossMargin: 'Cross Margin',
-  isolatedMargin: 'Isolated Margin',
   competitionDisplay: 'Show in Competition',
   show: 'Show',
   hide: 'Hide',
@@ -176,8 +173,6 @@ const en = {
   secretKey: 'Secret Key',
   walletAddress: 'Wallet Address',
   user: 'User',
-  // Hyperliquid Agent Wallet (New Security Model)
-  // Aster API Pro Configuration
 
   // LIGHTER Configuration
 
@@ -449,22 +444,6 @@ const en = {
 
   // Data Page
 
-  // Strategy Market Page
-  strategyMarket: {
-    title: 'STRATEGY MARKET',
-    subtitle: 'GLOBAL STRATEGY DATABASE',
-    description:
-      'Discover, analyze, and clone high-performance trading algorithms',
-    search: 'SEARCH PARAMETERS...',
-    all: 'ALL PROTOCOLS',
-    recent: 'LATEST',
-    createdAt: 'TIMESTAMP',
-    copied: 'COPIED',
-    indicators: 'INDICATORS',
-    maxPositions: 'POS_LIMIT',
-    loading: 'INITIALIZING...',
-  },
-
   // Strategy Studio Page
 
   // Metric Tooltip
@@ -647,9 +626,6 @@ const en = {
     aiModel: 'AI Model',
     exchange: 'Exchange',
     initialBalance: 'Initial Balance',
-    marginMode: 'Margin Mode',
-    crossMargin: 'Cross',
-    isolatedMargin: 'Isolated',
     scanInterval: '{minutes} minutes',
     scanIntervalLabel: 'Scan Interval',
     strategyUsed: 'Strategy Used',
