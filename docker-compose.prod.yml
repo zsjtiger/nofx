@@ -9,13 +9,13 @@
 # docker compose -f docker-compose.prod.yml up -d
 
 services:
-  nofx:
+  crux:
     image: ghcr.io/nofxaios/nofx/nofx-backend:latest
-    container_name: nofx-trading
+    container_name: crux-trading
     restart: unless-stopped
     stop_grace_period: 30s
     ports:
-      - "${NOFX_BACKEND_PORT:-8080}:8080"
+      - "${CRUX_BACKEND_PORT:-${NOFX_BACKEND_PORT:-8080}}:8080"
     volumes:
       # Data directory for database and logs
       - ./data:/app/data
@@ -26,7 +26,7 @@ services:
       - TZ=${TZ:-Asia/Shanghai}
       - AI_MAX_TOKENS=8000
     networks:
-      - nofx-network
+      - crux-network
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
       interval: 30s
@@ -34,16 +34,16 @@ services:
       retries: 3
       start_period: 60s
 
-  nofx-frontend:
+  crux-frontend:
     image: ghcr.io/nofxaios/nofx/nofx-frontend:latest
-    container_name: nofx-frontend
+    container_name: crux-frontend
     restart: unless-stopped
     ports:
-      - "${NOFX_FRONTEND_PORT:-3000}:80"
+      - "${CRUX_FRONTEND_PORT:-${NOFX_FRONTEND_PORT:-3000}}:80"
     networks:
-      - nofx-network
+      - crux-network
     depends_on:
-      - nofx
+      - crux
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/health"]
       interval: 30s
@@ -52,5 +52,5 @@ services:
       start_period: 5s
 
 networks:
-  nofx-network:
+  crux-network:
     driver: bridge

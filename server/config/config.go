@@ -81,7 +81,7 @@ func initConfig() error {
 		DBHost:    "localhost",
 		DBPort:    5432,
 		DBUser:    "postgres",
-		DBName:    "nofx",
+		DBName:    "crux",
 		DBSSLMode: "disable",
 	}
 

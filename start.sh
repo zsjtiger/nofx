@@ -174,18 +174,16 @@ check_encryption() {
 # Utility: Read Environment Variables
 # ------------------------------------------------------------------------
 read_env_vars() {
+    CRUX_FRONTEND_PORT=3000
+    CRUX_BACKEND_PORT=8080
     if [ -f ".env" ]; then
-        NOFX_FRONTEND_PORT=$(grep "^NOFX_FRONTEND_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3000")
-        NOFX_BACKEND_PORT=$(grep "^NOFX_BACKEND_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "8080")
-
-        NOFX_FRONTEND_PORT=$(echo "$NOFX_FRONTEND_PORT" | tr -d '"'"'" | tr -d ' ')
-        NOFX_BACKEND_PORT=$(echo "$NOFX_BACKEND_PORT" | tr -d '"'"'" | tr -d ' ')
-
-        NOFX_FRONTEND_PORT=${NOFX_FRONTEND_PORT:-3000}
-        NOFX_BACKEND_PORT=${NOFX_BACKEND_PORT:-8080}
-    else
-        NOFX_FRONTEND_PORT=3000
-        NOFX_BACKEND_PORT=8080
+        # Read the older NOFX_* names first so the CRUX_* names win when both are set.
+        for prefix in NOFX CRUX; do
+            fe=$(grep "^${prefix}_FRONTEND_PORT=" .env 2>/dev/null | tail -n1 | cut -d'=' -f2 | tr -d '"'"'"' ')
+            be=$(grep "^${prefix}_BACKEND_PORT=" .env 2>/dev/null | tail -n1 | cut -d'=' -f2 | tr -d '"'"'"' ')
+            [ -n "$fe" ] && CRUX_FRONTEND_PORT=$fe
+            [ -n "$be" ] && CRUX_BACKEND_PORT=$be
+        done
     fi
 }
 
@@ -236,7 +234,7 @@ start() {
     echo "  2. Add an AI model and exchange in Settings"
     echo "  3. (Optional) Add a Telegram bot token in Settings → Telegram"
     echo ""
-    echo -e "  Web dashboard: ${BLUE}http://localhost:${NOFX_FRONTEND_PORT}${NC}"
+    echo -e "  Web dashboard: ${BLUE}http://localhost:${CRUX_FRONTEND_PORT}${NC}"
     echo -e "  View logs:     ${YELLOW}./start.sh logs${NC}"
     echo -e "  Stop:          ${YELLOW}./start.sh stop${NC}"
     echo ""
@@ -281,7 +279,7 @@ status() {
     $COMPOSE_CMD ps
     echo ""
     print_info "Health check:"
-    curl -s "http://localhost:${NOFX_BACKEND_PORT}/api/health" | jq '.' || echo "Backend not responding"
+    curl -s "http://localhost:${CRUX_BACKEND_PORT}/api/health" | jq '.' || echo "Backend not responding"
 }
 
 # ------------------------------------------------------------------------

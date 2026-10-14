@@ -81,7 +81,7 @@ func NewDBDriverFromEnv() (*DBDriver, error) {
 			Port:     port,
 			User:     getEnv("DB_USER", "postgres"),
 			Password: os.Getenv("DB_PASSWORD"),
-			DBName:   getEnv("DB_NAME", "nofx"),
+			DBName:   getEnv("DB_NAME", "crux"),
 			SSLMode:  getEnv("DB_SSLMODE", "disable"),
 		})
 

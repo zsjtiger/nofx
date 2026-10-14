@@ -1,5 +1,8 @@
 # 去除加密货币，支持 A 股与美股（实施计划）
 
+> 说明：本文是迁移时的决策记录。文中的 `NOFX` 为改名为 Crux 之前的产品名；代码中的模块名 `nofx`、仓库地址等标识符保持不变。
+> Note: this is the decision record for the migration. `NOFX` refers to the product's name before it was renamed to Crux; identifiers such as the `nofx` module name and the repository URL are unchanged.
+
 ## 已确认的决策
 
 | 问题 | 决定 |

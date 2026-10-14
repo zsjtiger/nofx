@@ -102,8 +102,8 @@ generate_env() {
 # Generated at: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Server ports
-NOFX_BACKEND_PORT=8080
-NOFX_FRONTEND_PORT=3000
+CRUX_BACKEND_PORT=8080
+CRUX_FRONTEND_PORT=3000
 
 # Timezone
 TZ=Asia/Shanghai

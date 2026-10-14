@@ -64,8 +64,8 @@ generate_env() {
     DATA_ENCRYPTION_KEY=$(openssl rand -base64 32)
     RSA_PRIVATE_KEY=$(openssl genrsa 2048 2>/dev/null | tr '\n' '\\' | sed 's/\\/\\n/g' | sed 's/\\n$//')
     cat > .env << EOF
-NOFX_BACKEND_PORT=8080
-NOFX_FRONTEND_PORT=3000
+CRUX_BACKEND_PORT=8080
+CRUX_FRONTEND_PORT=3000
 TZ=Asia/Shanghai
 JWT_SECRET=${JWT_SECRET}
 DATA_ENCRYPTION_KEY=${DATA_ENCRYPTION_KEY}
