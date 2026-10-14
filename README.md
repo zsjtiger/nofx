@@ -99,7 +99,9 @@ cd web && npm install && npm run dev  # frontend, in a second terminal
 | `kernel` | Prompt building and fail-closed validation of AI decisions |
 | `store` | Database models (GORM, SQLite or PostgreSQL) |
 | `api` | HTTP API used by the web app |
-| `web` | React and TypeScript front end |
+| `web/src/app` | Front-end entry point, router, header and footer |
+| `web/src/features` | Feature folders: auth, traders, dashboard, strategy, faq, settings |
+| `web/src/shared` | Shared UI, API client, i18n, types and config modals |
 
 The migration plan and the decisions behind it are in [docs/plans/2026-10-14-cn-us-equity-migration.md](docs/plans/2026-10-14-cn-us-equity-migration.md).
 

@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react'
-import type { AIModel } from '../../shared/types'
-import { getModelIcon } from '../../shared/ui/ModelIcons'
-import { getShortName } from '../../shared/domain/models'
+import type { AIModel } from '../../types'
+import { getModelIcon } from '../../ui/ModelIcons'
+import { getShortName } from '../../domain/models'
 
 interface ModelCardProps {
   model: AIModel

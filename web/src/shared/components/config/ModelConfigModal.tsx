@@ -4,8 +4,8 @@ import type { AIModel } from '../../types'
 import type { Language } from '../../i18n/translations'
 import { t } from '../../i18n/translations'
 import { getModelIcon } from '../../ui/ModelIcons'
-import { ModelStepIndicator } from '../../../features/traders/ModelStepIndicator'
-import { ModelCard } from '../../../features/traders/ModelCard'
+import { ModelStepIndicator } from './ModelStepIndicator'
+import { ModelCard } from './ModelCard'
 import { AI_PROVIDER_CONFIG, getShortName } from '../../domain/models'
 
 interface ModelConfigModalProps {

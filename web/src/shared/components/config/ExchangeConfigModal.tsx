@@ -3,7 +3,7 @@ import type { Exchange } from '../../types'
 import type { Language } from '../../i18n/translations'
 import { getExchangeIcon } from '../../ui/ExchangeIcons'
 import { Trash2, Check } from 'lucide-react'
-import { getShortName } from '../../../features/traders/utils'
+import { getShortName } from '../../utils/traderUtils'
 
 // Paper accounts are the only exchange types. The market is fixed by the type.
 export const SUPPORTED_EXCHANGE_TEMPLATES = [
