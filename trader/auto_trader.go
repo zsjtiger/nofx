@@ -105,6 +105,12 @@ type AutoTraderConfig struct {
 	GateAPIKey    string
 	GateSecretKey string
 
+	// Equity paper trading (alpaca_paper and cn_paper)
+	AlpacaAPIKey     string
+	AlpacaSecretKey  string
+	TushareToken     string
+	PaperInitialCash float64 // starting CNY for cn_paper; 0 uses the default
+
 	// KuCoin API configuration
 	KuCoinAPIKey     string
 	KuCoinSecretKey  string
@@ -352,6 +358,16 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 	case "indodax":
 		logger.Infof("🏦 [%s] Using Indodax Spot trading", config.Name)
 		trader = indodax.NewIndodaxTrader(config.IndodaxAPIKey, config.IndodaxSecretKey)
+	case "alpaca_paper":
+		trader, err = newAlpacaPaperTrader(config)
+		if err != nil {
+			return nil, err
+		}
+	case "cn_paper":
+		trader, err = newCNPaperTrader(config)
+		if err != nil {
+			return nil, err
+		}
 	default:
 		return nil, fmt.Errorf("unsupported trading platform: %s", config.Exchange)
 	}

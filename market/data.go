@@ -32,6 +32,9 @@ func Get(symbol string) (*Data, error) {
 
 // GetWithExchange retrieves market data for the specified token using exchange-specific data
 func GetWithExchange(symbol, exchange string) (*Data, error) {
+	if IsEquityExchange(exchange) {
+		return getEquityData(symbol, exchange)
+	}
 	var klines3m, klines4h []Kline
 	var err error
 	// Normalize symbol
