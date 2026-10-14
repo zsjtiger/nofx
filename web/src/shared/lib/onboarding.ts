@@ -1,7 +1,7 @@
 export type UserMode = 'beginner' | 'advanced'
 
-const USER_MODE_KEY = 'nofx_user_mode'
-const BEGINNER_ONBOARDING_COMPLETED_KEY = 'nofx_beginner_onboarding_completed'
+const USER_MODE_KEY = 'crux_user_mode'
+const BEGINNER_ONBOARDING_COMPLETED_KEY = 'crux_beginner_onboarding_completed'
 
 export function getUserMode(): UserMode | null {
   const value = localStorage.getItem(USER_MODE_KEY)

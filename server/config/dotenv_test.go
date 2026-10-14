@@ -9,10 +9,10 @@ import (
 func TestLoadFirstDotEnvPrefersFirstExistingCandidate(t *testing.T) {
 	dir := t.TempDir()
 	parent := filepath.Join(dir, ".env")
-	if err := os.WriteFile(parent, []byte("NOFX_TEST_DOTENV=from-parent\n"), 0o600); err != nil {
+	if err := os.WriteFile(parent, []byte("CRUX_TEST_DOTENV=from-parent\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { os.Unsetenv("NOFX_TEST_DOTENV") })
+	t.Cleanup(func() { os.Unsetenv("CRUX_TEST_DOTENV") })
 
 	missing := filepath.Join(dir, "missing", ".env")
 	got, err := loadFirstDotEnv(missing, parent)
@@ -22,8 +22,8 @@ func TestLoadFirstDotEnvPrefersFirstExistingCandidate(t *testing.T) {
 	if got != parent {
 		t.Fatalf("loaded %q, want %q", got, parent)
 	}
-	if v := os.Getenv("NOFX_TEST_DOTENV"); v != "from-parent" {
-		t.Fatalf("NOFX_TEST_DOTENV = %q, want from-parent", v)
+	if v := os.Getenv("CRUX_TEST_DOTENV"); v != "from-parent" {
+		t.Fatalf("CRUX_TEST_DOTENV = %q, want from-parent", v)
 	}
 }
 
@@ -40,16 +40,16 @@ func TestLoadDotEnvFromServerDirUsesRootFile(t *testing.T) {
 	if err := os.Mkdir(serverDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(root, ".env"), []byte("NOFX_TEST_DOTENV_ROOT=yes\n"), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(root, ".env"), []byte("CRUX_TEST_DOTENV_ROOT=yes\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { os.Unsetenv("NOFX_TEST_DOTENV_ROOT") })
+	t.Cleanup(func() { os.Unsetenv("CRUX_TEST_DOTENV_ROOT") })
 	t.Chdir(serverDir)
 
 	if err := LoadDotEnv(); err != nil {
 		t.Fatalf("LoadDotEnv: %v", err)
 	}
-	if v := os.Getenv("NOFX_TEST_DOTENV_ROOT"); v != "yes" {
-		t.Fatalf("NOFX_TEST_DOTENV_ROOT = %q, want yes", v)
+	if v := os.Getenv("CRUX_TEST_DOTENV_ROOT"); v != "yes" {
+		t.Fatalf("CRUX_TEST_DOTENV_ROOT = %q, want yes", v)
 	}
 }
