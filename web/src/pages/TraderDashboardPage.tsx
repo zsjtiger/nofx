@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from 'react'
 import { mutate } from 'swr'
 import { api } from '../lib/api'
 import { EquityChart } from '../components/charts/EquityChart'
+import { EquityKlineChart } from '../components/charts/EquityKlineChart'
+import { inferEquityMarket } from '../lib/equityMarket'
 import { DecisionCard } from '../components/trader/DecisionCard'
 import { PositionHistory } from '../components/trader/PositionHistory'
 import { PunkAvatar, getTraderAvatar } from '../components/common/PunkAvatar'
@@ -489,6 +491,19 @@ export function TraderDashboardPage({
                         >
                             <EquityChart traderId={selectedTrader.trader_id} embedded />
                         </div>
+
+                        {/* Daily price for the first open position */}
+                        {positions && positions.length > 0 && (
+                            <div className="chart-container animate-slide-in backdrop-blur-sm p-4">
+                                <div className="mb-2 text-xs font-mono text-nofx-text-muted">
+                                    {positions[0].symbol} · {inferEquityMarket(positions[0].symbol)}
+                                </div>
+                                <EquityKlineChart
+                                    market={inferEquityMarket(positions[0].symbol)}
+                                    symbol={positions[0].symbol}
+                                />
+                            </div>
+                        )}
 
                         {/* Current Positions */}
                         <div

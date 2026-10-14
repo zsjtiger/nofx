@@ -91,6 +91,18 @@ export const dataApi = {
     return result.data!
   },
 
+  async getEquityKlines(
+    market: string,
+    symbol: string,
+    limit = 120,
+    silent?: boolean
+  ): Promise<{ market: string; symbol: string; klines: { openTime: number; open: number; high: number; low: number; close: number; volume: number }[] }> {
+    const params = new URLSearchParams({ market, symbol, limit: String(limit) })
+    const result = await httpClient.request<any>(`${API_BASE}/equity/klines?${params}`, { silent })
+    if (!result.success) throw new Error('Failed to fetch daily bars')
+    return result.data!
+  },
+
   async getEquityHistory(traderId?: string, silent?: boolean): Promise<any[]> {
     const url = traderId
       ? `${API_BASE}/equity-history?trader_id=${traderId}`
