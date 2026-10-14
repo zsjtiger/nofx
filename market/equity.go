@@ -3,18 +3,13 @@ package market
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
 	"nofx/provider/alpaca"
 	"nofx/provider/tushare"
 	"nofx/trader/types"
-)
-
-// Exchange names for equity accounts. They match the exchange_type values in the store.
-const (
-	ExchangeCNPaper     = "cn_paper"
-	ExchangeAlpacaPaper = "alpaca_paper"
 )
 
 // minEquityBars is the history needed for the indicators in BuildDataFromKlines.
@@ -28,59 +23,34 @@ type EquityKlineSource func(ctx context.Context, symbol string, limit int) ([]Kl
 
 var (
 	equityMu      sync.RWMutex
-	equitySources = map[string]EquityKlineSource{}
+	equitySources = map[types.Market]EquityKlineSource{}
 )
 
-// IsEquityExchange reports whether an exchange type trades stocks rather than perpetuals.
-func IsEquityExchange(exchange string) bool {
-	switch exchange {
-	case ExchangeCNPaper, ExchangeAlpacaPaper:
-		return true
-	default:
-		return false
-	}
-}
-
-// RegisterEquitySource sets the daily-bar source for an equity exchange type.
-// Each exchange type has one source per process; a trader registers its own on creation.
-func RegisterEquitySource(exchange string, src EquityKlineSource) {
+// RegisterEquitySource sets the daily-bar source for a stock market. A trader
+// registers the source for its market when it is created.
+func RegisterEquitySource(m types.Market, src EquityKlineSource) {
 	equityMu.Lock()
 	defer equityMu.Unlock()
-	equitySources[exchange] = src
+	equitySources[m] = src
 }
 
-func equitySource(exchange string) EquityKlineSource {
+func equitySource(m types.Market) EquityKlineSource {
 	equityMu.RLock()
 	defer equityMu.RUnlock()
-	return equitySources[exchange]
+	return equitySources[m]
 }
 
-// equityMarket maps an equity exchange type to its market.
-func equityMarket(exchange string) (types.Market, error) {
-	switch exchange {
-	case ExchangeCNPaper:
-		return types.MarketCNEquity, nil
-	case ExchangeAlpacaPaper:
-		return types.MarketUSEquity, nil
-	default:
-		return "", fmt.Errorf("%s is not an equity exchange", exchange)
-	}
-}
-
-// getEquityData builds market data for a stock from daily bars.
-// Intraday bars are not available from these sources, so the "primary" series is daily.
-func getEquityData(symbol, exchange string) (*Data, error) {
-	m, err := equityMarket(exchange)
-	if err != nil {
-		return nil, err
-	}
+// GetForMarket returns market data for a stock in the given market. Data is built
+// from daily bars, because the equity sources do not provide intraday bars, so
+// the "primary" series is daily.
+func GetForMarket(symbol string, m types.Market) (*Data, error) {
 	canonical, err := types.NormalizeSymbol(m, symbol)
 	if err != nil {
 		return nil, err
 	}
-	src := equitySource(exchange)
+	src := equitySource(m)
 	if src == nil {
-		return nil, fmt.Errorf("no daily bar source registered for %s", exchange)
+		return nil, fmt.Errorf("no daily bar source registered for %s", m)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
@@ -171,17 +141,12 @@ func USDailyKlineSource(client *alpaca.Client) EquityKlineSource {
 	}
 }
 
-// NormalizeFor canonicalises a symbol for the given exchange type. Equity
-// exchanges use their own symbol rules; every other exchange keeps the
-// crypto perpetual rules in Normalize.
-func NormalizeFor(exchange, symbol string) string {
-	m, err := equityMarket(exchange)
-	if err != nil {
-		return Normalize(symbol)
-	}
+// NormalizeFor canonicalises a symbol for the given market. Input that is not
+// a valid symbol is upper-cased and trimmed, so it still matches exchange data.
+func NormalizeFor(m types.Market, symbol string) string {
 	canonical, err := types.NormalizeSymbol(m, symbol)
 	if err != nil {
-		return symbol
+		return strings.ToUpper(strings.TrimSpace(symbol))
 	}
 	return canonical
 }

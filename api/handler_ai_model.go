@@ -11,7 +11,6 @@ import (
 	"nofx/logger"
 	"nofx/security"
 	"nofx/store"
-	"nofx/wallet"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,8 +33,6 @@ type SafeModelConfig struct {
 	HasAPIKey       bool   `json:"has_api_key"`
 	CustomAPIURL    string `json:"customApiUrl"`    // Custom API URL (usually not sensitive)
 	CustomModelName string `json:"customModelName"` // Custom model name (not sensitive)
-	WalletAddress   string `json:"walletAddress,omitempty"`
-	BalanceUSDC     string `json:"balanceUsdc,omitempty"`
 }
 
 // ModelConfigUpdate is a single model's update payload. It is a named type
@@ -67,10 +64,7 @@ func (s *Server) handleGetModelConfigs(c *gin.Context) {
 	// If no models in database, return default models
 	if len(models) == 0 {
 		logger.Infof("⚠️ No AI models in database, returning defaults")
-		defaultModels := []SafeModelConfig{
-			{ID: "claw402", Name: "Claw402 (Base USDC)", Provider: "claw402", Enabled: false, HasAPIKey: false},
-		}
-		c.JSON(http.StatusOK, defaultModels)
+		c.JSON(http.StatusOK, defaultModelConfigs())
 		return
 	}
 
@@ -92,26 +86,12 @@ func (s *Server) handleGetModelConfigs(c *gin.Context) {
 			CustomModelName: model.CustomModelName,
 		}
 
-		if model.Provider == "claw402" {
-			if privateKey := strings.TrimSpace(model.APIKey.String()); privateKey != "" {
-				if walletAddress, addrErr := walletAddressFromPrivateKey(privateKey); addrErr == nil {
-					safeModel.WalletAddress = walletAddress
-					safeModel.BalanceUSDC = wallet.QueryUSDCBalanceStr(walletAddress)
-				} else {
-					logger.Warnf("⚠️ Failed to derive claw402 wallet address for model %s: %v", model.ID, addrErr)
-				}
-			}
-		}
-
 		safeModels = append(safeModels, safeModel)
 	}
 
 	if len(safeModels) == 0 {
 		logger.Infof("⚠️ No visible AI models in database, returning defaults")
-		defaultModels := []SafeModelConfig{
-			{ID: "claw402", Name: "Claw402 (Base USDC)", Provider: "claw402", Enabled: false, HasAPIKey: false},
-		}
-		c.JSON(http.StatusOK, defaultModels)
+		c.JSON(http.StatusOK, defaultModelConfigs())
 		return
 	}
 
@@ -179,10 +159,9 @@ func (s *Server) handleUpdateModelConfigs(c *gin.Context) {
 	}
 
 	// Update each model's configuration and track traders that need reload.
-	// The request key may be either the model row id or the provider name
-	// (legacy clients send the provider, e.g. "claw402", while trader rows
-	// reference the full model id) — resolve both, mirroring the matching in
-	// AIModelStore.Update, otherwise running traders keep the old model.
+	// The request key may be either the model row id or the provider name;
+	// resolve both, mirroring the matching in AIModelStore.Update, otherwise
+	// running traders keep the old model.
 	modelIDCandidates := func(modelID string) map[string]bool {
 		candidates := map[string]bool{modelID: true}
 		if models, listErr := s.store.AIModel().List(userID); listErr == nil {
@@ -242,10 +221,28 @@ func (s *Server) handleUpdateModelConfigs(c *gin.Context) {
 
 // handleGetSupportedModels Get list of AI models supported by the system
 func (s *Server) handleGetSupportedModels(c *gin.Context) {
-	// Return static list of supported AI models with default versions
-	supportedModels := []map[string]interface{}{
-		{"id": "claw402", "name": "Claw402 (Base USDC)", "provider": "claw402", "defaultModel": "gpt-5.6"},
-	}
+	c.JSON(http.StatusOK, supportedModelProviders())
+}
 
-	c.JSON(http.StatusOK, supportedModels)
+// defaultModelConfigs is what the model settings page shows before any model is saved.
+// The custom entry takes any OpenAI-compatible endpoint and model name.
+func defaultModelConfigs() []SafeModelConfig {
+	return []SafeModelConfig{
+		{ID: "custom", Name: "OpenAI-compatible API", Provider: "custom", Enabled: false, HasAPIKey: false},
+	}
+}
+
+// supportedModelProviders lists the providers a user can configure with their own key.
+func supportedModelProviders() []map[string]interface{} {
+	return []map[string]interface{}{
+		{"id": "custom", "name": "OpenAI-compatible API", "provider": "custom", "defaultModel": ""},
+		{"id": "openai", "name": "OpenAI", "provider": "openai", "defaultModel": "gpt-5.6"},
+		{"id": "deepseek", "name": "DeepSeek", "provider": "deepseek", "defaultModel": "deepseek-chat"},
+		{"id": "qwen", "name": "Qwen", "provider": "qwen", "defaultModel": "qwen3-max"},
+		{"id": "claude", "name": "Claude", "provider": "claude", "defaultModel": ""},
+		{"id": "gemini", "name": "Gemini", "provider": "gemini", "defaultModel": ""},
+		{"id": "grok", "name": "Grok", "provider": "grok", "defaultModel": ""},
+		{"id": "kimi", "name": "Kimi", "provider": "kimi", "defaultModel": ""},
+		{"id": "minimax", "name": "MiniMax", "provider": "minimax", "defaultModel": "MiniMax-M2.7"},
+	}
 }

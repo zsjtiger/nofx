@@ -2,15 +2,12 @@ package trader
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ethereum/crypto"
 	"nofx/kernel"
 	"nofx/logger"
 	"nofx/mcp"
-	_ "nofx/mcp/payment"
 	_ "nofx/mcp/provider"
 	"nofx/store"
 	"nofx/trader/types"
-	"nofx/wallet"
 	"sync"
 	"time"
 )
@@ -85,10 +82,9 @@ type AutoTraderConfig struct {
 	QwenKey     string
 
 	// Custom AI API configuration
-	CustomAPIURL     string
-	CustomAPIKey     string
-	CustomModelName  string
-	Claw402WalletKey string
+	CustomAPIURL    string
+	CustomAPIKey    string
+	CustomModelName string
 
 	// Scan configuration
 	ScanInterval time.Duration // Scan interval (recommended 15 minutes)
@@ -144,18 +140,13 @@ type AutoTrader struct {
 	peakPnLCacheMutex     sync.RWMutex       // Cache read-write lock
 	lastBalanceSyncTime   time.Time          // Last balance sync time
 	userID                string             // User ID
-	gridState             *GridState         // Grid trading state (only used when StrategyType == "grid_trading")
-	claw402WalletAddr     string             // Claw402 wallet address (derived from private key at start)
 	consecutiveAIFailures int                // Consecutive AI call failures
 	runtimeHealthMu       sync.RWMutex       // Guards safe mode + AI wallet health (loop writes, API reads)
 	tradingBlocked        bool
 	tradingError          string
 	tradingCheckedAt      time.Time
-	safeMode              bool      // Safe mode: no new positions, protect existing ones
-	safeModeReason        string    // Why safe mode was activated
-	aiWalletStatus        string    // "ok"|"low"|"empty"|"unknown" — see runtime_health.go
-	aiWalletBalanceUSDC   float64   // Last observed Base USDC balance of the claw402 wallet
-	aiWalletCheckedAt     time.Time // When the balance was last observed
+	safeMode              bool   // Safe mode: no new positions, protect existing ones
+	safeModeReason        string // Why safe mode was activated
 }
 
 // NewAutoTrader creates an automatic trader
@@ -219,22 +210,15 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 		mcpClient = mcp.New()
 	}
 
-	// Payment providers (claw402) ignore customURL
-	switch aiModel {
-	case "claw402":
-		mcpClient.SetAPIKey(apiKey, "", config.CustomModelName)
-	default:
-		mcpClient.SetAPIKey(apiKey, customURL, config.CustomModelName)
-	}
+	mcpClient.SetAPIKey(apiKey, customURL, config.CustomModelName)
 	logger.Infof("🤖 [%s] Using %s AI", config.Name, aiModel)
 
 	if config.CustomAPIURL != "" || config.CustomModelName != "" {
 		logger.Infof("🔧 [%s] Custom config - URL: %s, Model: %s", config.Name, config.CustomAPIURL, config.CustomModelName)
 	}
 
-	// Set default trading platform
 	if config.Exchange == "" {
-		config.Exchange = "binance"
+		return nil, fmt.Errorf("exchange type is required")
 	}
 
 	// Create corresponding trader based on configuration
@@ -298,13 +282,7 @@ func NewAutoTrader(config AutoTraderConfig, st *store.Store, userID string) (*Au
 	if config.StrategyConfig == nil {
 		return nil, fmt.Errorf("[%s] strategy not configured", config.Name)
 	}
-	// Pass claw402 wallet key to strategy engine so nofxos data requests
-	// are routed through claw402 (reuses the same wallet as AI calls)
-	claw402Key := config.Claw402WalletKey
-	if claw402Key == "" && config.AIModel == "claw402" && config.CustomAPIKey != "" {
-		claw402Key = config.CustomAPIKey
-	}
-	strategyEngine := kernel.NewStrategyEngine(config.StrategyConfig, claw402Key).WithMarket(capabilities.Market)
+	strategyEngine := kernel.NewStrategyEngine(config.StrategyConfig).WithMarket(capabilities.Market)
 	logger.Infof("✓ [%s] Using strategy engine (strategy configuration loaded)", config.Name)
 
 	return &AutoTrader{
@@ -362,14 +340,9 @@ func (at *AutoTrader) reloadStrategyConfigIfChanged() error {
 	// ClampLimits above bounds it (ratio 0.5–10, leverage caps), and the
 	// margin auto-reduce at order time keeps the book solvent.
 
-	claw402Key := at.config.Claw402WalletKey
-	if claw402Key == "" && at.config.AIModel == "claw402" && at.config.CustomAPIKey != "" {
-		claw402Key = at.config.CustomAPIKey
-	}
-
 	at.config.StrategyConfig = strategyConfig
 	at.config.StrategyConfigRaw = strategy.Config
-	at.strategyEngine = kernel.NewStrategyEngine(strategyConfig, claw402Key).WithMarket(at.marketCapabilities().Market)
+	at.strategyEngine = kernel.NewStrategyEngine(strategyConfig).WithMarket(at.marketCapabilities().Market)
 	at.logInfof("🔄 Strategy config refreshed from DB: %s", strategy.Name)
 	return nil
 }
@@ -388,8 +361,6 @@ func (at *AutoTrader) Run() error {
 	at.logInfof("⚙️  Scan interval: %v", at.config.ScanInterval)
 	logger.Info("🤖 AI will make full decisions on leverage, position size, stop loss/take profit, etc.")
 
-	// Pre-launch checks for claw402 users
-	at.runPreLaunchChecks()
 	at.monitorWg.Add(1)
 	defer at.monitorWg.Done()
 
@@ -410,30 +381,10 @@ func (at *AutoTrader) Run() error {
 
 	// Start Binance order sync if using Binance exchange
 
-	// Start Gate order sync if using Gate exchange
-
-	// Start KuCoin order sync if using KuCoin exchange
-
-	// Check if this is a grid trading strategy
-	isGridStrategy := at.IsGridStrategy()
-	if isGridStrategy {
-		at.logInfof("🔲 Grid trading strategy detected, initializing grid...")
-		if err := at.InitializeGrid(); err != nil {
-			at.logErrorf("❌ Failed to initialize grid: %v", err)
-			return fmt.Errorf("grid initialization failed: %w", err)
-		}
-	}
-
 	// Execute immediately on first run
 	at.logInfof("▶️ Running first trading cycle immediately; next cycle starts after %v", at.config.ScanInterval)
-	if isGridStrategy {
-		if err := at.RunGridCycle(); err != nil {
-			at.logErrorf("❌ Grid execution failed: %v", err)
-		}
-	} else {
-		if err := at.runCycle(); err != nil {
-			at.logErrorf("❌ Execution failed: %v", err)
-		}
+	if err := at.runCycle(); err != nil {
+		at.logErrorf("❌ Execution failed: %v", err)
 	}
 
 	ticker := time.NewTicker(at.config.ScanInterval)
@@ -450,14 +401,8 @@ func (at *AutoTrader) Run() error {
 
 		select {
 		case <-ticker.C:
-			if isGridStrategy {
-				if err := at.RunGridCycle(); err != nil {
-					at.logErrorf("❌ Grid execution failed: %v", err)
-				}
-			} else {
-				if err := at.runCycle(); err != nil {
-					at.logErrorf("❌ Execution failed: %v", err)
-				}
+			if err := at.runCycle(); err != nil {
+				at.logErrorf("❌ Execution failed: %v", err)
 			}
 		case <-at.stopMonitorCh:
 			at.logInfof("⏹ Stop signal received, exiting automatic trading main loop")
@@ -495,7 +440,6 @@ func (at *AutoTrader) GetInitialBalance() float64 {
 }
 
 // GetUnderlyingTrader returns the underlying Trader interface implementation
-// This is used by grid trading and other components that need direct exchange access
 func (at *AutoTrader) GetUnderlyingTrader() Trader {
 	return at.trader
 }
@@ -576,64 +520,7 @@ func calculatePnLPercentage(unrealizedPnl, marginUsed float64) float64 {
 	return 0.0
 }
 
-// runPreLaunchChecks performs pre-launch checks for claw402 users (wallet balance, runway estimate)
-func (at *AutoTrader) runPreLaunchChecks() {
-	if !store.IsClaw402Config(at.config.AIModel) {
-		return
-	}
-
-	logger.Info("🔍 Running pre-launch checks (claw402)...")
-
-	// Derive wallet address from CustomAPIKey (which is the private key for claw402)
-	if at.config.CustomAPIKey != "" {
-		// Try to derive address using go-ethereum
-		addr := deriveWalletAddress(at.config.CustomAPIKey)
-		if addr != "" {
-			at.claw402WalletAddr = addr
-			logger.Infof("💳 [%s] Claw402 wallet: %s", at.name, addr)
-
-			// Query USDC balance
-			balance, err := wallet.QueryUSDCBalance(addr)
-			if err != nil {
-				logger.Warnf("⚠️ [%s] Could not query USDC balance: %v", at.name, err)
-				at.markAIWalletHealthUnknown()
-			} else {
-				at.setAIWalletHealth(balance)
-				// Estimate runway
-				scanMinutes := int(at.config.ScanInterval.Minutes())
-				modelName := at.config.CustomModelName
-				if modelName == "" {
-					modelName = "deepseek"
-				}
-				dailyCost, runway := store.EstimateRunway(balance, modelName, scanMinutes)
-				logger.Infof("💰 [%s] USDC Balance: $%.2f | Daily AI cost: ~$%.2f | Runway: ~%.1f days",
-					at.name, balance, dailyCost, runway)
-
-				if balance < 1.0 {
-					logger.Warnf("⚠️ [%s] Low USDC balance! Consider topping up.", at.name)
-				}
-				if balance <= 0 {
-					logger.Errorf("🚨 [%s] USDC balance is ZERO — AI calls will fail!", at.name)
-				}
-			}
-		}
-	}
-
-	logger.Info("✅ Pre-launch checks complete")
-}
-
-// deriveWalletAddress derives an Ethereum address from a hex private key
-func deriveWalletAddress(privateKeyHex string) string {
-	// Remove 0x prefix if present
-	if len(privateKeyHex) > 2 && privateKeyHex[:2] == "0x" {
-		privateKeyHex = privateKeyHex[2:]
-	}
-
-	privateKey, err := crypto.HexToECDSA(privateKeyHex)
-	if err != nil {
-		return ""
-	}
-
-	address := crypto.PubkeyToAddress(privateKey.PublicKey)
-	return address.Hex()
+// GetMarket returns the market this trader trades.
+func (at *AutoTrader) GetMarket() types.Market {
+	return at.capabilities.Market
 }

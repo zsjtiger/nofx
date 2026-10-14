@@ -41,7 +41,6 @@ func SanitizeExchangeConfigForLog(exchanges map[string]ExchangeConfigUpdate) map
 	for exchangeID, cfg := range exchanges {
 		safeExchange := map[string]interface{}{
 			"enabled": cfg.Enabled,
-			"testnet": cfg.Testnet,
 		}
 
 		// Only add masked sensitive fields when they have values
@@ -50,32 +49,6 @@ func SanitizeExchangeConfigForLog(exchanges map[string]ExchangeConfigUpdate) map
 		}
 		if cfg.SecretKey != "" {
 			safeExchange["secret_key"] = MaskSensitiveString(cfg.SecretKey)
-		}
-		if cfg.Passphrase != "" {
-			safeExchange["passphrase"] = MaskSensitiveString(cfg.Passphrase)
-		}
-		if cfg.AsterPrivateKey != "" {
-			safeExchange["aster_private_key"] = MaskSensitiveString(cfg.AsterPrivateKey)
-		}
-		if cfg.LighterPrivateKey != "" {
-			safeExchange["lighter_private_key"] = MaskSensitiveString(cfg.LighterPrivateKey)
-		}
-		if cfg.LighterAPIKeyPrivateKey != "" {
-			safeExchange["lighter_api_key_private_key"] = MaskSensitiveString(cfg.LighterAPIKeyPrivateKey)
-		}
-
-		// Add non-sensitive fields directly
-		if cfg.HyperliquidWalletAddr != "" {
-			safeExchange["hyperliquid_wallet_addr"] = cfg.HyperliquidWalletAddr
-		}
-		if cfg.AsterUser != "" {
-			safeExchange["aster_user"] = cfg.AsterUser
-		}
-		if cfg.AsterSigner != "" {
-			safeExchange["aster_signer"] = cfg.AsterSigner
-		}
-		if cfg.LighterWalletAddr != "" {
-			safeExchange["lighter_wallet_addr"] = cfg.LighterWalletAddr
 		}
 
 		safe[exchangeID] = safeExchange

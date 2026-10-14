@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"nofx/trader/types"
 	"strconv"
 	"strings"
 
@@ -275,9 +276,8 @@ func (s *Server) handleTrades(c *gin.Context) {
 		limit = l
 	}
 
-	// Normalize symbol (add USDT suffix if not present)
 	if symbol != "" {
-		symbol = market.Normalize(symbol)
+		symbol = market.NormalizeFor(s.symbolMarket(traderID), symbol)
 	}
 
 	// Get trades from store
@@ -331,9 +331,8 @@ func (s *Server) handleOrders(c *gin.Context) {
 		limit = l
 	}
 
-	// Normalize symbol (add USDT suffix if not present)
 	if symbol != "" {
-		symbol = market.Normalize(symbol)
+		symbol = market.NormalizeFor(s.symbolMarket(traderID), symbol)
 	}
 
 	// Get orders from store
@@ -412,7 +411,7 @@ func (s *Server) handleOpenOrders(c *gin.Context) {
 	}
 
 	// Normalize symbol
-	symbol = market.Normalize(symbol)
+	symbol = market.NormalizeFor(s.symbolMarket(traderID), symbol)
 
 	// Get open orders from exchange
 	openOrders, err := trader.GetOpenOrders(symbol)
@@ -422,4 +421,14 @@ func (s *Server) handleOpenOrders(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, openOrders)
+}
+
+// symbolMarket returns the market a trader trades, so request symbols are
+// canonicalised the same way the trader stored them. Unknown traders fall back to
+// US equities, which only affects how the query string is normalised.
+func (s *Server) symbolMarket(traderID string) types.Market {
+	if at, err := s.traderManager.GetTrader(traderID); err == nil && at != nil {
+		return at.GetMarket()
+	}
+	return types.MarketUSEquity
 }

@@ -77,8 +77,14 @@ func openActionSide(action string) string {
 	}
 }
 
-func normalizedDecisionSymbol(symbol string) string {
-	return market.Normalize(strings.TrimSpace(symbol))
+// canonicalPositionSymbol normalizes a symbol reported by the exchange. Exchange
+// symbols are already canonical, so only case and whitespace are normalised.
+func canonicalPositionSymbol(symbol string) string {
+	return strings.ToUpper(strings.TrimSpace(symbol))
+}
+
+func (at *AutoTrader) normalizedDecisionSymbol(symbol string) string {
+	return market.NormalizeFor(at.marketCapabilities().Market, strings.TrimSpace(symbol))
 }
 
 func (at *AutoTrader) tradeThrottleReason(decision kernel.Decision, ctx *kernel.Context) string {
@@ -97,7 +103,7 @@ func (at *AutoTrader) tradeThrottleReason(decision kernel.Decision, ctx *kernel.
 }
 
 func (at *AutoTrader) openThrottleReason(decision kernel.Decision, ctx *kernel.Context) string {
-	symbol := normalizedDecisionSymbol(decision.Symbol)
+	symbol := at.normalizedDecisionSymbol(decision.Symbol)
 	if symbol == "" {
 		return ""
 	}
@@ -106,27 +112,20 @@ func (at *AutoTrader) openThrottleReason(decision kernel.Decision, ctx *kernel.C
 		return fmt.Sprintf("trade throttle: %s already has an open %s position; manage or close it before opening another side", symbol, pos.Side)
 	}
 
-	if !at.usesVergexSignalPolicy() {
-		if order := at.findRecentCloseOrder(symbol, time.Now().Add(-autopilotReentryCooldown)); order != nil {
-			age := time.Since(time.UnixMilli(order.CreatedAt))
-			remaining := autopilotReentryCooldown - age
-			if remaining < 0 {
-				remaining = 0
-			}
-			return fmt.Sprintf("trade throttle: %s was closed %s ago; wait %s before re-entry", symbol, roundDuration(age), roundDuration(remaining))
+	if order := at.findRecentCloseOrder(symbol, time.Now().Add(-autopilotReentryCooldown)); order != nil {
+		age := time.Since(time.UnixMilli(order.CreatedAt))
+		remaining := autopilotReentryCooldown - age
+		if remaining < 0 {
+			remaining = 0
 		}
+		return fmt.Sprintf("trade throttle: %s was closed %s ago; wait %s before re-entry", symbol, roundDuration(age), roundDuration(remaining))
 	}
 
 	return ""
 }
 
 func (at *AutoTrader) closeThrottleReason(decision kernel.Decision, ctx *kernel.Context) string {
-	// Vergex positions are closed by the direction state machine. A changed or
-	// vanished board signal must exit immediately, independent of hold duration.
-	if at.usesVergexSignalPolicy() {
-		return ""
-	}
-	symbol := normalizedDecisionSymbol(decision.Symbol)
+	symbol := at.normalizedDecisionSymbol(decision.Symbol)
 	side := closeActionSide(decision.Action)
 	if symbol == "" || side == "" {
 		return ""
@@ -195,7 +194,7 @@ func findContextPosition(ctx *kernel.Context, symbol string, side string) *kerne
 	}
 	for i := range ctx.Positions {
 		pos := &ctx.Positions[i]
-		if normalizedDecisionSymbol(pos.Symbol) == symbol && strings.EqualFold(pos.Side, side) {
+		if canonicalPositionSymbol(pos.Symbol) == symbol && strings.EqualFold(pos.Side, side) {
 			return pos
 		}
 	}
@@ -208,7 +207,7 @@ func findAnyContextPosition(ctx *kernel.Context, symbol string) *kernel.Position
 	}
 	for i := range ctx.Positions {
 		pos := &ctx.Positions[i]
-		if normalizedDecisionSymbol(pos.Symbol) == symbol {
+		if canonicalPositionSymbol(pos.Symbol) == symbol {
 			return pos
 		}
 	}
@@ -233,7 +232,7 @@ func (at *AutoTrader) findRecentCloseOrder(symbol string, since time.Time) *stor
 		if order == nil || order.CreatedAt < sinceMs || isCanceledOrder(order) {
 			continue
 		}
-		if normalizedDecisionSymbol(order.Symbol) == symbol && isCloseAction(order.OrderAction) {
+		if at.normalizedDecisionSymbol(order.Symbol) == symbol && isCloseAction(order.OrderAction) {
 			return order
 		}
 	}
@@ -251,7 +250,7 @@ func (at *AutoTrader) findRecentOpenOrder(symbol string, side string, since time
 		if order == nil || order.CreatedAt < sinceMs || isCanceledOrder(order) {
 			continue
 		}
-		if normalizedDecisionSymbol(order.Symbol) == symbol &&
+		if at.normalizedDecisionSymbol(order.Symbol) == symbol &&
 			strings.EqualFold(openActionSide(order.OrderAction), side) {
 			return order
 		}

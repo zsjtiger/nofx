@@ -10,6 +10,7 @@ import (
 	"nofx/provider/tushare"
 	"nofx/trader/alpacapaper"
 	"nofx/trader/cnpaper"
+	"nofx/trader/types"
 )
 
 // DefaultCNPaperCash is the starting cash for A-share paper accounts, in CNY.
@@ -36,7 +37,7 @@ func newAlpacaPaperTrader(config AutoTraderConfig) (Trader, error) {
 	if err != nil {
 		return nil, err
 	}
-	market.RegisterEquitySource(market.ExchangeAlpacaPaper, market.USDailyKlineSource(alpaca.NewClientWithKeys(config.AlpacaAPIKey, config.AlpacaSecretKey)))
+	market.RegisterEquitySource(types.MarketUSEquity, market.USDailyKlineSource(alpaca.NewClientWithKeys(config.AlpacaAPIKey, config.AlpacaSecretKey)))
 	logger.Infof("🏦 [%s] Using Alpaca paper trading (US equities)", config.Name)
 	return t, nil
 }
@@ -55,7 +56,7 @@ func newCNPaperTrader(config AutoTraderConfig) (Trader, error) {
 	if err != nil {
 		return nil, err
 	}
-	market.RegisterEquitySource(market.ExchangeCNPaper, market.CNDailyKlineSource(client))
+	market.RegisterEquitySource(types.MarketCNEquity, market.CNDailyKlineSource(client))
 	logger.Infof("🏦 [%s] Using A-share paper trading (CNY %.0f starting cash)", config.Name, cash)
 	return t, nil
 }

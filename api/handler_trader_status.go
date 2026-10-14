@@ -13,20 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// handleGetGridRiskInfo returns current risk information for a grid trader
-func (s *Server) handleGetGridRiskInfo(c *gin.Context) {
-	traderID := c.Param("id")
-
-	autoTrader, err := s.traderManager.GetTrader(traderID)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "trader not found"})
-		return
-	}
-
-	riskInfo := autoTrader.GetGridRiskInfo()
-	c.JSON(http.StatusOK, riskInfo)
-}
-
 // handleSyncBalance Sync exchange balance to initial_balance (Option B: Manual Sync + Option C: Smart Detection)
 func (s *Server) handleSyncBalance(c *gin.Context) {
 	userID := c.GetString("user_id")

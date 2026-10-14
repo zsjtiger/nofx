@@ -125,11 +125,6 @@ func (at *AutoTrader) GetStatus() map[string]interface{} {
 	if safeModeReason != "" {
 		result["safe_mode_reason"] = safeModeReason
 	}
-	if status, balance, checkedAt := at.aiWalletHealth(); status != "" {
-		result["ai_wallet_status"] = status
-		result["ai_wallet_balance_usdc"] = balance
-		result["ai_wallet_checked_at"] = checkedAt.Format(time.RFC3339)
-	}
 
 	return result
 }
@@ -376,7 +371,7 @@ func (at *AutoTrader) recordAndConfirmOrder(orderResult map[string]interface{}, 
 	}
 
 	// Normalize symbol for position record consistency
-	normalizedSymbolForPosition := market.NormalizeFor(at.exchange, symbol)
+	normalizedSymbolForPosition := market.NormalizeFor(at.marketCapabilities().Market, symbol)
 
 	logger.Infof("  📝 Recording position (ID: %s, action: %s, price: %.6f, qty: %.6f, fee: %.4f)",
 		orderID, action, actualPrice, actualQty, fee)
@@ -468,7 +463,7 @@ func (at *AutoTrader) createOrderRecord(orderID, symbol, action, positionSide st
 	reduceOnly := (action == "close_long" || action == "close_short")
 
 	// Normalize symbol for consistency
-	normalizedSymbol := market.NormalizeFor(at.exchange, symbol)
+	normalizedSymbol := market.NormalizeFor(at.marketCapabilities().Market, symbol)
 
 	return &store.TraderOrder{
 		TraderID:        at.id,
@@ -515,7 +510,7 @@ func (at *AutoTrader) recordOrderFill(orderRecordID int64, exchangeOrderID, symb
 	tradeID := fmt.Sprintf("%s-%d", exchangeOrderID, time.Now().UnixNano())
 
 	// Normalize symbol for consistency
-	normalizedSymbol := market.NormalizeFor(at.exchange, symbol)
+	normalizedSymbol := market.NormalizeFor(at.marketCapabilities().Market, symbol)
 
 	fill := &store.TraderFill{
 		TraderID:        at.id,

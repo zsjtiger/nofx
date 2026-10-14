@@ -49,7 +49,7 @@ func TestInTradingSessionCN(t *testing.T) {
 	assert.False(t, got, "weekends are closed")
 }
 
-func TestInTradingSessionUSAndCrypto(t *testing.T) {
+func TestInTradingSessionUS(t *testing.T) {
 	us := mustCaps(t, MarketUSEquity)
 	// 2026-10-14 10:00 New York time (EDT, UTC-4) is inside the regular session.
 	open := time.Date(2026, 10, 14, 14, 0, 0, 0, time.UTC)
@@ -62,10 +62,6 @@ func TestInTradingSessionUSAndCrypto(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, got)
 
-	crypto := mustCaps(t, MarketCrypto)
-	got, err = crypto.InTradingSession(closed)
-	require.NoError(t, err)
-	assert.True(t, got, "crypto has no session table and is always open")
 }
 
 func TestSameTradingDayUsesMarketTimezone(t *testing.T) {

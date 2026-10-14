@@ -21,15 +21,15 @@ func testRisk() store.RiskControlConfig {
 	return store.RiskControlConfig{MaxPositions: 3, AltcoinMaxPositionValueRatio: 0.5, MinConfidence: 70}
 }
 
-func TestEquityCapabilitiesOnlyForStockMarkets(t *testing.T) {
-	_, ok := (&StrategyEngine{}).equityCapabilities()
-	assert.False(t, ok, "no market keeps the crypto path")
+func TestEngineRequiresStockMarket(t *testing.T) {
+	_, err := (&StrategyEngine{}).capabilities()
+	assert.Error(t, err, "an engine without a market refuses to decide")
 
-	_, ok = (&StrategyEngine{market: types.MarketCrypto}).equityCapabilities()
-	assert.False(t, ok)
+	_, err = (&StrategyEngine{market: "crypto"}).capabilities()
+	assert.Error(t, err, "crypto is no longer a market")
 
-	caps, ok := (&StrategyEngine{}).WithMarket(types.MarketCNEquity).equityCapabilities()
-	require.True(t, ok)
+	caps, err := (&StrategyEngine{}).WithMarket(types.MarketCNEquity).capabilities()
+	require.NoError(t, err)
 	assert.Equal(t, types.MarketCNEquity, caps.Market)
 }
 

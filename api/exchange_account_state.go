@@ -279,10 +279,8 @@ func accountAssetForExchange(exchangeType string) string {
 		return "USD"
 	case "cn_paper":
 		return "CNY"
-	case "hyperliquid", "aster", "lighter":
-		return "USDC"
 	default:
-		return "USDT"
+		return ""
 	}
 }
 
@@ -291,13 +289,6 @@ func missingExchangeCredentials(exchangeCfg *store.Exchange) (status string, cod
 		exchangeCfg.ExchangeType,
 		string(exchangeCfg.APIKey),
 		string(exchangeCfg.SecretKey),
-		string(exchangeCfg.Passphrase),
-		exchangeCfg.HyperliquidWalletAddr,
-		exchangeCfg.AsterUser,
-		exchangeCfg.AsterSigner,
-		string(exchangeCfg.AsterPrivateKey),
-		exchangeCfg.LighterWalletAddr,
-		string(exchangeCfg.LighterAPIKeyPrivateKey),
 	)
 	if len(missingFields) > 0 {
 		if len(missingFields) == 1 && missingFields[0] == "exchange_type" {

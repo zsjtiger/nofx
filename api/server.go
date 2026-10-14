@@ -145,13 +145,6 @@ func (s *Server) setupRoutes() {
 		// System config (no authentication required, for frontend to determine admin mode/registration status)
 		s.route(api, "GET", "/config", "Get system configuration", s.handleGetSystemConfig)
 
-		// Wallet validation (no authentication required — used by frontend config form)
-		api.POST("/wallet/validate", s.handleWalletValidate)
-		api.POST("/wallet/generate", s.handleWalletGenerate)
-		s.route(api, "GET", "/hyperliquid/connect-config", "Get NOFX Hyperliquid builder authorization config", s.handleHyperliquidConnectConfig)
-		s.route(api, "GET", "/hyperliquid/account", "Get Hyperliquid account balance summary", s.handleHyperliquidAccount)
-		s.route(api, "GET", "/hyperliquid/agent", "Get Hyperliquid approved agent wallets and authorization expiry", s.handleHyperliquidAgent)
-		s.route(api, "POST", "/hyperliquid/submit-exchange", "Submit a user-signed Hyperliquid approval action", s.handleHyperliquidSubmitExchange)
 
 		// Crypto related endpoints (no authentication required, not exposed to bot).
 		// SECURITY: only the config + public-key endpoints are exposed. Transport
@@ -173,8 +166,6 @@ func (s *Server) setupRoutes() {
 		s.route(api, "GET", "/traders/:id/public-config", "Public trader configuration", s.handleGetPublicTraderConfig)
 
 		// Market data (no authentication required)
-		s.route(api, "GET", "/klines", "Candlestick data (?symbol=&interval=&limit=)", s.handleKlines)
-		s.route(api, "GET", "/symbols", "Available trading symbols", s.handleSymbols)
 
 		// Public strategy market (no authentication required)
 		s.route(api, "GET", "/strategies/public", "Public strategy market", s.handlePublicStrategies)
@@ -200,8 +191,6 @@ func (s *Server) setupRoutes() {
 		{
 			// Logout (add to blacklist)
 			s.route(protected, "POST", "/logout", "Logout (blacklist token)", s.handleLogout)
-			s.route(protected, "POST", "/onboarding/beginner", "Prepare beginner claw402 wallet and default model", s.handleBeginnerOnboarding)
-			s.route(protected, "GET", "/onboarding/beginner/current", "Get current beginner claw402 wallet", s.handleCurrentBeginnerWallet)
 
 			// User account management
 			s.routeWithSchema(protected, "PUT", "/user/password", "Change current user password",
@@ -211,13 +200,6 @@ func (s *Server) setupRoutes() {
 			// Server IP query (requires authentication, for whitelist configuration)
 			s.route(protected, "GET", "/server-ip", "Get server public IP (for exchange whitelist)", s.handleGetServerIP)
 
-			s.route(protected, "GET", "/vergex/direction-change/leaderboard", "Vergex OI Top 30 bull/bear direction leaderboard via claw402", s.handleVergexDirectionChangeLeaderboard)
-			s.route(protected, "GET", "/vergex/direction-change/current", "Vergex current bull/bear direction via claw402 (?symbol=BTC)", s.handleVergexDirectionChangeCurrent)
-			s.route(protected, "GET", "/vergex/direction-change/history", "Vergex bull/bear direction history via claw402 (?symbol=BTC&type=all&page=1&page_size=20)", s.handleVergexDirectionChangeHistory)
-			s.route(protected, "GET", "/vergex/cost-liquidation-heatmap", "Vergex cost/liquidation heatmap via claw402 (?marketType=hip3_perp&symbol=AAPL)", s.handleVergexCostLiquidationHeatmap)
-			s.route(protected, "GET", "/vergex/flow-markets", "Vergex net-flow market ranking via claw402 (?chain=mainnet&window=1h&limit=25)", s.handleVergexFlowMarkets)
-			s.route(protected, "GET", "/vergex/holder-winrate-map", "Vergex holder win-rate matrix via claw402 (?marketType=hip3_perp&symbol=NVDA&winMin=0&winMax=100&costMin=92&costMax=108)", s.handleVergexHolderWinrateMap)
-			s.route(protected, "GET", "/vergex/holder-winrate-map/holders", "Vergex win-rate matrix address drilldown via claw402 (?marketType=hip3_perp&symbol=NVDA&snapshotId=…&row=0&rowEnd=19&column=1&columnEnd=16&side=long&offset=0&limit=50)", s.handleVergexHolderWinrateHolders)
 
 			// AI trader management
 			s.routeWithSchema(protected, "GET", "/my-traders", "List user's traders with status",
@@ -268,13 +250,8 @@ Body: {"symbol":"<string, e.g. BTCUSDT — must match an open position symbol fr
 				`:id = trader_id from GET /api/my-traders.
 Body: {"show_in_competition":<bool>}`,
 				s.handleToggleCompetition)
-			s.routeWithSchema(protected, "GET", "/traders/:id/grid-risk", "Get grid trading risk info",
-				`:id = trader_id from GET /api/my-traders.`,
-				s.handleGetGridRiskInfo)
 
 			// AI cost tracking
-			s.route(protected, "GET", "/ai-costs", "Get AI call costs for a trader (?trader_id=xxx&period=today)", s.handleGetAICosts)
-			s.route(protected, "GET", "/ai-costs/summary", "Get AI cost summary (?period=today)", s.handleGetAICostsSummary)
 
 			// AI model configuration
 			s.routeWithSchema(protected, "GET", "/models", "List AI model configs",

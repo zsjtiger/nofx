@@ -221,28 +221,6 @@ func (s *Server) initUserDefaultConfigs(userID string, lang string) error {
 }
 
 func (s *Server) createDefaultStrategies(userID string, lang string) error {
-	type strategyI18n struct {
-		name, description string
-	}
-	type strategyLocale struct {
-		defaultStrategy strategyI18n
-	}
-	locales := map[string]strategyLocale{
-		"zh": {
-			defaultStrategy: strategyI18n{"NOFX Claw402 Auto Strategy", "The only built-in strategy: read the Claw402.ai direction board each cycle, load direction history and cost/liquidation heatmaps, then manage positions by the live board."},
-		},
-		"en": {
-			defaultStrategy: strategyI18n{"NOFX Claw402 Auto Strategy", "The only built-in strategy: read the Claw402.ai direction board each cycle, load direction history and cost/liquidation heatmaps, then manage positions by the live board."},
-		},
-		"id": {
-			defaultStrategy: strategyI18n{"Strategi Otomatis NOFX Claw402", "Satu strategi bawaan: membaca papan arah Claw402.ai setiap siklus, memuat riwayat arah dan heatmap biaya/likuidasi, lalu mengelola posisi mengikuti papan langsung."},
-		},
-	}
-	locale, ok := locales[lang]
-	if !ok {
-		locale = locales["en"]
-	}
-
 	type strategyDef struct {
 		name        string
 		description string
@@ -250,47 +228,59 @@ func (s *Server) createDefaultStrategies(userID string, lang string) error {
 		applyConfig func(*store.StrategyConfig)
 	}
 
-	setClaw402Strategy := func(c *store.StrategyConfig) {
-		c.CoinSource.SourceType = "vergex_signal"
-		c.CoinSource.StaticCoins = nil
-		c.CoinSource.UseAI500 = false
-		c.CoinSource.UseOITop = false
-		c.CoinSource.UseOILow = false
-		c.CoinSource.UseHyperAll = false
-		c.CoinSource.UseHyperMain = false
-		c.CoinSource.HyperRankCategory = "all"
-		c.CoinSource.VergexLimit = 10
-		c.CoinSource.VergexMarketType = "all"
-		c.CoinSource.VergexChain = "hyperliquid"
-		c.RiskControl.MaxPositions = store.AutopilotDefaultMaxPositions
-		c.RiskControl.BTCETHMaxLeverage = 10
-		c.RiskControl.AltcoinMaxLeverage = 10
-		// Position-value ratios are hard per-position caps. Actual Autopilot
-		// allocation is calculated separately from leverage and slot count.
-		c.RiskControl.BTCETHMaxPositionValueRatio = store.AutopilotMaxPositionValueRatio
-		c.RiskControl.AltcoinMaxPositionValueRatio = store.AutopilotMaxPositionValueRatio
-		c.RiskControl.MaxMarginUsage = 1.0
-		c.RiskControl.MinConfidence = 78
-		c.RiskControl.MinRiskRewardRatio = 3.0
-		c.Indicators.Klines.PrimaryTimeframe = "15m"
-		c.Indicators.Klines.PrimaryCount = 30
-		c.Indicators.Klines.LongerTimeframe = ""
-		c.Indicators.Klines.LongerCount = 0
-		c.Indicators.Klines.EnableMultiTimeframe = false
-		c.Indicators.Klines.SelectedTimeframes = []string{"15m"}
-		c.Indicators.EnableRawKlines = true
+	// Two presets, one per stock market. Each lists liquid large caps, so the
+	// symbols are valid on the matching paper account.
+	setEquityStrategy := func(symbols []string) func(*store.StrategyConfig) {
+		return func(c *store.StrategyConfig) {
+			c.CoinSource.SourceType = "static"
+			c.CoinSource.StaticCoins = append([]string(nil), symbols...)
+			c.CoinSource.UseAI500 = false
+			c.CoinSource.UseOITop = false
+			c.CoinSource.UseOILow = false
+			c.RiskControl.MaxPositions = 3
+			c.RiskControl.BTCETHMaxLeverage = 1
+			c.RiskControl.AltcoinMaxLeverage = 1
+			c.RiskControl.BTCETHMaxPositionValueRatio = 1.0
+			c.RiskControl.AltcoinMaxPositionValueRatio = 1.0
+			c.RiskControl.MaxMarginUsage = 1.0
+			c.RiskControl.MinConfidence = 70
+			c.RiskControl.MinRiskRewardRatio = 2.0
+			c.Indicators.Klines.PrimaryTimeframe = "1d"
+			c.Indicators.Klines.PrimaryCount = 60
+			c.Indicators.Klines.LongerTimeframe = ""
+			c.Indicators.Klines.LongerCount = 0
+			c.Indicators.Klines.EnableMultiTimeframe = false
+			c.Indicators.Klines.SelectedTimeframes = []string{"1d"}
+			c.Indicators.EnableRawKlines = true
+		}
 	}
 
-	definitions := []strategyDef{
-		{
-			name:        locale.defaultStrategy.name,
-			description: locale.defaultStrategy.description,
-			isActive:    true,
-			applyConfig: func(c *store.StrategyConfig) {
-				setClaw402Strategy(c)
-			},
-		},
+	usStrategy := strategyDef{
+		name:        "NOFX US Stock Strategy",
+		description: "Daily-bar AI strategy over large-cap US stocks on the Alpaca paper account. Long and short, no leverage.",
+		isActive:    true,
+		applyConfig: setEquityStrategy([]string{"AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA"}),
 	}
+	cnStrategy := strategyDef{
+		name:        "NOFX A-Share Strategy",
+		description: "Daily-bar AI strategy over large-cap A-shares on the paper account. Long only, whole lots, T+1.",
+		isActive:    false,
+		applyConfig: setEquityStrategy([]string{"600519.SH", "000858.SZ", "601318.SH", "000333.SZ", "300750.SZ"}),
+	}
+	if lang == "zh" {
+		usStrategy.name = "NOFX 美股策略"
+		usStrategy.description = "基于日线的 AI 策略，覆盖纳斯达克与纽交所大盘股，使用 Alpaca 纸上账户，可做多做空，不加杠杆。"
+		cnStrategy.name = "NOFX A 股策略"
+		cnStrategy.description = "基于日线的 AI 策略，覆盖沪深大盘股，使用纸上账户，只做多，按整手交易，遵守 T+1。"
+	}
+	if lang == "id" {
+		usStrategy.name = "Strategi Saham AS NOFX"
+		usStrategy.description = "Strategi AI berbasis data harian untuk saham AS berkapitalisasi besar di akun paper Alpaca. Long dan short, tanpa leverage."
+		cnStrategy.name = "Strategi Saham A-Share NOFX"
+		cnStrategy.description = "Strategi AI berbasis data harian untuk saham A-share berkapitalisasi besar di akun paper. Hanya long, per lot 100 saham, aturan T+1."
+	}
+
+	definitions := []strategyDef{usStrategy, cnStrategy}
 
 	// GetDefaultStrategyConfig only supports zh/en; map id -> en
 	configLang := lang
@@ -320,6 +310,7 @@ func (s *Server) createDefaultStrategies(userID string, lang string) error {
 	}
 
 	legacyDefaultNames := []string{
+		"NOFX Claw402 Auto Strategy", "Strategi Otomatis NOFX Claw402",
 		"Balanced Strategy", "Steady Strategy", "Aggressive Strategy",
 		"US Stock Trend Strategy", "US Stock Steady Strategy", "US Stock Breakout Strategy",
 		"Balanced Strategy", "Conservative Strategy", "Aggressive Strategy",

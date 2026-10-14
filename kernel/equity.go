@@ -9,24 +9,6 @@ import (
 	"nofx/trader/types"
 )
 
-// WithMarket sets the market the engine decides for. Equity markets get an
-// equity prompt and equity validation; crypto (the default) keeps the perpetual rules.
-func (e *StrategyEngine) WithMarket(m types.Market) *StrategyEngine {
-	e.market = m
-	return e
-}
-
-// equityCapabilities returns the rules for the engine's market when it is an equity market.
-func (e *StrategyEngine) equityCapabilities() (types.Capabilities, bool) {
-	if e.market == "" || e.market == types.MarketCrypto {
-		return types.Capabilities{}, false
-	}
-	caps, err := types.CapabilitiesOf(e.market)
-	if err != nil {
-		return types.Capabilities{}, false
-	}
-	return caps, true
-}
 
 // BuildEquitySystemPrompt is the decision prompt for stock markets. It states the
 // market rules the code enforces, so the model does not propose trades that will be rejected.

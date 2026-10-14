@@ -2,15 +2,11 @@ package trader
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"nofx/kernel"
 	"nofx/logger"
 	"nofx/market"
-	"nofx/mcp/payment"
-	"nofx/provider/hyperliquid"
 	"nofx/store"
-	"nofx/wallet"
 	"strings"
 	"time"
 )
@@ -34,11 +30,6 @@ func (at *AutoTrader) runCycle() error {
 
 	if err := at.reloadStrategyConfigIfChanged(); err != nil {
 		at.logWarnf("⚠️ Strategy refresh failed, using current in-memory config: %v", err)
-	}
-
-	// Check USDC balance periodically for claw402 users (every 10 cycles)
-	if at.callCount%10 == 0 && store.IsClaw402Config(at.config.AIModel) {
-		at.checkClaw402Balance()
 	}
 
 	// Create decision record
@@ -142,48 +133,10 @@ func (at *AutoTrader) runCycle() error {
 		}
 	}
 
-	// Record AI charge (track cost regardless of decision outcome).
-	// Use the effective model name (custom model, e.g. "gpt-5.6") so the
-	// per-call price lookup matches what was actually invoked — at.aiModel is
-	// the provider id (e.g. "claw402") and would fall back to the default price.
-	// Prefer the gateway-reported settled amount (upto scheme) over the flat
-	// catalog estimate when the client exposes it.
-	if aiDecision != nil && at.store != nil {
-		chargeModel := at.config.CustomModelName
-		if chargeModel == "" {
-			chargeModel = at.aiModel
-		}
-		var chargeErr error
-		if r, ok := at.mcpClient.(interface{ LastCallCostUSD() (float64, bool) }); ok {
-			if actual, has := r.LastCallCostUSD(); has {
-				chargeErr = at.store.AICharge().RecordWithCost(at.id, chargeModel, at.config.AIModel, actual)
-			} else {
-				at.logWarnf("AI payment outcome unverified; skipping estimated charge entry. Reconcile the original payment.")
-			}
-		} else {
-			chargeErr = at.store.AICharge().Record(at.id, chargeModel, at.config.AIModel)
-		}
-		if chargeErr != nil {
-			at.logWarnf("⚠️ Failed to record AI charge: %v", chargeErr)
-		}
-	}
-
 	if err != nil {
 		at.consecutiveAIFailures++
 		record.Success = false
 		record.ErrorMessage = fmt.Sprintf("Failed to get AI decision: %v", err)
-
-		// Payment-layer rejection means the AI fee wallet is definitively out
-		// of funds — surface it as structured health state (GetStatus), not
-		// just a log line.
-		var insufficientFunds *payment.ErrInsufficientFunds
-		if errors.As(err, &insufficientFunds) {
-			at.markAIWalletEmptyFromPayment(insufficientFunds.Balance)
-			record.ErrorMessage = fmt.Sprintf(
-				"AI fee wallet out of funds: balance $%.2f USDC, next call needs ~$%.2f. Top up the Base USDC wallet.",
-				insufficientFunds.Balance, insufficientFunds.Needed,
-			)
-		}
 
 		// Activate safe mode after 3 consecutive failures
 		if at.consecutiveAIFailures >= 3 && !at.isSafeMode() {
@@ -264,7 +217,6 @@ func (at *AutoTrader) runCycle() error {
 	// 8. Sort decisions: ensure close positions first, then open positions (prevent position stacking overflow)
 	sortedDecisions := sortDecisionsByPriority(aiDecision.Decisions)
 	sortedDecisions = at.filterDecisionsToStrategyUniverse(sortedDecisions, ctx)
-	sortedDecisions = at.enforceVergexSignalPolicy(sortedDecisions, ctx)
 	sortedDecisions = sortDecisionsByPriority(sortedDecisions)
 
 	logger.Info("🔄 Execution order (optimized): Close positions first → Open positions later")
@@ -353,32 +305,22 @@ func (at *AutoTrader) runCycle() error {
 	return nil
 }
 
-func normalizeUniverseSymbol(symbol string) string {
-	return market.Normalize(strings.TrimSpace(symbol))
+func (at *AutoTrader) normalizeUniverseSymbol(symbol string) string {
+	return market.NormalizeFor(at.marketCapabilities().Market, strings.TrimSpace(symbol))
 }
 
-// universeBaseKey returns the bare base ticker used for fuzzy candidate
-// matching. The AI sometimes echoes a candidate as "QNTUSDC", "QNT-USDC",
-// "QNTUSDT", or even just "QNT" instead of the canonical "xyz:QNT" we
-// supplied in the prompt. All of those resolve to the same Hyperliquid
-// instrument, so we accept any of them when the base matches an allowed
-// candidate's base.
+// universeBaseKey returns the bare ticker used for fuzzy candidate matching.
+// The AI may echo "600519" for the canonical "600519.SH", so the A-share
+// exchange suffix is dropped. Other suffixes are kept, so "BRK.A" and "BRK.B"
+// stay distinct.
 func universeBaseKey(symbol string) string {
 	s := strings.ToUpper(strings.TrimSpace(symbol))
-	if s == "" {
-		return ""
-	}
-	// Drop any xyz:/XYZ: prefix.
-	s = strings.TrimPrefix(s, "XYZ:")
-	// Drop common quote suffixes in order of specificity.
-	for _, suf := range []string{"-USDC", "-USDT", "USDC", "USDT", "USD"} {
-		if strings.HasSuffix(s, suf) && len(s) > len(suf) {
-			s = strings.TrimSuffix(s, suf)
-			break
+	for _, suf := range []string{".SH", ".SZ", ".BJ"} {
+		if strings.HasSuffix(s, suf) {
+			return strings.TrimSuffix(s, suf)
 		}
 	}
-	// Normalize alias (TESLA -> TSLA, ROBINHOOD -> HOOD, etc.).
-	return hyperliquid.NormalizeXYZAlias(s)
+	return s
 }
 
 func isOpenDecision(action string) bool {
@@ -394,7 +336,7 @@ func (at *AutoTrader) filterDecisionsToStrategyUniverse(decisions []kernel.Decis
 	allowed := make(map[string]bool, len(ctx.CandidateCoins))
 	allowedBases := make(map[string]bool, len(ctx.CandidateCoins))
 	for _, coin := range ctx.CandidateCoins {
-		allowed[normalizeUniverseSymbol(coin.Symbol)] = true
+		allowed[at.normalizeUniverseSymbol(coin.Symbol)] = true
 		if base := universeBaseKey(coin.Symbol); base != "" {
 			allowedBases[base] = true
 		}
@@ -403,7 +345,7 @@ func (at *AutoTrader) filterDecisionsToStrategyUniverse(decisions []kernel.Decis
 	positions := make(map[string]bool, len(ctx.Positions))
 	positionBases := make(map[string]bool, len(ctx.Positions))
 	for _, pos := range ctx.Positions {
-		positions[normalizeUniverseSymbol(pos.Symbol)] = true
+		positions[at.normalizeUniverseSymbol(pos.Symbol)] = true
 		if base := universeBaseKey(pos.Symbol); base != "" {
 			positionBases[base] = true
 		}
@@ -411,7 +353,7 @@ func (at *AutoTrader) filterDecisionsToStrategyUniverse(decisions []kernel.Decis
 
 	filtered := make([]kernel.Decision, 0, len(decisions))
 	for _, d := range decisions {
-		sym := normalizeUniverseSymbol(d.Symbol)
+		sym := at.normalizeUniverseSymbol(d.Symbol)
 		if sym == "" || sym == "ALL" {
 			filtered = append(filtered, d)
 			continue
@@ -596,12 +538,6 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 	} else {
 		coins, err := at.strategyEngine.GetCandidateCoins()
 		if err != nil {
-			// The direction board is the sole ordinary exit authority in Vergex
-			// signal mode. With open exposure, stale/missing board data must abort
-			// the cycle rather than allowing raw AI closes through.
-			if at.usesVergexSignalPolicy() && len(positionInfos) > 0 {
-				return nil, fmt.Errorf("failed to refresh Vergex direction board with open positions: %w", err)
-			}
 			at.logWarnf("⚠️ Failed to get candidate coins: %v (will use empty list)", err)
 		} else {
 			candidateCoins = coins
@@ -621,19 +557,11 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 		marginUsedPct = (totalMarginUsed / totalEquity) * 100
 	}
 
-	// 5. Get leverage from strategy config
-	strategyConfig := at.strategyEngine.GetConfig()
-	btcEthLeverage := strategyConfig.RiskControl.BTCETHMaxLeverage
-	altcoinLeverage := strategyConfig.RiskControl.AltcoinMaxLeverage
-	logger.Infof("📋 [%s] Strategy leverage config: BTC/ETH=%dx, Altcoin=%dx", at.name, btcEthLeverage, altcoinLeverage)
-
 	// 6. Build context
 	ctx := &kernel.Context{
-		CurrentTime:     time.Now().UTC().Format("2006-01-02 15:04:05 UTC"),
-		RuntimeMinutes:  int(time.Since(at.startTime).Minutes()),
-		CallCount:       at.callCount,
-		BTCETHLeverage:  btcEthLeverage,
-		AltcoinLeverage: altcoinLeverage,
+		CurrentTime:    time.Now().UTC().Format("2006-01-02 15:04:05 UTC"),
+		RuntimeMinutes: int(time.Since(at.startTime).Minutes()),
+		CallCount:      at.callCount,
 		Account: kernel.AccountInfo{
 			TotalEquity:      totalEquity,
 			AvailableBalance: availableBalance,
@@ -706,57 +634,6 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 		at.logWarnf("⚠️ Store is nil, cannot get recent trades")
 	}
 
-	// 8. Get quantitative data (if enabled in strategy config)
-	if strategyConfig.Indicators.EnableQuantData {
-		// Collect symbols to query (candidate coins + position coins)
-		symbolsToQuery := make(map[string]bool)
-		for _, coin := range candidateCoins {
-			symbolsToQuery[coin.Symbol] = true
-		}
-		for _, pos := range positionInfos {
-			symbolsToQuery[pos.Symbol] = true
-		}
-
-		symbols := make([]string, 0, len(symbolsToQuery))
-		for sym := range symbolsToQuery {
-			symbols = append(symbols, sym)
-		}
-
-		logger.Infof("📊 [%s] Fetching quantitative data for %d symbols...", at.name, len(symbols))
-		ctx.QuantDataMap = at.strategyEngine.FetchQuantDataBatch(symbols)
-		logger.Infof("📊 [%s] Successfully fetched quantitative data for %d symbols", at.name, len(ctx.QuantDataMap))
-	}
-
-	// 9. Get OI ranking data (market-wide position changes)
-	if strategyConfig.Indicators.EnableOIRanking {
-		logger.Infof("📊 [%s] Fetching OI ranking data...", at.name)
-		ctx.OIRankingData = at.strategyEngine.FetchOIRankingData()
-		if ctx.OIRankingData != nil {
-			logger.Infof("📊 [%s] OI ranking data ready: %d top, %d low positions",
-				at.name, len(ctx.OIRankingData.TopPositions), len(ctx.OIRankingData.LowPositions))
-		}
-	}
-
-	// 10. Get NetFlow ranking data (market-wide fund flow)
-	if strategyConfig.Indicators.EnableNetFlowRanking {
-		logger.Infof("💰 [%s] Fetching NetFlow ranking data...", at.name)
-		ctx.NetFlowRankingData = at.strategyEngine.FetchNetFlowRankingData()
-		if ctx.NetFlowRankingData != nil {
-			logger.Infof("💰 [%s] NetFlow ranking data ready: inst_in=%d, inst_out=%d",
-				at.name, len(ctx.NetFlowRankingData.InstitutionFutureTop), len(ctx.NetFlowRankingData.InstitutionFutureLow))
-		}
-	}
-
-	// 11. Get Price ranking data (market-wide gainers/losers)
-	if strategyConfig.Indicators.EnablePriceRanking {
-		logger.Infof("📈 [%s] Fetching Price ranking data...", at.name)
-		ctx.PriceRankingData = at.strategyEngine.FetchPriceRankingData()
-		if ctx.PriceRankingData != nil {
-			logger.Infof("📈 [%s] Price ranking data ready for %d durations",
-				at.name, len(ctx.PriceRankingData.Durations))
-		}
-	}
-
 	return ctx, nil
 }
 
@@ -795,39 +672,4 @@ func sortDecisionsByPriority(decisions []kernel.Decision) []kernel.Decision {
 	}
 
 	return sorted
-}
-
-// checkClaw402Balance checks USDC balance and logs warnings if low
-func (at *AutoTrader) checkClaw402Balance() {
-	scanMinutes := int(at.config.ScanInterval.Minutes())
-	if scanMinutes <= 0 {
-		scanMinutes = 15
-	}
-	dailyCost, _ := store.EstimateRunway(1.0, at.config.CustomModelName, scanMinutes)
-	logger.Infof("💰 [%s] Estimated daily AI cost: ~$%.2f (model: %s, interval: %dm)",
-		at.name, dailyCost, at.config.CustomModelName, scanMinutes)
-
-	if at.claw402WalletAddr != "" {
-		balance, err := wallet.QueryUSDCBalance(at.claw402WalletAddr)
-		if err != nil {
-			at.logWarnf("⚠️ Failed to query USDC balance: %v", err)
-			at.markAIWalletHealthUnknown()
-			return
-		}
-
-		at.setAIWalletHealth(balance)
-		if balance < aiWalletLowThresholdUSDC {
-			at.logWarnf("⚠️ Low USDC balance: $%.2f — AI may stop soon!", balance)
-		}
-		if balance <= 0 {
-			at.logErrorf("🚨 USDC balance is ZERO — AI calls will fail!")
-		}
-
-		runway := float64(0)
-		if dailyCost > 0 {
-			runway = balance / dailyCost
-		}
-		logger.Infof("💰 [%s] USDC Balance: $%.2f | Daily AI cost: ~$%.2f | Runway: ~%.1f days",
-			at.name, balance, dailyCost, runway)
-	}
 }

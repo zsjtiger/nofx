@@ -3,117 +3,55 @@ package kernel
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
+	"strings"
+	"time"
+
 	"nofx/logger"
 	"nofx/market"
 	"nofx/mcp"
 	"nofx/store"
-	"regexp"
-	"strings"
-	"time"
+	"nofx/trader/types"
 )
 
 // ============================================================================
-// Pre-compiled regular expressions (performance optimization)
+// Entry Functions
 // ============================================================================
 
-var (
-	// Safe regex: precisely match ```json code blocks
-	reJSONFence      = regexp.MustCompile(`(?is)` + "```json\\s*(\\[\\s*\\{.*?\\}\\s*\\])\\s*```")
-	reJSONArray      = regexp.MustCompile(`(?is)\[\s*\{.*?\}\s*\]`)
-	reArrayHead      = regexp.MustCompile(`^\[\s*\{`)
-	reArrayOpenSpace = regexp.MustCompile(`^\[\s+\{`)
-	reInvisibleRunes = regexp.MustCompile("[\u200B\u200C\u200D\uFEFF]")
-
-	// XML tag extraction (supports any characters in reasoning chain)
-	reReasoningTag = regexp.MustCompile(`(?s)<reasoning>(.*?)</reasoning>`)
-	reDecisionTag  = regexp.MustCompile(`(?s)<decision>(.*?)</decision>`)
-)
-
-// ============================================================================
-// Entry Functions - Main API
-// ============================================================================
-
-// GetFullDecision gets AI's complete trading decision (batch analysis of all coins and positions)
-// Uses default strategy configuration - for production use GetFullDecisionWithStrategy with explicit config
+// GetFullDecision asks the model for decisions using a default stock strategy.
+// Production code calls GetFullDecisionWithStrategy with the trader's own config.
 func GetFullDecision(ctx *Context, mcpClient mcp.AIClient) (*FullDecision, error) {
 	defaultConfig := store.GetDefaultStrategyConfig("en")
-	engine := NewStrategyEngine(&defaultConfig)
+	engine := NewStrategyEngine(&defaultConfig).WithMarket(types.MarketUSEquity)
 	return GetFullDecisionWithStrategy(ctx, mcpClient, engine, "")
 }
 
-// GetFullDecisionWithStrategy uses StrategyEngine to get AI decision (unified prompt generation)
+// GetFullDecisionWithStrategy runs one decision cycle: fetch daily bars for the
+// candidate symbols, build the prompts, call the model, and validate the answer
+// against the market rules. Nothing is traded here.
 func GetFullDecisionWithStrategy(ctx *Context, mcpClient mcp.AIClient, engine *StrategyEngine, variant string) (*FullDecision, error) {
 	if ctx == nil {
 		return nil, fmt.Errorf("context is nil")
 	}
 	if engine == nil {
-		defaultConfig := store.GetDefaultStrategyConfig("en")
-		engine = NewStrategyEngine(&defaultConfig)
+		return nil, fmt.Errorf("strategy engine is nil")
+	}
+	caps, err := engine.capabilities()
+	if err != nil {
+		return nil, err
 	}
 
-	// Clamp strategy limits to prevent token overflow
-	engineConfig := engine.GetConfig()
-	engineConfig.ClampLimits()
+	engine.GetConfig().ClampLimits()
 
-	// Token estimation check — block if exceeding the specific model's context limit
-	estimate := engineConfig.EstimateTokens()
-
-	// Determine context limit for the specific model being used
-	contextLimit := 131072 // safe default (strictest common limit)
-	var providerName string
-	if embedder, ok := mcpClient.(mcp.ClientEmbedder); ok {
-		base := embedder.BaseClient()
-		providerName = base.Provider
-		contextLimit = store.GetContextLimitForClient(base.Provider, base.Model)
-	}
-
-	if estimate.Total > contextLimit {
-		logger.Errorf("🚫 Token estimate %d exceeds %s context limit %d — blocking analysis",
-			estimate.Total, providerName, contextLimit)
-		return nil, fmt.Errorf("estimated %d tokens exceeds model context limit of %d; reduce coins, timeframes, or K-line count",
-			estimate.Total, contextLimit)
-	}
-	if estimate.Total*100/contextLimit >= 80 {
-		logger.Infof("⚠️  Token estimate %d — approaching %s context limit %d",
-			estimate.Total, providerName, contextLimit)
-	}
-
-	// 1. Fetch market data using strategy config
-	if len(ctx.MarketDataMap) == 0 {
-		if err := fetchMarketDataWithStrategy(ctx, engine); err != nil {
-			return nil, fmt.Errorf("failed to fetch market data: %w", err)
-		}
+	if err := fetchMarketDataWithStrategy(ctx, engine); err != nil {
+		return nil, fmt.Errorf("failed to fetch market data: %w", err)
 	}
 	pruneCandidateCoinsWithoutMarketData(ctx)
-	_, equityMarket := engine.equityCapabilities()
-	if !equityMarket {
-		enrichVergexDataWithStrategy(ctx, engine)
-	}
 
-	// Open-interest ranking is a perpetual-futures signal and does not apply to stocks.
-	if ctx.OITopDataMap == nil && !equityMarket {
-		ctx.OITopDataMap = make(map[string]*OITopData)
-		oiPositions, err := engine.nofxosClient.GetOITopPositions()
-		if err == nil {
-			for _, pos := range oiPositions {
-				ctx.OITopDataMap[pos.Symbol] = &OITopData{
-					Rank:              pos.Rank,
-					OIDeltaPercent:    pos.OIDeltaPercent,
-					OIDeltaValue:      pos.OIDeltaValue,
-					PriceDeltaPercent: pos.PriceDeltaPercent,
-				}
-			}
-		}
-	}
-
-	// 2. Build System Prompt using strategy engine
 	riskConfig := engine.GetRiskControlConfig()
 	systemPrompt := engine.BuildSystemPrompt(ctx.Account.TotalEquity, variant)
-
-	// 3. Build User Prompt using strategy engine
 	userPrompt := engine.BuildUserPrompt(ctx)
 
-	// 4. Call AI API
 	aiCallStart := time.Now()
 	aiResponse, err := mcpClient.CallWithMessages(systemPrompt, userPrompt)
 	aiCallDuration := time.Since(aiCallStart)
@@ -121,24 +59,7 @@ func GetFullDecisionWithStrategy(ctx *Context, mcpClient mcp.AIClient, engine *S
 		return nil, fmt.Errorf("AI API call failed: %w", err)
 	}
 
-	// 5. Parse AI response
-	decision, err := parseFullDecisionResponse(
-		aiResponse,
-		ctx.Account.TotalEquity,
-		riskConfig.BTCETHMaxLeverage,
-		riskConfig.AltcoinMaxLeverage,
-		riskConfig.BTCETHMaxPositionValueRatio,
-		riskConfig.AltcoinMaxPositionValueRatio,
-		engine.usesVergexSignalPrompt(),
-	)
-
-	// Stock markets have their own rules (no shorts on A-shares, no leverage, stops required).
-	if err == nil && decision != nil {
-		if caps, ok := engine.equityCapabilities(); ok {
-			err = ValidateEquityDecisions(decision.Decisions, caps, ctx.Account.TotalEquity, riskConfig)
-		}
-	}
-
+	decision, err := parseFullDecisionResponse(aiResponse, caps, ctx.Account.TotalEquity, riskConfig)
 	if decision != nil {
 		decision.Timestamp = time.Now()
 		decision.SystemPrompt = systemPrompt
@@ -146,117 +67,22 @@ func GetFullDecisionWithStrategy(ctx *Context, mcpClient mcp.AIClient, engine *S
 		decision.AIRequestDurationMs = aiCallDuration.Milliseconds()
 		decision.RawResponse = aiResponse
 	}
-
 	if err != nil {
 		return decision, fmt.Errorf("failed to parse AI response: %w", err)
 	}
-
 	return decision, nil
 }
 
-func enrichVergexDataWithStrategy(ctx *Context, engine *StrategyEngine) {
-	if ctx == nil || engine == nil || ctx.VergexDataMap != nil {
-		return
-	}
-	if engine.GetConfig().CoinSource.SourceType != "vergex_signal" {
-		return
-	}
-	symbolSet := make(map[string]bool)
-	symbols := make([]string, 0, len(ctx.CandidateCoins)+len(ctx.Positions))
-	for _, coin := range ctx.CandidateCoins {
-		if !symbolSet[coin.Symbol] {
-			symbolSet[coin.Symbol] = true
-			symbols = append(symbols, coin.Symbol)
-		}
-	}
-	for _, pos := range ctx.Positions {
-		if !symbolSet[pos.Symbol] {
-			symbolSet[pos.Symbol] = true
-			symbols = append(symbols, pos.Symbol)
-		}
-	}
-	ctx.VergexDataMap = engine.FetchVergexDataBatch(nil, symbols)
-}
-
-// ============================================================================
-// Market Data Fetching
-// ============================================================================
-
-// fetchMarketDataWithStrategy fetches market data using strategy config (multiple timeframes)
 func fetchMarketDataWithStrategy(ctx *Context, engine *StrategyEngine) error {
-	config := engine.GetConfig()
 	ctx.MarketDataMap = make(map[string]*market.Data)
-
-	timeframes := config.Indicators.Klines.SelectedTimeframes
-	primaryTimeframe := config.Indicators.Klines.PrimaryTimeframe
-	klineCount := config.Indicators.Klines.PrimaryCount
-
-	// Compatible with old configuration
-	if len(timeframes) == 0 {
-		if primaryTimeframe != "" {
-			timeframes = append(timeframes, primaryTimeframe)
-		} else {
-			timeframes = append(timeframes, "3m")
-		}
-		if config.Indicators.Klines.LongerTimeframe != "" {
-			timeframes = append(timeframes, config.Indicators.Klines.LongerTimeframe)
-		}
-	}
-	if primaryTimeframe == "" {
-		primaryTimeframe = timeframes[0]
-	}
-	if klineCount <= 0 {
-		klineCount = 30
-	}
-
-	logger.Infof("📊 Strategy timeframes: %v, Primary: %s, Kline count: %d", timeframes, primaryTimeframe, klineCount)
-
-	// 1. First fetch data for position coins (must fetch)
-	for _, pos := range ctx.Positions {
-		data, err := market.GetWithTimeframes(pos.Symbol, timeframes, primaryTimeframe, klineCount)
-		if err != nil {
-			logger.Infof("⚠️  Failed to fetch market data for position %s: %v", pos.Symbol, err)
-			continue
-		}
-		ctx.MarketDataMap[pos.Symbol] = data
-	}
-
-	// 2. Fetch data for all candidate coins
-	positionSymbols := make(map[string]bool)
-	for _, pos := range ctx.Positions {
-		positionSymbols[pos.Symbol] = true
-	}
-
-	const minOIThresholdMillions = 15.0 // 15M USD minimum open interest value
-
 	for _, coin := range ctx.CandidateCoins {
-		if _, exists := ctx.MarketDataMap[coin.Symbol]; exists {
-			continue
-		}
-
-		data, err := market.GetWithTimeframes(coin.Symbol, timeframes, primaryTimeframe, klineCount)
+		data, err := engine.FetchMarketData(coin.Symbol)
 		if err != nil {
-			logger.Infof("⚠️  Failed to fetch market data for %s: %v", coin.Symbol, err)
+			logger.Infof("⚠️  No market data for %s: %v", coin.Symbol, err)
 			continue
 		}
-
-		// Liquidity filter (skip for xyz dex assets - they don't have OI data from Binance)
-		isExistingPosition := positionSymbols[coin.Symbol]
-		isXyzAsset := market.IsXyzDexAsset(coin.Symbol)
-		if !isExistingPosition && !isXyzAsset && data.OpenInterest != nil && data.CurrentPrice > 0 {
-			oiValue := data.OpenInterest.Latest * data.CurrentPrice
-			oiValueInMillions := oiValue / 1_000_000
-			if oiValueInMillions < minOIThresholdMillions {
-				logger.Infof("⚠️  %s OI value too low (%.2fM USD < %.1fM), skipping coin",
-					coin.Symbol, oiValueInMillions, minOIThresholdMillions)
-				continue
-			}
-		}
-
 		ctx.MarketDataMap[coin.Symbol] = data
 	}
-
-	logger.Infof("📊 Successfully fetched multi-timeframe market data for %d coins", len(ctx.MarketDataMap))
 	return nil
 }
 
@@ -270,7 +96,7 @@ func pruneCandidateCoinsWithoutMarketData(ctx *Context) {
 			kept = append(kept, coin)
 			continue
 		}
-		logger.Infof("⚠️  Skipping candidate %s in AI prompt: no valid market/K-line data", coin.Symbol)
+		logger.Infof("⚠️  Skipping candidate %s in AI prompt: no market data", coin.Symbol)
 	}
 	ctx.CandidateCoins = kept
 }
@@ -279,29 +105,35 @@ func pruneCandidateCoinsWithoutMarketData(ctx *Context) {
 // AI Response Parsing
 // ============================================================================
 
-func parseFullDecisionResponse(aiResponse string, accountEquity float64, btcEthLeverage, altcoinLeverage int, btcEthPosRatio, altcoinPosRatio float64, signalManagedExit bool) (*FullDecision, error) {
+// parseFullDecisionResponse extracts the decisions from the model's answer and
+// validates them against the market rules.
+func parseFullDecisionResponse(aiResponse string, caps types.Capabilities, accountEquity float64, riskControl store.RiskControlConfig) (*FullDecision, error) {
 	cotTrace := extractCoTTrace(aiResponse)
 
 	decisions, err := extractDecisions(aiResponse)
 	if err != nil {
-		return &FullDecision{
-			CoTTrace:  cotTrace,
-			Decisions: []Decision{},
-		}, fmt.Errorf("failed to extract decisions: %w", err)
+		return &FullDecision{CoTTrace: cotTrace, Decisions: []Decision{}}, fmt.Errorf("failed to extract decisions: %w", err)
 	}
 
-	if err := validateDecisions(decisions, accountEquity, btcEthLeverage, altcoinLeverage, btcEthPosRatio, altcoinPosRatio, signalManagedExit); err != nil {
-		return &FullDecision{
-			CoTTrace:  cotTrace,
-			Decisions: decisions,
-		}, fmt.Errorf("decision validation failed: %w", err)
+	if err := ValidateEquityDecisions(decisions, caps, accountEquity, riskControl); err != nil {
+		return &FullDecision{CoTTrace: cotTrace, Decisions: decisions}, fmt.Errorf("decision validation failed: %w", err)
 	}
 
-	return &FullDecision{
-		CoTTrace:  cotTrace,
-		Decisions: decisions,
-	}, nil
+	return &FullDecision{CoTTrace: cotTrace, Decisions: decisions}, nil
 }
+
+var (
+	// Safe regex: precisely match ```json code blocks
+	reJSONFence      = regexp.MustCompile(`(?is)` + "```json\\s*(\\[\\s*\\{.*?\\}\\s*\\])\\s*```")
+	reJSONArray      = regexp.MustCompile(`(?is)\[\s*\{.*?\}\s*\]`)
+	reArrayHead      = regexp.MustCompile(`^\[\s*\{`)
+	reArrayOpenSpace = regexp.MustCompile(`^\[\s+\{`)
+	reInvisibleRunes = regexp.MustCompile("[\u200B\u200C\u200D\uFEFF]")
+
+	// XML tag extraction (supports any characters in reasoning chain)
+	reReasoningTag = regexp.MustCompile(`(?s)<reasoning>(.*?)</reasoning>`)
+	reDecisionTag  = regexp.MustCompile(`(?s)<decision>(.*?)</decision>`)
+)
 
 func extractCoTTrace(response string) string {
 	if match := reReasoningTag.FindStringSubmatch(response); match != nil && len(match) > 1 {

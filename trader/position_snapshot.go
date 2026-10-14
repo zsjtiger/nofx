@@ -5,6 +5,7 @@ import (
 	"nofx/logger"
 	"nofx/market"
 	"nofx/store"
+	"nofx/trader/types"
 	"time"
 )
 
@@ -46,7 +47,10 @@ func CreatePositionSnapshot(traderID, exchangeID, exchangeType string, trader Tr
 	for _, posMap := range positions {
 		// Parse position data
 		rawSymbol, _ := posMap["symbol"].(string)
-		symbol := market.NormalizeFor(exchangeType, rawSymbol)
+		symbol := rawSymbol
+		if m, err := types.ResolveMarket(store.MarketForExchangeType(exchangeType)); err == nil {
+			symbol = market.NormalizeFor(m, rawSymbol)
+		}
 		sideStr, _ := posMap["side"].(string)
 		positionAmt, _ := posMap["positionAmt"].(float64)
 		entryPrice, _ := posMap["entryPrice"].(float64)

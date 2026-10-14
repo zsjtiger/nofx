@@ -101,59 +101,6 @@ func exchangeDisplayName(exchange *store.Exchange) string {
 	return "the selected exchange account"
 }
 
-func missingExchangeFields(exchange *store.Exchange) []string {
-	if exchange == nil {
-		return nil
-	}
-
-	var missing []string
-	switch exchange.ExchangeType {
-	case "binance", "bybit", "gate", "indodax":
-		if exchange.APIKey == "" {
-			missing = append(missing, "API Key")
-		}
-		if exchange.SecretKey == "" {
-			missing = append(missing, "Secret Key")
-		}
-	case "okx", "bitget", "kucoin":
-		if exchange.APIKey == "" {
-			missing = append(missing, "API Key")
-		}
-		if exchange.SecretKey == "" {
-			missing = append(missing, "Secret Key")
-		}
-		if exchange.Passphrase == "" {
-			missing = append(missing, "Passphrase")
-		}
-	case "hyperliquid":
-		if exchange.APIKey == "" {
-			missing = append(missing, "Private Key")
-		}
-		if strings.TrimSpace(exchange.HyperliquidWalletAddr) == "" {
-			missing = append(missing, "Wallet Address")
-		}
-	case "aster":
-		if strings.TrimSpace(exchange.AsterUser) == "" {
-			missing = append(missing, "Aster User")
-		}
-		if strings.TrimSpace(exchange.AsterSigner) == "" {
-			missing = append(missing, "Aster Signer")
-		}
-		if exchange.AsterPrivateKey == "" {
-			missing = append(missing, "Aster Private Key")
-		}
-	case "lighter":
-		if strings.TrimSpace(exchange.LighterWalletAddr) == "" {
-			missing = append(missing, "Wallet Address")
-		}
-		if exchange.LighterAPIKeyPrivateKey == "" {
-			missing = append(missing, "API Key Private Key")
-		}
-	}
-
-	return missing
-}
-
 func mapStringPairs(kv ...string) map[string]string {
 	if len(kv) == 0 {
 		return nil
@@ -782,13 +729,6 @@ func (s *Server) handleStartTrader(c *gin.Context) {
 		traderName = fullCfg.Trader.Name
 	}
 
-	if fullCfg != nil && fullCfg.Exchange != nil && fullCfg.Exchange.ExchangeType == "hyperliquid" && !fullCfg.Exchange.HyperliquidBuilderApproved {
-		SafeBadRequestWithDetails(c, formatTraderStartError(
-			fmt.Sprintf("The Hyperliquid trading authorization for bot \"%s\" is not yet complete", traderName),
-			"Please reconnect the Hyperliquid wallet and complete the trading authorization, then start the bot",
-		), "trader.start.hyperliquid_builder_not_approved", mapStringPairs("trader_name", traderName, "exchange_name", exchangeDisplayName(fullCfg.Exchange)))
-		return
-	}
 
 	// Check if trader exists in memory and if it's running
 	existingTrader, _ := s.traderManager.GetTrader(traderID)
@@ -928,4 +868,12 @@ func (s *Server) handleStopTrader(c *gin.Context) {
 
 	logger.Infof("⏹  Trader %s stopped", trader.GetName())
 	c.JSON(http.StatusOK, gin.H{"message": "Trader stopped"})
+}
+
+// missingExchangeFields lists the credential fields an exchange account still needs.
+func missingExchangeFields(exchange *store.Exchange) []string {
+	if exchange == nil {
+		return nil
+	}
+	return store.MissingRequiredExchangeCredentialFields(exchange.ExchangeType, string(exchange.APIKey), string(exchange.SecretKey))
 }

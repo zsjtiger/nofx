@@ -86,97 +86,39 @@ func TestSanitizeModelConfigForLog(t *testing.T) {
 
 func TestSanitizeExchangeConfigForLog(t *testing.T) {
 	exchanges := map[string]ExchangeConfigUpdate{
-		"binance": {
+		"alpaca": {
 			Enabled:   true,
-			APIKey:    "binance_api_key_1234567890abcdef",
-			SecretKey: "binance_secret_key_1234567890abcdef",
-			Testnet:   false,
+			APIKey:    "alpaca_key_id_1234567890abcdef",
+			SecretKey: "alpaca_secret_key_1234567890abcdef",
 		},
-		"okx": {
-			Enabled:    true,
-			APIKey:     "okx_api_key_1234567890abcdef",
-			SecretKey:  "okx_secret_key_1234567890abcdef",
-			Passphrase: "okx_passphrase_supersecret_value",
-		},
-		"lighter": {
-			Enabled:                 true,
-			LighterWalletAddr:       "0xabcdef0000000000000000000000000000000000",
-			LighterPrivateKey:       "lighter_private_key_1234567890abcdef",
-			LighterAPIKeyPrivateKey: "lighter_api_key_private_key_1234567890abcdef",
-		},
-		"hyperliquid": {
-			Enabled:               true,
-			HyperliquidWalletAddr: "0x1234567890abcdef1234567890abcdef12345678",
-			Testnet:               false,
+		"tushare": {
+			Enabled: true,
+			APIKey:  "tushare_token_1234567890abcdef",
 		},
 	}
 
 	result := SanitizeExchangeConfigForLog(exchanges)
 
-	// Check Binance configuration
-	binanceConfig, ok := result["binance"].(map[string]interface{})
+	alpaca, ok := result["alpaca"].(map[string]interface{})
 	if !ok {
-		t.Fatal("binance config not found or wrong type")
+		t.Fatal("alpaca config not found or wrong type")
+	}
+	if alpaca["enabled"] != true {
+		t.Errorf("enabled should be true, got %v", alpaca["enabled"])
+	}
+	for _, field := range []string{"api_key", "secret_key"} {
+		value, _ := alpaca[field].(string)
+		if value == "" || strings.Contains(value, "1234567890abcdef") {
+			t.Errorf("%s should be masked, got %q", field, value)
+		}
 	}
 
-	maskedAPIKey, ok := binanceConfig["api_key"].(string)
+	tushare, ok := result["tushare"].(map[string]interface{})
 	if !ok {
-		t.Fatal("binance api_key not found or wrong type")
+		t.Fatal("tushare config not found or wrong type")
 	}
-
-	if maskedAPIKey != "bina****cdef" {
-		t.Errorf("expected masked api_key='bina****cdef', got %q", maskedAPIKey)
-	}
-
-	maskedSecretKey, ok := binanceConfig["secret_key"].(string)
-	if !ok {
-		t.Fatal("binance secret_key not found or wrong type")
-	}
-
-	if maskedSecretKey != "bina****cdef" {
-		t.Errorf("expected masked secret_key='bina****cdef', got %q", maskedSecretKey)
-	}
-
-	// Check OKX passphrase is masked (regression: previously not covered)
-	okxConfig, ok := result["okx"].(map[string]interface{})
-	if !ok {
-		t.Fatal("okx config not found or wrong type")
-	}
-	maskedPassphrase, ok := okxConfig["passphrase"].(string)
-	if !ok {
-		t.Fatal("okx passphrase not found or wrong type")
-	}
-	if maskedPassphrase != "okx_****alue" {
-		t.Errorf("expected masked passphrase='okx_****alue', got %q", maskedPassphrase)
-	}
-
-	// Check Lighter API key private key is masked (regression: previously not covered)
-	lighterConfig, ok := result["lighter"].(map[string]interface{})
-	if !ok {
-		t.Fatal("lighter config not found or wrong type")
-	}
-	maskedLighterAPIKey, ok := lighterConfig["lighter_api_key_private_key"].(string)
-	if !ok {
-		t.Fatal("lighter_api_key_private_key not found or wrong type")
-	}
-	if maskedLighterAPIKey != "ligh****cdef" {
-		t.Errorf("expected masked lighter_api_key_private_key='ligh****cdef', got %q", maskedLighterAPIKey)
-	}
-
-	// Check Hyperliquid configuration
-	hlConfig, ok := result["hyperliquid"].(map[string]interface{})
-	if !ok {
-		t.Fatal("hyperliquid config not found or wrong type")
-	}
-
-	walletAddr, ok := hlConfig["hyperliquid_wallet_addr"].(string)
-	if !ok {
-		t.Fatal("hyperliquid_wallet_addr not found or wrong type")
-	}
-
-	// Wallet address should not be masked
-	if walletAddr != "0x1234567890abcdef1234567890abcdef12345678" {
-		t.Errorf("wallet address should not be masked, got %q", walletAddr)
+	if _, has := tushare["secret_key"]; has {
+		t.Error("secret_key should be omitted when empty")
 	}
 }
 
@@ -186,31 +128,22 @@ func TestSanitizeExchangeConfigForLog(t *testing.T) {
 // historically not redacted — survives into the log line.
 func TestSanitizeExchangeConfigForLog_NoPlaintextSecrets(t *testing.T) {
 	secrets := map[string]string{
-		"api_key":                     "binance_api_key_1234567890abcdef",
-		"secret_key":                  "binance_secret_key_1234567890abcdef",
-		"passphrase":                  "okx_passphrase_supersecret_value",
-		"aster_private_key":           "aster_private_key_1234567890abcdef",
-		"lighter_private_key":         "lighter_private_key_1234567890abcdef",
-		"lighter_api_key_private_key": "lighter_api_key_private_key_1234567890abcdef",
+		"api_key":    "alpaca_key_id_1234567890abcdef",
+		"secret_key": "alpaca_secret_key_1234567890abcdef",
 	}
 
 	exchanges := map[string]ExchangeConfigUpdate{
-		"okx": {
-			Enabled:                 true,
-			APIKey:                  secrets["api_key"],
-			SecretKey:               secrets["secret_key"],
-			Passphrase:              secrets["passphrase"],
-			AsterPrivateKey:         secrets["aster_private_key"],
-			LighterPrivateKey:       secrets["lighter_private_key"],
-			LighterAPIKeyPrivateKey: secrets["lighter_api_key_private_key"],
+		"alpaca": {
+			Enabled:   true,
+			APIKey:    secrets["api_key"],
+			SecretKey: secrets["secret_key"],
 		},
 	}
 
-	rendered := fmt.Sprintf("%+v", SanitizeExchangeConfigForLog(exchanges))
-
-	for field, secret := range secrets {
-		if strings.Contains(rendered, secret) {
-			t.Errorf("sanitized log leaked plaintext %s: %q present in %q", field, secret, rendered)
+	logged := fmt.Sprintf("%+v", SanitizeExchangeConfigForLog(exchanges))
+	for name, secret := range secrets {
+		if strings.Contains(logged, secret) {
+			t.Errorf("%s leaked into the log output", name)
 		}
 	}
 }

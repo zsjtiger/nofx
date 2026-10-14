@@ -59,7 +59,6 @@ func TestNormalizeSymbol(t *testing.T) {
 		{name: "cn bad suffix", market: MarketCNEquity, input: "600519.HK", wantErr: true},
 		{name: "cn bad length", market: MarketCNEquity, input: "60051", wantErr: true},
 		{name: "cn unknown prefix", market: MarketCNEquity, input: "100001", wantErr: true},
-		{name: "crypto passthrough", market: MarketCrypto, input: "btcusdt", want: "BTCUSDT"},
 		{name: "empty", market: MarketUSEquity, input: "  ", wantErr: true},
 		{name: "unknown market", market: "bogus", input: "AAPL", wantErr: true},
 	}
@@ -121,11 +120,10 @@ func TestValidateSideAllowed(t *testing.T) {
 }
 
 func TestResolveMarket(t *testing.T) {
-	m, err := ResolveMarket("")
-	require.NoError(t, err)
-	assert.Equal(t, MarketCrypto, m, "empty market keeps legacy crypto behaviour")
+	_, err := ResolveMarket("")
+	assert.Error(t, err, "an empty market is rejected")
 
-	m, err = ResolveMarket("cn_equity")
+	m, err := ResolveMarket("cn_equity")
 	require.NoError(t, err)
 	assert.Equal(t, MarketCNEquity, m)
 

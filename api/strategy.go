@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -9,9 +8,10 @@ import (
 	"nofx/logger"
 	"nofx/market"
 	"nofx/mcp"
-	_ "nofx/mcp/payment"
 	_ "nofx/mcp/provider"
 	"nofx/store"
+	"nofx/trader/types"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,16 +21,6 @@ import (
 // validateStrategyConfig validates strategy configuration and returns warnings
 func validateStrategyConfig(config *store.StrategyConfig) []string {
 	var warnings []string
-	if config.StrategyType == "grid_trading" {
-		return warnings
-	}
-
-	// Validate NofxOS API key if any NofxOS feature is enabled
-	if (config.Indicators.EnableQuantData || config.Indicators.EnableOIRanking ||
-		config.Indicators.EnableNetFlowRanking || config.Indicators.EnablePriceRanking) &&
-		config.Indicators.NofxOSAPIKey == "" {
-		warnings = append(warnings, "NofxOS API key is not configured. NofxOS data sources may not work properly.")
-	}
 
 	return warnings
 }
@@ -507,12 +497,18 @@ func (s *Server) handlePreviewPrompt(c *gin.Context) {
 
 	var req struct {
 		Config        store.StrategyConfig `json:"config" binding:"required"`
+		Market        string               `json:"market"`
 		AccountEquity float64              `json:"account_equity"`
 		PromptVariant string               `json:"prompt_variant"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		SafeBadRequest(c, "Invalid request parameters")
+		return
+	}
+	m, err := previewMarket(req.Market)
+	if err != nil {
+		SafeBadRequest(c, err.Error())
 		return
 	}
 
@@ -524,8 +520,7 @@ func (s *Server) handlePreviewPrompt(c *gin.Context) {
 		req.PromptVariant = "balanced"
 	}
 
-	// Create strategy engine to build prompt
-	engine := kernel.NewStrategyEngine(&req.Config)
+	engine := kernel.NewStrategyEngine(&req.Config).WithMarket(m)
 
 	// Build system prompt (using built-in method from strategy engine)
 	systemPrompt := engine.BuildSystemPrompt(
@@ -537,11 +532,9 @@ func (s *Server) handlePreviewPrompt(c *gin.Context) {
 		"system_prompt":  systemPrompt,
 		"prompt_variant": req.PromptVariant,
 		"config_summary": gin.H{
-			"coin_source":      req.Config.CoinSource.SourceType,
-			"primary_tf":       req.Config.Indicators.Klines.PrimaryTimeframe,
-			"btc_eth_leverage": req.Config.RiskControl.BTCETHMaxLeverage,
-			"altcoin_leverage": req.Config.RiskControl.AltcoinMaxLeverage,
-			"max_positions":    req.Config.RiskControl.MaxPositions,
+			"coin_source":   req.Config.CoinSource.SourceType,
+			"market":        m,
+			"max_positions": req.Config.RiskControl.MaxPositions,
 		},
 	})
 }
@@ -556,6 +549,7 @@ func (s *Server) handleStrategyTestRun(c *gin.Context) {
 
 	var req struct {
 		Config        store.StrategyConfig `json:"config" binding:"required"`
+		Market        string               `json:"market"`
 		PromptVariant string               `json:"prompt_variant"`
 		AIModelID     string               `json:"ai_model_id"`
 		RunRealAI     bool                 `json:"run_real_ai"`
@@ -565,24 +559,18 @@ func (s *Server) handleStrategyTestRun(c *gin.Context) {
 		SafeBadRequest(c, "Invalid request parameters")
 		return
 	}
+	m, err := previewMarket(req.Market)
+	if err != nil {
+		SafeBadRequest(c, err.Error())
+		return
+	}
 
 	if req.PromptVariant == "" {
 		req.PromptVariant = "balanced"
 	}
 
-	claw402WalletKey, err := s.resolveStrategyDataWalletKey(userID, req.AIModelID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":       err.Error(),
-			"ai_response": "",
-		})
-		return
-	}
+	engine := kernel.NewStrategyEngine(&req.Config).WithMarket(m)
 
-	// Create strategy engine to build prompt
-	engine := kernel.NewStrategyEngine(&req.Config, claw402WalletKey)
-
-	// Get candidate coins
 	candidates, err := engine.GetCandidateCoins()
 	if err != nil {
 		logger.Errorf("[API Error] Failed to get candidate coins: %v", err)
@@ -593,62 +581,16 @@ func (s *Server) handleStrategyTestRun(c *gin.Context) {
 		return
 	}
 
-	// Get timeframe configuration
-	timeframes := req.Config.Indicators.Klines.SelectedTimeframes
-	primaryTimeframe := req.Config.Indicators.Klines.PrimaryTimeframe
-	klineCount := req.Config.Indicators.Klines.PrimaryCount
-
-	// If no timeframes selected, use default values
-	if len(timeframes) == 0 {
-		// Backward compatibility: use primary and longer timeframes
-		if primaryTimeframe != "" {
-			timeframes = append(timeframes, primaryTimeframe)
-		} else {
-			timeframes = append(timeframes, "3m")
-		}
-		if req.Config.Indicators.Klines.LongerTimeframe != "" {
-			timeframes = append(timeframes, req.Config.Indicators.Klines.LongerTimeframe)
-		}
-	}
-	if primaryTimeframe == "" {
-		primaryTimeframe = timeframes[0]
-	}
-	if klineCount <= 0 {
-		klineCount = 30
-	}
-
-	fmt.Printf("📊 Using timeframes: %v, primary: %s, kline count: %d\n", timeframes, primaryTimeframe, klineCount)
-
-	// Get real market data (using multiple timeframes)
 	marketDataMap := make(map[string]*market.Data)
 	for _, coin := range candidates {
-		data, err := market.GetWithTimeframes(coin.Symbol, timeframes, primaryTimeframe, klineCount)
+		data, err := engine.FetchMarketData(coin.Symbol)
 		if err != nil {
-			// If getting data for a coin fails, log but continue
 			fmt.Printf("⚠️  Failed to get market data for %s: %v\n", coin.Symbol, err)
 			continue
 		}
 		marketDataMap[coin.Symbol] = data
 	}
 
-	// Fetch quantitative data for each candidate coin
-	symbols := make([]string, 0, len(candidates))
-	for _, c := range candidates {
-		symbols = append(symbols, c.Symbol)
-	}
-	quantDataMap := engine.FetchQuantDataBatch(symbols)
-	vergexDataMap := engine.FetchVergexDataBatch(context.Background(), symbols)
-
-	// Fetch OI ranking data (market-wide position changes)
-	oiRankingData := engine.FetchOIRankingData()
-
-	// Fetch NetFlow ranking data (market-wide fund flow)
-	netFlowRankingData := engine.FetchNetFlowRankingData()
-
-	// Fetch Price ranking data (market-wide gainers/losers)
-	priceRankingData := engine.FetchPriceRankingData()
-
-	// Build real context (for generating User Prompt)
 	testContext := &kernel.Context{
 		CurrentTime:    time.Now().UTC().Format("2006-01-02 15:04:05 UTC"),
 		RuntimeMinutes: 0,
@@ -656,25 +598,13 @@ func (s *Server) handleStrategyTestRun(c *gin.Context) {
 		Account: kernel.AccountInfo{
 			TotalEquity:      1000.0,
 			AvailableBalance: 1000.0,
-			UnrealizedPnL:    0,
-			TotalPnL:         0,
-			TotalPnLPct:      0,
-			MarginUsed:       0,
-			MarginUsedPct:    0,
-			PositionCount:    0,
 		},
-		Positions:          []kernel.PositionInfo{},
-		CandidateCoins:     candidates,
-		PromptVariant:      req.PromptVariant,
-		MarketDataMap:      marketDataMap,
-		QuantDataMap:       quantDataMap,
-		VergexDataMap:      vergexDataMap,
-		OIRankingData:      oiRankingData,
-		NetFlowRankingData: netFlowRankingData,
-		PriceRankingData:   priceRankingData,
+		Positions:      []kernel.PositionInfo{},
+		CandidateCoins: candidates,
+		PromptVariant:  req.PromptVariant,
+		MarketDataMap:  marketDataMap,
 	}
 
-	// Build System Prompt
 	systemPrompt := engine.BuildSystemPrompt(1000.0, req.PromptVariant)
 
 	// Build User Prompt (using real market data)
@@ -746,13 +676,7 @@ func (s *Server) runRealAITest(userID, modelID, systemPrompt, userPrompt string)
 		aiClient = mcp.NewClient()
 	}
 
-	// Payment providers ignore custom URL
-	switch provider {
-	case "claw402":
-		aiClient.SetAPIKey(apiKey, "", model.CustomModelName)
-	default:
-		aiClient.SetAPIKey(apiKey, model.CustomAPIURL, model.CustomModelName)
-	}
+	aiClient.SetAPIKey(apiKey, model.CustomAPIURL, model.CustomModelName)
 
 	// Call AI API
 	response, err := aiClient.CallWithMessages(systemPrompt, userPrompt)
@@ -763,6 +687,15 @@ func (s *Server) runRealAITest(userID, modelID, systemPrompt, userPrompt string)
 	return response, nil
 }
 
-func (s *Server) resolveStrategyDataWalletKey(userID, selectedModelID string) (string, error) {
-	return s.store.AIModel().ResolveClaw402WalletKey(userID, selectedModelID)
+// previewMarket resolves the market a prompt preview or test run is built for.
+// Empty means US equities, the default stock market.
+func previewMarket(raw string) (types.Market, error) {
+	if strings.TrimSpace(raw) == "" {
+		return types.MarketUSEquity, nil
+	}
+	m, err := types.ParseMarket(raw)
+	if err != nil {
+		return "", fmt.Errorf("market must be us_equity or cn_equity")
+	}
+	return m, nil
 }

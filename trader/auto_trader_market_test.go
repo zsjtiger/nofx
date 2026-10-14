@@ -53,12 +53,14 @@ func TestApplyMarketRulesUSEquityKeepsFractionalShares(t *testing.T) {
 	assert.NoError(t, err, "US equities may be shorted")
 }
 
-func TestApplyMarketRulesZeroCapabilitiesUseCryptoRules(t *testing.T) {
+func TestApplyMarketRulesWithoutMarketFailsClosed(t *testing.T) {
 	at := &AutoTrader{}
 
-	qty, err := at.applyMarketRules(&kernel.Decision{Symbol: "BTCUSDT", Leverage: 10}, 0.123, true, cnOpenTime)
-	require.NoError(t, err, "a trader without a market keeps legacy crypto behaviour")
-	assert.Equal(t, 0.123, qty)
+	_, err := at.applyMarketRules(&kernel.Decision{Symbol: "AAPL", Leverage: 1}, 1, true, usOpenTime)
+	assert.Error(t, err, "a trader with no market allows no shorts")
+
+	_, err = at.applyMarketRules(&kernel.Decision{Symbol: "AAPL", Leverage: 3}, 1, false, usOpenTime)
+	assert.Error(t, err, "a trader with no market allows no leverage")
 }
 
 func TestEnforceSettlementCNBlocksSameDaySell(t *testing.T) {

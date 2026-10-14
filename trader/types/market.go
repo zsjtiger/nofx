@@ -11,9 +11,6 @@ import (
 type Market string
 
 const (
-	// MarketCrypto is the legacy perpetual-futures market. It is removed in a
-	// later phase; it stays here so existing traders keep resolving.
-	MarketCrypto Market = "crypto"
 	// MarketUSEquity is US stocks (Eastern Time, USD).
 	MarketUSEquity Market = "us_equity"
 	// MarketCNEquity is A-shares on Shanghai and Shenzhen (Beijing Time, CNY).
@@ -33,13 +30,6 @@ type Capabilities struct {
 }
 
 var capabilityTable = map[Market]Capabilities{
-	MarketCrypto: {
-		Market:        MarketCrypto,
-		Currency:      "USDT",
-		Timezone:      "UTC",
-		AllowShort:    true,
-		AllowLeverage: true,
-	},
 	MarketUSEquity: {
 		Market:        MarketUSEquity,
 		Currency:      "USD",
@@ -85,15 +75,12 @@ var (
 //   - us_equity: upper-case ticker, e.g. "aapl" -> "AAPL", "brk.b" -> "BRK.B"
 //   - cn_equity: six digits with an exchange suffix, e.g. "600519" -> "600519.SH",
 //     "000001.sz" -> "000001.SZ". The suffix is inferred from the code prefix when omitted.
-//   - crypto: returned upper-cased and unchanged otherwise (legacy behaviour).
 func NormalizeSymbol(m Market, raw string) (string, error) {
 	s := strings.ToUpper(strings.TrimSpace(raw))
 	if s == "" {
 		return "", fmt.Errorf("empty symbol")
 	}
 	switch m {
-	case MarketCrypto:
-		return s, nil
 	case MarketUSEquity:
 		if !usSymbolPattern.MatchString(s) {
 			return "", fmt.Errorf("invalid US ticker %q", raw)
@@ -166,11 +153,11 @@ func ValidateSideAllowed(c Capabilities, leverage int, isShort bool) error {
 	return nil
 }
 
-// ResolveMarket maps a configured market name to a Market. An empty value
-// means the legacy default (crypto), so existing traders keep working.
+// ResolveMarket maps a configured market name to a Market. An empty value is
+// an error: every trader must name its market.
 func ResolveMarket(s string) (Market, error) {
 	if strings.TrimSpace(s) == "" {
-		return MarketCrypto, nil
+		return "", fmt.Errorf("market is required")
 	}
 	return ParseMarket(s)
 }

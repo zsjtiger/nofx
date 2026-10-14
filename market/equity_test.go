@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"nofx/provider/tushare"
+	"nofx/trader/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -26,39 +27,32 @@ func dailyKlines(n int, last time.Time, startPrice float64) []Kline {
 	return out
 }
 
-func TestIsEquityExchange(t *testing.T) {
-	assert.True(t, IsEquityExchange("cn_paper"))
-	assert.True(t, IsEquityExchange("alpaca_paper"))
-	assert.False(t, IsEquityExchange("binance"))
-	assert.False(t, IsEquityExchange("hyperliquid"))
-}
-
-func TestGetWithExchangeEquityUsesRegisteredSource(t *testing.T) {
-	RegisterEquitySource(ExchangeCNPaper, func(_ context.Context, symbol string, _ int) ([]Kline, error) {
+func TestGetForMarketUsesRegisteredSource(t *testing.T) {
+	RegisterEquitySource(types.MarketCNEquity, func(_ context.Context, symbol string, _ int) ([]Kline, error) {
 		assert.Equal(t, "600519.SH", symbol, "symbol is canonicalised before the source is called")
 		return dailyKlines(60, time.Date(2026, 10, 14, 15, 0, 0, 0, time.UTC), 100), nil
 	})
-	t.Cleanup(func() { RegisterEquitySource(ExchangeCNPaper, nil) })
+	t.Cleanup(func() { RegisterEquitySource(types.MarketCNEquity, nil) })
 
-	data, err := GetWithExchange("600519", ExchangeCNPaper)
+	data, err := GetForMarket("600519", types.MarketCNEquity)
 	require.NoError(t, err)
 	assert.Equal(t, "600519.SH", data.Symbol)
 	assert.InDelta(t, 100+59*0.5, data.CurrentPrice, 0.001)
 	assert.NotNil(t, data.LongerTermContext)
 }
 
-func TestGetWithExchangeEquityErrors(t *testing.T) {
-	_, err := GetWithExchange("600519", ExchangeCNPaper)
+func TestGetForMarketErrors(t *testing.T) {
+	_, err := GetForMarket("600519", types.MarketCNEquity)
 	require.Error(t, err, "no source registered")
 
-	RegisterEquitySource(ExchangeAlpacaPaper, func(context.Context, string, int) ([]Kline, error) {
+	RegisterEquitySource(types.MarketUSEquity, func(context.Context, string, int) ([]Kline, error) {
 		return dailyKlines(5, time.Now(), 10), nil
 	})
-	t.Cleanup(func() { RegisterEquitySource(ExchangeAlpacaPaper, nil) })
-	_, err = GetWithExchange("AAPL", ExchangeAlpacaPaper)
+	t.Cleanup(func() { RegisterEquitySource(types.MarketUSEquity, nil) })
+	_, err = GetForMarket("AAPL", types.MarketUSEquity)
 	assert.ErrorContains(t, err, "need 30")
 
-	_, err = GetWithExchange("6005", ExchangeCNPaper)
+	_, err = GetForMarket("6005", types.MarketCNEquity)
 	assert.Error(t, err, "invalid A-share code is rejected before any source call")
 }
 
@@ -102,10 +96,8 @@ func TestCNDailyKlineSourceAdjustsPrices(t *testing.T) {
 	assert.Equal(t, 20.0, klines[1].Close, "latest bar is unchanged")
 }
 
-func TestNormalizeForExchange(t *testing.T) {
-	assert.Equal(t, "600519.SH", NormalizeFor("cn_paper", "600519"))
-	assert.Equal(t, "AAPL", NormalizeFor("alpaca_paper", "aapl"))
-	assert.Equal(t, "BTCUSDT", NormalizeFor("binance", "btc"), "perpetual exchanges keep crypto rules")
-	assert.Equal(t, "BTCUSDT", NormalizeFor("hyperliquid", "BTCUSDT"))
-	assert.Equal(t, "not-a-code", NormalizeFor("cn_paper", "not-a-code"), "invalid input is returned unchanged")
+func TestNormalizeFor(t *testing.T) {
+	assert.Equal(t, "600519.SH", NormalizeFor(types.MarketCNEquity, "600519"))
+	assert.Equal(t, "AAPL", NormalizeFor(types.MarketUSEquity, "aapl"))
+	assert.Equal(t, "NOT-A-CODE", NormalizeFor(types.MarketCNEquity, "not-a-code"), "invalid input is upper-cased and trimmed")
 }

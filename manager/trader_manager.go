@@ -7,7 +7,6 @@ import (
 	"nofx/store"
 	"nofx/trader"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 )
@@ -411,34 +410,6 @@ func (tm *TraderManager) RemoveTrader(traderID string) {
 	}
 }
 
-func ensureHyperliquidNativeStrategy(traderName, exchangeType string, cfg *store.StrategyConfig) {
-	if cfg == nil || strings.ToLower(strings.TrimSpace(exchangeType)) != "hyperliquid" {
-		return
-	}
-
-	source := strings.ToLower(strings.TrimSpace(cfg.CoinSource.SourceType))
-	if source == "hyper_rank" || source == "vergex_signal" || source == "static" || source == "hyper_all" || source == "hyper_main" {
-		return
-	}
-
-	logger.Warnf("⚠️ Trader %s uses legacy coin source %q on Hyperliquid; forcing native stock ranking to avoid crypto fallback", traderName, cfg.CoinSource.SourceType)
-	cfg.CoinSource.SourceType = "hyper_rank"
-	cfg.CoinSource.UseAI500 = false
-	cfg.CoinSource.UseOITop = false
-	cfg.CoinSource.UseOILow = false
-	cfg.CoinSource.UseHyperAll = false
-	cfg.CoinSource.UseHyperMain = false
-	if cfg.CoinSource.HyperRankCategory == "" {
-		cfg.CoinSource.HyperRankCategory = "stock"
-	}
-	if cfg.CoinSource.HyperRankDirection == "" {
-		cfg.CoinSource.HyperRankDirection = "gainers"
-	}
-	if cfg.CoinSource.HyperRankLimit <= 0 {
-		cfg.CoinSource.HyperRankLimit = 5
-	}
-}
-
 // LoadUserTradersFromStore loads traders from store for a specific user to memory
 func (tm *TraderManager) LoadUserTradersFromStore(st *store.Store, userID string) error {
 	tm.mu.Lock()
@@ -672,13 +643,8 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 		// distributes its margin budget across the configured slots while the
 		// per-position ratio remains a hard safety cap.
 		logger.Infof("✓ Trader %s loaded strategy config: %s (maxPos=%d, posRatio=%.1f)", traderCfg.Name, strategy.Name, strategyConfig.RiskControl.MaxPositions, strategyConfig.RiskControl.AltcoinMaxPositionValueRatio)
-		ensureHyperliquidNativeStrategy(traderCfg.Name, exchangeCfg.ExchangeType, strategyConfig)
 	} else {
 		return fmt.Errorf("trader %s has no strategy configured", traderCfg.Name)
-	}
-
-	if exchangeCfg.ExchangeType == "hyperliquid" && !exchangeCfg.HyperliquidBuilderApproved {
-		return fmt.Errorf("Hyperliquid trading authorization is incomplete for exchange %s; reconnect Hyperliquid wallet and complete trading authorization before starting trader %s", exchangeCfg.AccountName, traderCfg.Name)
 	}
 
 	// Build AutoTraderConfig (ai500APIURL/oiTopAPIURL obtained from strategy config, used in StrategyEngine)
@@ -722,8 +688,6 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 		traderConfig.CustomAPIKey = string(aiModelCfg.APIKey)
 	}
 
-	traderConfig.Claw402WalletKey = resolveTraderDataWalletKey(st, traderCfg.UserID, aiModelCfg)
-
 	// Create trader instance
 	at, err := trader.NewAutoTrader(traderConfig, st, traderCfg.UserID)
 	if err != nil {
@@ -760,28 +724,4 @@ func (tm *TraderManager) addTraderFromStore(traderCfg *store.Trader, aiModelCfg 
 	}
 
 	return nil
-}
-
-func resolveTraderDataWalletKey(st *store.Store, userID string, selectedModel *store.AIModel) string {
-	// Fast path: selected model is itself a claw402 model.
-	if selectedModel != nil && selectedModel.Provider == "claw402" {
-		if walletKey := string(selectedModel.APIKey); walletKey != "" {
-			return walletKey
-		}
-	}
-
-	if st == nil {
-		return ""
-	}
-
-	// Fallback: find any configured claw402 model for this user so that paid
-	// NofxAI data sources work even when a non-claw402 model (e.g. deepseek) is
-	// selected as the AI brain.
-	preferredID := ""
-	walletKey, err := st.AIModel().ResolveClaw402WalletKey(userID, preferredID)
-	if err != nil {
-		logger.Warnf("⚠️ Failed to load claw402 wallet for trader data routing: %v", err)
-		return ""
-	}
-	return walletKey
 }
