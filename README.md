@@ -211,7 +211,7 @@ The backend exposes `GET /api/health`. The frontend exposes `GET /health`. Both 
 ## Architecture
 
 <p align="center">
-  <img src="docs/assets/architecture.svg" alt="Crux feature architecture: web app, HTTP API, trader manager, trader cycle, external services and store" width="100%"/>
+  <img src="docs/assets/architecture.png" alt="Crux feature architecture: web app, HTTP API, trader manager, trader cycle, external services and store" width="100%"/>
 </p>
 
 | Path | Role |
