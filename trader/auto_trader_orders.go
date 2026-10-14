@@ -137,7 +137,7 @@ func (at *AutoTrader) executeOpenLongWithRecord(decision *kernel.Decision, actio
 	}
 
 	// [CODE ENFORCED] Market rules: shorting, leverage and lot size
-	quantity, err = at.applyMarketRules(decision, quantity, false)
+	quantity, err = at.applyMarketRules(decision, quantity, false, time.Now())
 	if err != nil {
 		return err
 	}
@@ -268,7 +268,7 @@ func (at *AutoTrader) executeOpenShortWithRecord(decision *kernel.Decision, acti
 	}
 
 	// [CODE ENFORCED] Market rules: shorting, leverage and lot size
-	quantity, err = at.applyMarketRules(decision, quantity, true)
+	quantity, err = at.applyMarketRules(decision, quantity, true, time.Now())
 	if err != nil {
 		return err
 	}
@@ -329,12 +329,21 @@ func (at *AutoTrader) executeCloseLongWithRecord(decision *kernel.Decision, acti
 	var quantity float64
 
 	// First try to get from local database (more accurate for quantity)
+	var entryTime time.Time
 	if at.store != nil {
 		if openPos, err := at.store.Position().GetOpenPositionBySymbol(at.id, normalizedSymbol, "LONG"); err == nil && openPos != nil {
 			quantity = openPos.Quantity
 			entryPrice = openPos.EntryPrice
+			if openPos.EntryTime > 0 {
+				entryTime = time.UnixMilli(openPos.EntryTime)
+			}
 			logger.Infof("  📊 Using local position data: qty=%.8f, entry=%.2f", quantity, entryPrice)
 		}
+	}
+
+	// [CODE ENFORCED] T+1: shares bought on the current trading day cannot be sold
+	if err := at.enforceSettlement(entryTime, time.Now()); err != nil {
+		return err
 	}
 
 	// Fallback to exchange API if local data not found
