@@ -42,12 +42,17 @@ func TestDropRetiredColumnsOnPostgres(t *testing.T) {
 		require.NoError(t, st.gdb.Exec(stmt).Error, stmt)
 	}
 
-	require.NoError(t, st.dropRetiredColumns())
+	require.NoError(t, st.dropRetiredSchema())
 
 	for _, rc := range retiredColumns {
 		require.False(t, st.gdb.Migrator().HasColumn(rc.table, rc.column), "%s.%s should be dropped", rc.table, rc.column)
 	}
 
+	// The Telegram table from the removed bot is dropped as well.
+	require.NoError(t, st.gdb.Exec("CREATE TABLE IF NOT EXISTS telegram_configs (id BIGINT PRIMARY KEY, bot_token TEXT)").Error)
+	require.NoError(t, st.dropRetiredSchema())
+	require.False(t, st.gdb.Migrator().HasTable("telegram_configs"))
+
 	// A second run finds nothing to drop and succeeds.
-	require.NoError(t, st.dropRetiredColumns())
+	require.NoError(t, st.dropRetiredSchema())
 }

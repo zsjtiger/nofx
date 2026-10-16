@@ -153,7 +153,7 @@ func (s *Store) initTables() error {
 	if err := s.Order().InitTables(); err != nil {
 		return fmt.Errorf("failed to initialize order tables: %w", err)
 	}
-	if err := s.dropRetiredColumns(); err != nil {
+	if err := s.dropRetiredSchema(); err != nil {
 		return err
 	}
 	return nil
