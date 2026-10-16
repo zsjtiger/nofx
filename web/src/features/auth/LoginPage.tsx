@@ -84,17 +84,15 @@ export function LoginPage() {
             <div className="inline-flex items-center gap-2 mb-7 px-3 py-1 rounded-full border border-crux-success/25 bg-crux-success/[0.06]">
               <div className="w-1.5 h-1.5 rounded-full bg-crux-success animate-pulse" />
               <span className="text-[10.5px] font-mono tracking-[0.18em] text-crux-success uppercase">
-                Terminal Online
+                {language === 'zh' ? '终端在线' : 'Terminal Online'}
               </span>
             </div>
             <h2 className="text-4xl xl:text-5xl font-bold tracking-tight text-crux-text leading-[1.05]">
               {language === 'zh' ? (
                 <>
-                  AI-Powered
+                  AI 驱动的
                   <br />
-                  <span className="text-crux-gold">
-                    Multi-Market Trading Terminal
-                  </span>
+                  <span className="text-crux-gold">多市场交易终端</span>
                 </>
               ) : language === 'id' ? (
                 <>
@@ -112,7 +110,7 @@ export function LoginPage() {
             </h2>
             <p className="mt-5 text-crux-text-muted text-base leading-relaxed max-w-md">
               {language === 'zh'
-                ? 'Connect Alpaca for US stocks and Tushare for A-shares, with your own OpenAI-compatible model keys. Deploy 24/7 automated strategies with natural language.'
+                ? '使用你自己的 OpenAI 兼容模型密钥，连接 Alpaca（美股）和 Tushare（A 股），用自然语言部署 7×24 小时自动化策略。'
                 : language === 'id'
                   ? 'Hubungkan Alpaca untuk saham AS dan Tushare untuk saham A, dengan kunci model OpenAI-compatible Anda sendiri. Terapkan strategi otomatis 24/7 dengan bahasa alami.'
                   : 'Connect Alpaca for US stocks and Tushare for A-shares, with your own OpenAI-compatible model keys. Deploy 24/7 automated strategies with natural language.'}
@@ -125,7 +123,7 @@ export function LoginPage() {
               value="10+"
               label={
                 language === 'zh'
-                  ? 'Exchanges'
+                  ? '交易所'
                   : language === 'id'
                     ? 'Bursa'
                     : 'Exchanges'
@@ -135,7 +133,7 @@ export function LoginPage() {
               value="7"
               label={
                 language === 'zh'
-                  ? 'AI Models'
+                  ? 'AI 模型'
                   : language === 'id'
                     ? 'Model AI'
                     : 'AI Models'
@@ -145,7 +143,7 @@ export function LoginPage() {
               value="24/7"
               label={
                 language === 'zh'
-                  ? 'Always On'
+                  ? '全天在线'
                   : language === 'id'
                     ? 'Sepanjang Waktu'
                     : 'Always On'
@@ -176,7 +174,7 @@ export function LoginPage() {
               </h1>
               <p className="mt-1.5 text-sm text-crux-text-muted">
                 {language === 'zh'
-                  ? 'Continue with your email'
+                  ? '使用邮箱继续'
                   : language === 'id'
                     ? 'Lanjutkan dengan email Anda'
                     : 'Continue with your email'}
@@ -231,7 +229,13 @@ export function LoginPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-crux-text-muted hover:text-crux-text transition-colors"
                     aria-label={
-                      showPassword ? 'Hide password' : 'Show password'
+                      language === 'zh'
+                        ? showPassword
+                          ? '隐藏密码'
+                          : '显示密码'
+                        : showPassword
+                          ? 'Hide password'
+                          : 'Show password'
                     }
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
