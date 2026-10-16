@@ -298,7 +298,7 @@ export function RiskRadar({
       <GaugeRow
         zh="Drawdown"
         en="MAX DRAWDOWN"
-        value={`-${pct(m.drawdown)}`}
+        value={m.drawdown > 0 ? `-${pct(m.drawdown)}` : pct(0)}
         sub="peak drawdown"
         fill={Math.min(100, m.drawdown)}
         color="var(--tm-red)"

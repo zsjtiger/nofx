@@ -499,7 +499,9 @@ export function TerminalDashboard({
               l: t('terminal.maxDrawdown', language),
               v:
                 fullStats != null
-                  ? `-${fullStats.max_drawdown_pct.toFixed(1)}%`
+                  ? fullStats.max_drawdown_pct > 0
+                    ? `-${fullStats.max_drawdown_pct.toFixed(1)}%`
+                    : '0.0%'
                   : '—',
               c: 'var(--tm-dn)',
             },
@@ -667,7 +669,7 @@ export function TerminalDashboard({
                       {t('terminal.symbol', language)}
                     </td>
                     <td style={{ padding: '0 0 3px' }}>
-                      {t('terminal.sideLev', language)}
+                      {t('terminal.side', language)}
                     </td>
                     <td style={{ padding: '0 0 3px', textAlign: 'right' }}>
                       entry
@@ -815,9 +817,11 @@ export function TerminalDashboard({
                       {t('terminal.side', language)}
                     </td>
                     <td style={{ padding: '0 0 3px', textAlign: 'right' }}>
-                      hold
+                      {t('terminal.hold', language)}
                     </td>
-                    <td style={{ padding: '0 0 3px' }}> closed</td>
+                    <td style={{ padding: '0 0 3px 16px' }}>
+                      {t('terminal.closed', language)}
+                    </td>
                     <td style={{ padding: '0 0 3px', textAlign: 'right' }}>
                       PnL
                     </td>
