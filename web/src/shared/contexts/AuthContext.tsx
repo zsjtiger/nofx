@@ -23,10 +23,6 @@ interface AuthContextType {
     success: boolean
     message?: string
   }>
-  loginAdmin: (password: string) => Promise<{
-    success: boolean
-    message?: string
-  }>
   register: (
     email: string,
     password: string,
@@ -157,47 +153,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const loginAdmin = async (password: string) => {
-    try {
-      const response = await fetch('/api/admin-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      })
-      const data = await response.json()
-      if (response.ok) {
-        // Reset 401 flag on successful login
-        reset401Flag()
-
-        const userInfo = {
-          id: data.user_id || 'admin',
-          email: data.email || 'admin@localhost',
-        }
-        localStorage.setItem('auth_token', data.token)
-        localStorage.setItem('auth_user', JSON.stringify(userInfo))
-        flushSync(() => {
-          setToken(data.token)
-          setUser(userInfo)
-        })
-
-        // Check and redirect to returnUrl if exists
-        const returnUrl = sessionStorage.getItem('returnUrl')
-        if (returnUrl) {
-          sessionStorage.removeItem('returnUrl')
-          navigate(returnUrl)
-        } else {
-          // Redirect to dashboard
-          navigate(ROUTES.dashboard)
-        }
-        return { success: true }
-      } else {
-        return { success: false, message: data.error || 'Login failed' }
-      }
-    } catch (e) {
-      return { success: false, message: 'Login failed, please try again' }
-    }
-  }
-
   const register = async (
     email: string,
     password: string,
@@ -282,7 +237,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         token,
         login,
-        loginAdmin,
         register,
         logout,
         isLoading,
