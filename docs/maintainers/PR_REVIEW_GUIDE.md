@@ -12,7 +12,7 @@ This guide is for Crux maintainers reviewing pull requests.
 
 - [ ] **Check PR alignment with roadmap**
   - Does it fit into our current priorities?
-  - Is it in the [roadmap](../archive/roadmap/README.md)?
+  - Is it on the project roadmap?
   - If not, should we accept it anyway?
 
 - [ ] **Verify PR completeness**
@@ -447,10 +447,6 @@ If unsure about a PR:
 
 ## 🔗 Related Resources
 
-- [Contributing Guide](../../CONTRIBUTING.md)
-- [Code of Conduct](../../CODE_OF_CONDUCT.md)
-- [Security Policy](../../SECURITY.md)
-- [Project Roadmap](../archive/roadmap/README.md)
 
 ---
 

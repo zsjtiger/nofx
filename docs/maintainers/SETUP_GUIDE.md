@@ -197,8 +197,8 @@ After setup, verify:
 
 ### For Contributors
 
-1. **Read** [CONTRIBUTING.md](../../CONTRIBUTING.md)
-2. **Check** [Roadmap](../archive/roadmap/README.md) for priorities
+1. **Read** [README.md](../../README.md)
+2. **Check** the project roadmap for priorities
 3. **Open issue** or find existing one
 4. **Create PR** using the template
 5. **Address review feedback**

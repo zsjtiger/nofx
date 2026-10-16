@@ -129,7 +129,6 @@ result, err := client.CallWithRequest(request)
 - [构建器模式价值分析](./BUILDER_PATTERN_BENEFITS.md) - 为什么引入构建器模式
 - [迁移指南](./MIGRATION_GUIDE.md) - 从旧 API 迁移到新 API
 - [Logrus 集成](./LOGRUS_INTEGRATION.md) - 日志框架集成示例
-- [代码审查报告](./CODE_REVIEW.md) - 问题分析和修复记录
 
 ## 🎛️ 配置选项
 

@@ -153,7 +153,7 @@ Available → Claimed → In Progress → Under Review → Paid
 
 ## 📊 路线图对齐
 
-所有工作应与我们的[路线图](../archive/roadmap/README.zh-CN.md)对齐：
+所有工作应与项目路线图对齐：
 
 ### Phase 1：核心基础设施（当前重点）
 
@@ -380,8 +380,6 @@ Available → Claimed → In Progress → Under Review → Paid
 
 ### 内部文档
 - [PR 审核指南](PR_REVIEW_GUIDE.zh-CN.md)
-- [安全政策](../../SECURITY.md)
-- [行为准则](../../CODE_OF_CONDUCT.md)
 
 ### 外部资源
 - [GitHub 项目管理](https://docs.github.com/en/issues/planning-and-tracking-with-projects)

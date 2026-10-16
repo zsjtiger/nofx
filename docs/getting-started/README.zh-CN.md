@@ -21,7 +21,7 @@ Crux 运行在您自己的服务器上。在网页端添加 AI 模型和交易�
 | `alpaca_paper` | 美股 | Alpaca 纸盘的 Key 和 Secret |
 | `cn_paper` | A 股 | Tushare Pro 的 Token |
 
-两个市场目前都是纸上交易。各市场适用的规则见[迁移方案](../plans/2026-10-14-cn-us-equity-migration.md)。
+两个市场目前都是纸上交易。各市场适用的规则见 README 的[市场](../../README.md#市场)部分。
 
 ## 5. 创建策略和交易员
 

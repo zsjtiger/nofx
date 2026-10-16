@@ -219,7 +219,3 @@ Thank you for helping keep Crux and its users safe! 🙏
 
 ## 📖 Additional Resources
 
-- [Contributing Guidelines](../CONTRIBUTING.md)
-- [Code of Conduct](../CODE_OF_CONDUCT.md)
-- [License](../LICENSE)
-- [Changelog](../CHANGELOG.md)

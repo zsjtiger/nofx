@@ -153,7 +153,7 @@ Use this matrix to decide priority:
 
 ## 📊 Roadmap Alignment
 
-All work should align with our [roadmap](../archive/roadmap/README.md):
+All work should align with the project roadmap:
 
 ### Phase 1: Core Infrastructure (Current Focus)
 
@@ -380,8 +380,6 @@ We use GitHub Actions for automation:
 
 ### Internal Docs
 - [PR Review Guide](PR_REVIEW_GUIDE.md)
-- [Security Policy](../../SECURITY.md)
-- [Code of Conduct](../../CODE_OF_CONDUCT.md)
 
 ### External Resources
 - [GitHub Project Management](https://docs.github.com/en/issues/planning-and-tracking-with-projects)

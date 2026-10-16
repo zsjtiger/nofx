@@ -197,8 +197,8 @@ jobs:
 
 ### 对于贡献者
 
-1. **阅读** [CONTRIBUTING.md](../../CONTRIBUTING.md)
-2. **查看** [路线图](../archive/roadmap/README.zh-CN.md)了解优先级
+1. **阅读** [README.md](../../README.md)
+2. **查看**项目路线图了解优先级
 3. **开启 issue** 或找到现有的
 4. **使用模板创建 PR**
 5. **处理审核反馈**

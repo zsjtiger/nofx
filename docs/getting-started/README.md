@@ -21,7 +21,7 @@ Any model with an OpenAI-compatible chat completions endpoint works. Enter the b
 | `alpaca_paper` | US stocks | An Alpaca paper trading key and secret |
 | `cn_paper` | China A-shares | A Tushare Pro token |
 
-Both markets run in paper trading mode. See the [migration plan](../plans/2026-10-14-cn-us-equity-migration.md) for the rules that apply to each market.
+Both markets run in paper trading mode. See the [Markets](../../README.md#markets) section of the README for the rules that apply to each market.
 
 ## 5. Create a strategy and a trader
 

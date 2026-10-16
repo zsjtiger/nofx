@@ -264,5 +264,4 @@ MCP 模块也支持 Zap，集成方式类似。
 ## 🔗 相关资源
 
 - [Logrus 官方文档](https://github.com/sirupsen/logrus)
-- [Zap 集成示例](./ZAP_INTEGRATION.md)
 - [MCP README](./README.md)

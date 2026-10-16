@@ -104,8 +104,6 @@
 
 **By submitting this PR, I confirm:**
 
-- [ ] I have read the [Contributing Guidelines](../../CONTRIBUTING.md)
-- [ ] I agree to the [Code of Conduct](../../CODE_OF_CONDUCT.md)
 - [ ] My contribution is licensed under AGPL-3.0
 
 ---

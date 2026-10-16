@@ -42,7 +42,6 @@
       - '**/jwt*.go'
       - 'server/secrets/**/*'
       - '**/encryption*.go'
-      - 'SECURITY.md'
 
 # Area: Database
 'area: database':

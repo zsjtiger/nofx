@@ -75,8 +75,6 @@ docker-compose.yml @tangmengqiu
 # Database migrations and schemas
 *.sql @SkywalkerJi @hzb1115 @Icyoung @tangmengqiu
 
-# Scripts | 脚本
-/scripts/ @hzb1115 @tangmengqiu
 *.sh @hzb1115 @tangmengqiu
 *.bash @hzb1115 @tangmengqiu
 *.py @hzb1115 @tangmengqiu
@@ -97,7 +95,6 @@ yarn.lock @Icyoung @hzb1115 @tangmengqiu
 Makefile @hzb1115 @tangmengqiu
 
 # License & Legal | 许可证和法律文件
-LICENSE @hzb1115
 COPYING @hzb1115
 
 # =============================================================================
