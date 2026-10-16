@@ -53,6 +53,9 @@ Copy `.env.example` to `.env` and set the required secrets:
 | `ALPACA_API_KEY`, `ALPACA_SECRET_KEY` | Optional server-wide Alpaca market-data keys. |
 | `DB_TYPE`, `DB_PATH` | SQLite by default. Set `DB_TYPE=postgres` for PostgreSQL. |
 | `EXPERIENCE_IMPROVEMENT` | Set to `false` to turn off anonymous usage statistics. |
+| `API_SERVER_PORT` | Backend port when running from source (default 8080). Docker always uses 8080 inside the container. |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated browser origins allowed to call the API, when the web app is served from another origin. |
+| `AI_MAX_TOKENS` | Maximum tokens per AI response. Default 2000 from source, 8000 with Docker. |
 
 Broker and data keys are normally entered in the web app per account, not in `.env`. The Tushare token is entered in the `cn_paper` account.
 
@@ -200,6 +203,7 @@ Set these in `.env`:
 | `CRUX_BACKEND_PORT` | `8080` | Host port for the API. |
 | `CRUX_FRONTEND_PORT` | `3000` | Host port for the web app. |
 | `TZ` | `Asia/Shanghai` | Container timezone, read by `docker-compose.yml`. |
+| `AI_MAX_TOKENS` | `8000` | Maximum tokens per AI response, overrides the Docker default. |
 
 The container uses `./data` for its database and paper-account state.
 

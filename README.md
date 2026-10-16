@@ -53,6 +53,9 @@ Crux 是一个自托管的交易终端，支持**美股**和**中国 A 股**。�
 | `ALPACA_API_KEY`、`ALPACA_SECRET_KEY` | 可选，服务器级别的 Alpaca 行情密钥。 |
 | `DB_TYPE`、`DB_PATH` | 默认使用 SQLite。设置 `DB_TYPE=postgres` 可改用 PostgreSQL。 |
 | `EXPERIENCE_IMPROVEMENT` | 设为 `false` 可关闭匿名使用统计。 |
+| `API_SERVER_PORT` | 从源码运行时的后端端口（默认 8080）。Docker 容器内始终使用 8080。 |
+| `CORS_ALLOWED_ORIGINS` | 允许调用 API 的浏览器来源，逗号分隔；仅在 Web 应用与 API 不同源时需要。 |
+| `AI_MAX_TOKENS` | 每次 AI 回复的最大 token 数。源码运行默认 2000，Docker 默认 8000。 |
 
 券商和数据密钥通常在 Web 应用中按账户填写，而不是写在 `.env` 里。Tushare Token 填在 `cn_paper` 账户中。
 
@@ -200,6 +203,7 @@ docker compose ps       # 两个服务都应显示 healthy
 | `CRUX_BACKEND_PORT` | `8080` | API 的宿主机端口。 |
 | `CRUX_FRONTEND_PORT` | `3000` | Web 应用的宿主机端口。 |
 | `TZ` | `Asia/Shanghai` | 容器时区，由 `docker-compose.yml` 读取。 |
+| `AI_MAX_TOKENS` | `8000` | 每次 AI 回复的最大 token 数，覆盖 Docker 默认值。 |
 
 容器使用 `./data` 保存数据库和模拟账户状态。
 
