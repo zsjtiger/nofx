@@ -382,7 +382,6 @@ Available → Claimed → In Progress → Under Review → Paid
 - [PR 审核指南](PR_REVIEW_GUIDE.zh-CN.md)
 
 ### 外部资源
-- [GitHub 项目管理](https://docs.github.com/en/issues/planning-and-tracking-with-projects)
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [语义化版本](https://semver.org/)
 

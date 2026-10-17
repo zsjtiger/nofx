@@ -181,9 +181,8 @@ We follow a **coordinated disclosure** approach:
 
 For security concerns, reach out via:
 
-- **Email**: Contact maintainers (see [GitHub profile](https://github.com/NoFxAiOS/nofx))
+- **Email**: Contact maintainers
 - **Twitter**: [@nofx_official](https://x.com/nofx_official) (DM open)
-- **GitHub**: Private security advisory (preferred for verified issues)
 
 ## ⚖️ Legal
 

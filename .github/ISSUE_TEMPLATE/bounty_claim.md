@@ -27,7 +27,6 @@ assignees: ''
 - Email: your@email.com (optional)
 
 **Relevant Experience:**
-- <!-- Link to your GitHub profile -->
 - <!-- Previous contributions or similar projects -->
 - <!-- Relevant skills (Go, React, trading systems, etc.) -->
 

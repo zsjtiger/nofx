@@ -354,15 +354,11 @@ gh issue list --state all --json number,createdAt,closedAt
 
 ### For New Contributors
 
-- [First Contributions Guide](https://github.com/firstcontributions/first-contributions)
 - [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/)
 - [Conventional Commits](https://www.conventionalcommits.org/)
 
 ### For Maintainers
 
-- [The Art of Code Review](https://google.github.io/eng-practices/review/)
-- [GitHub Project Management](https://docs.github.com/en/issues/planning-and-tracking-with-projects)
-- [Maintainer Community](https://maintainers.github.com/)
 
 ---
 

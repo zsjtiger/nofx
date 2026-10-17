@@ -128,7 +128,7 @@ cd server && go run main.go
 ## Support
 
 - **Documentation**: See inline code comments
-- **Issues**: Report via GitHub issues
+- **Issues**: Report to the maintainers
 - **Questions**: Check `server/secrets/` for examples
 
 ---

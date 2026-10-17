@@ -42,7 +42,6 @@
 
 ## 📞 问题？
 
-- **公开问题：** 使用 [GitHub Discussions](https://github.com/NoFxAiOS/nofx/discussions)
 - **维护者问题：** 使用维护者频道
 
 ---

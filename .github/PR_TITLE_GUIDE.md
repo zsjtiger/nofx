@@ -253,7 +253,7 @@ If you need to add a new scope:
 ## 🎓 Learning Resources
 
 - **Conventional Commits:** https://www.conventionalcommits.org/
-- **Angular Commit Guidelines:** https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit
+- **Angular Commit Guidelines**
 - **Semantic Versioning:** https://semver.org/
 
 ---

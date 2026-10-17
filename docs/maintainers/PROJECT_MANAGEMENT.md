@@ -382,7 +382,6 @@ We use GitHub Actions for automation:
 - [PR Review Guide](PR_REVIEW_GUIDE.md)
 
 ### External Resources
-- [GitHub Project Management](https://docs.github.com/en/issues/planning-and-tracking-with-projects)
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Semantic Versioning](https://semver.org/)
 

@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Crux. This Contributor License Ag
 
 - **"Contribution"** means any code, documentation, or other original work submitted to the Project.
 - **"You"** means the individual or entity submitting the Contribution.
-- **"Project"** means Crux (https://github.com/NoFxAiOS/nofx).
+- **"Project"** means Crux.
 
 ## 2. Grant of Rights
 

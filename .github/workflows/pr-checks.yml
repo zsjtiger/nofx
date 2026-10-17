@@ -305,7 +305,7 @@ jobs:
       - name: Run TruffleHog OSS
         # SECURITY: never use @main — upstream compromise = secret exfil.
         # TODO: pin to a full 40-char SHA from
-        # https://github.com/trufflesecurity/trufflehog/releases and configure
+        # the trufflehog releases page and configure
         # Dependabot. Version tag is still mutable but is a major upgrade over @main.
         uses: trufflesecurity/trufflehog@v3.82.13
         with:

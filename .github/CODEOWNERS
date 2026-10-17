@@ -13,7 +13,6 @@
 # More specific patterns override less specific ones
 # 更具体的模式会覆盖不太具体的模式
 #
-# Documentation: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # =============================================================================
 # Global Owners | 全局所有者

@@ -171,6 +171,3 @@ This approach:
 
 ## References
 
-- [GitHub Actions: Keeping your GitHub Actions and workflows secure Part 1](https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
-- [Safely posting comments from untrusted workflows](https://securitylab.github.com/research/github-actions-building-blocks/)
-- [GitHub Actions: workflow_run trigger](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run)

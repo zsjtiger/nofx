@@ -42,7 +42,6 @@ Everything here is transparent and designed to help you contribute successfully!
 
 ## 📞 Questions?
 
-- **Public questions:** Use [GitHub Discussions](https://github.com/NoFxAiOS/nofx/discussions)
 - **Maintainer questions:** Use the maintainer channel
 
 ---

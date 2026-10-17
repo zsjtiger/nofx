@@ -354,15 +354,11 @@ gh issue list --state all --json number,createdAt,closedAt
 
 ### 对于新贡献者
 
-- [首次贡献指南](https://github.com/firstcontributions/first-contributions)
 - [如何写 Git Commit 信息](https://chris.beams.io/posts/git-commit/)
 - [Conventional Commits](https://www.conventionalcommits.org/)
 
 ### 对于维护者
 
-- [代码审核的艺术](https://google.github.io/eng-practices/review/)
-- [GitHub 项目管理](https://docs.github.com/en/issues/planning-and-tracking-with-projects)
-- [维护者社区](https://maintainers.github.com/)
 
 ---
 

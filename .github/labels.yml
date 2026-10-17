@@ -1,5 +1,5 @@
 # GitHub Labels Configuration
-# Use https://github.com/crazy-max/ghaction-github-labeler to sync labels
+# Sync these labels with a labeler action
 
 # Priority Labels
 - name: "priority: critical"

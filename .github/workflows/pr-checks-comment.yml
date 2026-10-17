@@ -289,7 +289,7 @@ jobs:
             comment += '### 📖 Resources\n\n';
             comment += '**Questions?** Feel free to ask in the comments! 🙏\n\n';
             comment += '---\n\n';
-            comment += '*These checks are advisory and won\'t block your PR from being merged. This comment is automatically generated from [pr-checks-run.yml](https://github.com/NoFxAiOS/nofx/blob/dev/.github/workflows/pr-checks-run.yml).*';
+            comment += '*These checks are advisory and won\'t block your PR from being merged. This comment is automatically generated from pr-checks-run.yml in .github/workflows.*';
 
             // Post comment
             await github.rest.issues.createComment({
