@@ -9,13 +9,15 @@ import (
 // IntelItem is one analysed web page about a stock. Items are scoped to the
 // user who ran the analysis.
 type IntelItem struct {
-	ID        int64     `gorm:"primaryKey;autoIncrement" json:"id"`
-	UserID    string    `gorm:"column:user_id;not null;index" json:"user_id"`
-	Symbol    string    `gorm:"column:symbol;not null;index" json:"symbol"`
-	SourceURL string    `gorm:"column:source_url;not null" json:"source_url"`
-	Summary   string    `gorm:"column:summary;not null;default:''" json:"summary"`
-	Sentiment float64   `gorm:"column:sentiment;not null;default:0" json:"sentiment"`
-	Risk      string    `gorm:"column:risk;not null;default:'unknown'" json:"risk"`
+	ID        int64   `gorm:"primaryKey;autoIncrement" json:"id"`
+	UserID    string  `gorm:"column:user_id;not null;index" json:"user_id"`
+	Symbol    string  `gorm:"column:symbol;not null;index" json:"symbol"`
+	SourceURL string  `gorm:"column:source_url;not null" json:"source_url"`
+	Summary   string  `gorm:"column:summary;not null;default:''" json:"summary"`
+	Sentiment float64 `gorm:"column:sentiment;not null;default:0" json:"sentiment"`
+	Risk      string  `gorm:"column:risk;not null;default:'unknown'" json:"risk"`
+	// Symbols is a comma-separated list of other stocks the page mainly discusses.
+	Symbols   string    `gorm:"column:symbols;not null;default:''" json:"symbols"`
 	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 }
 
@@ -71,6 +73,20 @@ func (s *IntelStore) ListSince(userID, symbol string, since time.Time, limit int
 	}
 	var items []IntelItem
 	err := s.db.Where("user_id = ? AND symbol = ? AND created_at >= ?", userID, symbol, since).
+		Order("created_at DESC, id DESC").
+		Limit(limit).
+		Find(&items).Error
+	return items, err
+}
+
+// ListSinceAll returns a user's items created at or after since, newest first,
+// across all symbols. Discovery uses it to find stocks mentioned in analysed pages.
+func (s *IntelStore) ListSinceAll(userID string, since time.Time, limit int) ([]IntelItem, error) {
+	if limit <= 0 || limit > 1000 {
+		limit = 200
+	}
+	var items []IntelItem
+	err := s.db.Where("user_id = ? AND created_at >= ?", userID, since).
 		Order("created_at DESC, id DESC").
 		Limit(limit).
 		Find(&items).Error

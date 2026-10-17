@@ -535,26 +535,8 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 		}
 	}
 
-	// 3b. Screen candidates with intel analysis when the strategy enables it.
-	// The same notes feed the prompt and the open-position gate (step 6b).
-	var intelNotes map[string][]kernel.IntelNote
-	intelLoaded := false
-	if cfg := at.strategyEngineConfig(); cfg != nil && cfg.CoinSource.IntelScreen.Enabled {
-		symbols := make([]string, 0, len(candidateCoins))
-		for _, coin := range candidateCoins {
-			symbols = append(symbols, coin.Symbol)
-		}
-		screen := cfg.CoinSource.IntelScreen
-		intelNotes = at.loadRecentIntel(symbols, intelScreenLookback(screen))
-		intelLoaded = true
-		total := len(candidateCoins)
-		var dropped []string
-		candidateCoins, dropped = screenCandidatesByIntel(candidateCoins, intelNotes, screen, time.Now())
-		for _, reason := range dropped {
-			at.logInfof("🔎 intel screen dropped %s", reason)
-		}
-		logger.Infof("📋 [%s] Intel screen kept %d of %d candidates", at.name, len(candidateCoins), total)
-	}
+	// 3b. Screen and extend candidates with intel analysis when the strategy enables it.
+	candidateCoins = at.applyIntelToCandidates(candidateCoins)
 
 	// 4. Calculate total P&L
 	totalPnL := totalEquity - at.initialBalance
@@ -592,11 +574,7 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 	for _, coin := range candidateCoins {
 		symbols = append(symbols, coin.Symbol)
 	}
-	if intelLoaded {
-		ctx.Intel = intelNotes
-	} else {
-		ctx.Intel = at.loadRecentIntel(symbols, intelLookback)
-	}
+	ctx.Intel = at.loadRecentIntel(symbols, at.intelContextLookback())
 
 	// 7. Add recent closed trades (if store is available)
 	if at.store != nil {

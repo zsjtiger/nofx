@@ -15,7 +15,13 @@ type Finding struct {
 	Sentiment float64 `json:"sentiment"` // -1 (very negative) to 1 (very positive)
 	Risk      string  `json:"risk"`      // none, low, high, or unknown
 	Summary   string  `json:"summary"`
+	// Symbols are other stocks the page is mainly about. They are not verified
+	// here; the service keeps only those that appear in the page text.
+	Symbols []string `json:"symbols,omitempty"`
 }
+
+// MaxSymbolsPerPage bounds the other stocks taken from one page.
+const MaxSymbolsPerPage = 5
 
 const (
 	RiskNone    = "none"
@@ -29,8 +35,8 @@ const (
 
 const analysisSystemPrompt = `你是证券情报分析员。只依据用户提供的网页内容判断，不要引入网页之外的信息，也不要编造。
 只输出一个 JSON 对象，不要输出其他文字：
-{"sentiment": 数字，-1 到 1 之间，表示对该股票的情绪倾向，"risk": "none" | "low" | "high"，表示是否出现需要警惕的风险事件，"summary": "不超过80字的中文摘要"}
-如果网页与该股票无关，sentiment 设为 0，risk 设为 "none"，summary 写明"与该股票无关"。`
+{"sentiment": 数字，-1 到 1 之间，表示对该股票的情绪倾向，"risk": "none" | "low" | "high"，表示是否出现需要警惕的风险事件，"summary": "不超过80字的中文摘要"，"symbols": ["网页主要讨论的其他股票代码，最多5个，只写网页中明确出现的代码"]}
+如果网页与该股票无关，sentiment 设为 0，risk 设为 "none"，summary 写明"与该股票无关"，symbols 设为空数组。`
 
 // Analyze asks the model for a sentiment and risk assessment of pageText with
 // respect to symbol.
@@ -61,6 +67,7 @@ func parseFinding(reply string) (Finding, error) {
 		return Finding{}, fmt.Errorf("parse model reply: %w", err)
 	}
 	f.Summary = strings.TrimSpace(f.Summary)
+	f.Symbols = cleanSymbols(f.Symbols)
 	if f.Summary == "" {
 		return Finding{}, fmt.Errorf("model reply has no summary")
 	}
@@ -80,4 +87,22 @@ func truncateRunes(s string, max int) string {
 		return s
 	}
 	return string(r[:max])
+}
+
+// cleanSymbols trims, upper-cases, de-duplicates and caps the symbols a model reported.
+func cleanSymbols(in []string) []string {
+	seen := make(map[string]bool, len(in))
+	out := make([]string, 0, len(in))
+	for _, raw := range in {
+		s := strings.ToUpper(strings.TrimSpace(raw))
+		if s == "" || seen[s] {
+			continue
+		}
+		seen[s] = true
+		out = append(out, s)
+		if len(out) == MaxSymbolsPerPage {
+			break
+		}
+	}
+	return out
 }

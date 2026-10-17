@@ -126,6 +126,20 @@ type CoinSourceConfig struct {
 	StaticCoins   []string          `json:"static_coins,omitempty"`
 	ExcludedCoins []string          `json:"excluded_coins,omitempty"`
 	IntelScreen   IntelScreenConfig `json:"intel_screen,omitempty"`
+	// IntelDiscovery adds stocks that recent intel mentions favourably.
+	IntelDiscovery IntelDiscoveryConfig `json:"intel_discovery,omitempty"`
+}
+
+// IntelDiscoveryConfig adds candidates discovered from intel analysis. Symbols
+// are taken from analysed pages, so they are not limited to the static list.
+type IntelDiscoveryConfig struct {
+	Enabled bool `json:"enabled"`
+	// MaxNew caps how many discovered symbols are added in one cycle (default 5, max 10).
+	MaxNew int `json:"max_new"`
+	// MinSentiment is the lowest average sentiment a discovered symbol may have.
+	MinSentiment float64 `json:"min_sentiment"`
+	// LookbackHours is the window for mentions (default 72, max 168).
+	LookbackHours int `json:"lookback_hours"`
 }
 
 // IntelScreenConfig filters and ranks the candidate list with recent
