@@ -1,11 +1,4 @@
-import {
-  BookOpen,
-  GitBranch,
-  Monitor,
-  Shield,
-  TrendingUp,
-  Wrench,
-} from 'lucide-react'
+import { BookOpen, Monitor, Shield, TrendingUp, Wrench } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 /**
@@ -266,34 +259,4 @@ export const faqCategories: FAQCategory[] = [
   },
 
   // ───────────────────────── Contributing ─────────────────────────
-  {
-    id: 'contributing',
-    title: 'Contributing',
-    icon: GitBranch,
-    items: [
-      {
-        id: 'how-to-contribute',
-        question: 'How can I contribute?',
-        blocks: [
-          {
-            type: 'links',
-            links: [
-              {
-                label: 'Repository',
-                href: 'https://github.com/NoFxAiOS/nofx',
-              },
-              {
-                label: 'Issues',
-                href: 'https://github.com/NoFxAiOS/nofx/issues',
-              },
-              {
-                label: 'Pull requests',
-                href: 'https://github.com/NoFxAiOS/nofx/pulls',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
 ]

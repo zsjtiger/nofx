@@ -284,7 +284,7 @@ const zh = {
   // About Section
 
   // How It Works Section
-  step1Title: '拉取 GitHub 仓库',
+  step1Title: '获取代码仓库',
   step2Title: '配置环境',
 
   // Community Section (testimonials are kept as-is since they are quotes)

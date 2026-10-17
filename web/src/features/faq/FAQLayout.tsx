@@ -102,27 +102,6 @@ export function FAQLayout() {
             )}
           </main>
         </div>
-
-        {/* still stuck */}
-        <div className="mt-12 rounded-xl border border-crux-gold/20 bg-crux-bg-lighter p-6 text-center md:p-8">
-          <h3 className="font-mono text-sm font-bold uppercase tracking-[0.16em] text-crux-text">
-            Still have questions?
-          </h3>
-          <p className="mt-2 text-sm text-crux-text-muted">
-            Ask in the community or open an issue — both are answered by the
-            people building Crux.
-          </p>
-          <div className="mt-5 flex items-center justify-center gap-3">
-            <a
-              href="https://github.com/NoFxAiOS/nofx"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg border border-[rgba(26,24,19,0.14)] bg-crux-bg-deeper px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-[0.12em] text-crux-text hover:border-crux-gold/40"
-            >
-              GitHub
-            </a>
-          </div>
-        </div>
       </div>
     </DeepVoidBackground>
   )

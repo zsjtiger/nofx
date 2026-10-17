@@ -277,7 +277,7 @@ const id = {
     'Pendaftaran pengguna saat ini dinonaktifkan. Silakan hubungi administrator untuk akses.',
   secureDesc:
     'Keamanan tingkat enterprise, kontrol penuh atas dana dan strategi trading Anda.',
-  step1Title: 'Clone Repository GitHub',
+  step1Title: 'Dapatkan Repositori',
   step2Title: 'Konfigurasi Lingkungan',
   links: 'Tautan',
   candidateCoins: 'Koin Kandidat',

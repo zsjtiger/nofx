@@ -298,7 +298,7 @@ const en = {
   // About Section
 
   // How It Works Section
-  step1Title: 'Clone GitHub Repository',
+  step1Title: 'Get the Repository',
   step2Title: 'Configure Environment',
 
   // Community Section (testimonials are kept as-is since they are quotes)
