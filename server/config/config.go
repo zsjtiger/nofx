@@ -26,7 +26,9 @@ var global *Config
 type Config struct {
 	// Service configuration
 	APIServerPort int
-	JWTSecret     string
+	// Crawl4AIURL is the base URL of a Crawl4AI server used by intelligence analysis. Empty disables it.
+	Crawl4AIURL string
+	JWTSecret   string
 
 	// Database configuration
 	DBType     string // sqlite or postgres
@@ -98,6 +100,8 @@ func initConfig() error {
 	if len(cfg.JWTSecret) < minJWTSecretLength {
 		return fmt.Errorf("JWT_SECRET must be at least %d bytes (got %d); generate via `openssl rand -base64 48`", minJWTSecretLength, len(cfg.JWTSecret))
 	}
+
+	cfg.Crawl4AIURL = strings.TrimRight(os.Getenv("CRAWL4AI_URL"), "/")
 
 	if v := os.Getenv("API_SERVER_PORT"); v != "" {
 		if port, err := strconv.Atoi(v); err == nil && port > 0 {

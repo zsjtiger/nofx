@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"crux/auth"
+	"crux/intel"
 	"crux/logger"
 	"crux/manager"
 	"crux/secrets"
@@ -27,6 +28,7 @@ type Server struct {
 	httpServer                *http.Server
 	port                      int
 	authLimiter               *ipRateLimiter // per-IP throttle for login/register
+	intelFetcher              intel.Fetcher  // page retrieval for intelligence analysis; nil disables it
 }
 
 // NewServer Creates API server
@@ -194,6 +196,10 @@ func (s *Server) setupRoutes() {
 			s.routeWithSchema(protected, "PUT", "/user/password", "Change current user password",
 				`Body: {"new_password":"<string, min 8 chars>"}`,
 				s.handleChangePassword)
+
+			// Intelligence analysis (web pages summarised by the AI model)
+			s.route(protected, "GET", "/intel", "List analysed web pages for a symbol", s.handleIntelList)
+			s.route(protected, "POST", "/intel/run", "Crawl and analyse web pages for a symbol", s.handleIntelRun)
 
 			// Server IP query (requires authentication, for whitelist configuration)
 			s.route(protected, "GET", "/server-ip", "Get server public IP (for exchange whitelist)", s.handleGetServerIP)

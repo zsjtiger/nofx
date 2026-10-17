@@ -4,6 +4,7 @@ import (
 	"crux/api"
 	"crux/auth"
 	"crux/config"
+	"crux/intel"
 	_ "crux/llm/providers"
 	"crux/logger"
 	"crux/manager"
@@ -129,6 +130,10 @@ func main() {
 
 	// Start API server
 	server := api.NewServer(traderManager, st, cryptoService, cfg.APIServerPort)
+	if cfg.Crawl4AIURL != "" {
+		server.WithIntelFetcher(intel.NewCrawl4AI(cfg.Crawl4AIURL))
+		logger.Infof("🔎 Intelligence analysis enabled (crawler: %s)", cfg.Crawl4AIURL)
+	}
 
 	go func() {
 		if err := server.Start(); err != nil {

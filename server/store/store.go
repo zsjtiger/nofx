@@ -26,6 +26,7 @@ type Store struct {
 	decision *DecisionStore
 	position *position.Store
 	strategy *StrategyStore
+	intel    *IntelStore
 	equity   *EquityStore
 	order    *OrderStore
 
@@ -153,6 +154,9 @@ func (s *Store) initTables() error {
 	if err := s.Order().InitTables(); err != nil {
 		return fmt.Errorf("failed to initialize order tables: %w", err)
 	}
+	if err := s.Intel().initTables(); err != nil {
+		return fmt.Errorf("failed to initialize intel tables: %w", err)
+	}
 	if err := s.dropRetiredSchema(); err != nil {
 		return err
 	}
@@ -234,6 +238,16 @@ func (s *Store) Position() *position.Store {
 		s.position = position.New(s.gdb)
 	}
 	return s.position
+}
+
+// Intel gets intelligence analysis storage
+func (s *Store) Intel() *IntelStore {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.intel == nil {
+		s.intel = NewIntelStore(s.gdb)
+	}
+	return s.intel
 }
 
 // Strategy gets strategy storage
