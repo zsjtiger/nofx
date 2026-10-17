@@ -122,9 +122,23 @@ func (c *StrategyConfig) UnmarshalJSON(data []byte) error {
 
 // CoinSourceConfig is the stock universe. Only a static symbol list is supported.
 type CoinSourceConfig struct {
-	SourceType    string   `json:"source_type"`
-	StaticCoins   []string `json:"static_coins,omitempty"`
-	ExcludedCoins []string `json:"excluded_coins,omitempty"`
+	SourceType    string            `json:"source_type"`
+	StaticCoins   []string          `json:"static_coins,omitempty"`
+	ExcludedCoins []string          `json:"excluded_coins,omitempty"`
+	IntelScreen   IntelScreenConfig `json:"intel_screen,omitempty"`
+}
+
+// IntelScreenConfig filters and ranks the candidate list with recent
+// intelligence analysis before the AI sees it.
+type IntelScreenConfig struct {
+	Enabled         bool `json:"enabled"`
+	ExcludeHighRisk bool `json:"exclude_high_risk"`
+	// MinSentiment drops a candidate whose average sentiment in the window is
+	// below this value. Candidates with no intel are not dropped.
+	MinSentiment float64 `json:"min_sentiment"`
+	// LookbackHours is the window for intel. 0 means the default (72), and
+	// values above the maximum (168) are capped.
+	LookbackHours int `json:"lookback_hours"`
 }
 
 // IndicatorConfig selects what the AI sees for each symbol.

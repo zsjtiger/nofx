@@ -15,14 +15,14 @@ const (
 	intelNotesPerSymbol = 3
 )
 
-// loadRecentIntel returns the trader owner's intel for each symbol within the
-// lookback window. A read failure is logged and leaves that symbol without notes,
-// so trading continues without intel rather than stopping.
-func (at *AutoTrader) loadRecentIntel(symbols []string) map[string][]kernel.IntelNote {
+// loadRecentIntel returns the trader owner's intel for each symbol created within
+// lookback. A read failure is logged and leaves that symbol without notes, so
+// trading continues without intel rather than stopping.
+func (at *AutoTrader) loadRecentIntel(symbols []string, lookback time.Duration) map[string][]kernel.IntelNote {
 	if at.store == nil || at.userID == "" || len(symbols) == 0 {
 		return nil
 	}
-	since := time.Now().Add(-intelLookback)
+	since := time.Now().Add(-lookback)
 	out := make(map[string][]kernel.IntelNote)
 	for _, symbol := range symbols {
 		items, err := at.store.Intel().ListSince(at.userID, symbol, since, intelNotesPerSymbol)
@@ -35,6 +35,14 @@ func (at *AutoTrader) loadRecentIntel(symbols []string) map[string][]kernel.Inte
 		}
 	}
 	return out
+}
+
+// strategyEngineConfig returns the live strategy config, or nil when no engine is set.
+func (at *AutoTrader) strategyEngineConfig() *store.StrategyConfig {
+	if at.strategyEngine == nil {
+		return nil
+	}
+	return at.strategyEngine.GetConfig()
 }
 
 func intelNoteFromStore(item store.IntelItem) kernel.IntelNote {
