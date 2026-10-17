@@ -13,7 +13,7 @@ import type { Position } from '../../shared/types'
  * inputs collapse to 0 and divides are guarded.
  */
 
-const C_AMBER = '#c8860b' // escalation tint between green and red
+const C_AMBER = 'var(--crux-warning)' // escalation tint between green and red
 
 function fmtUsd(n: number): string {
   const a = Math.abs(n)

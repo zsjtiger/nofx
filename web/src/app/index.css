@@ -10,44 +10,74 @@ html {
   overflow-y: scroll;
 }
 
+/*
+ * Color tokens. This file is the only place colors are defined. Tailwind
+ * (tailwind.config.js) and the terminal theme (features/dashboard/terminal.css)
+ * reference these variables.
+ *
+ * Each role has a fill (bars, buttons, badges) and a text variant. Text variants
+ * are darker so they meet WCAG AA (4.5:1) on the panel background.
+ * Channel variants (-rgb) let Tailwind's opacity modifiers work, e.g. bg-crux-gold/20.
+ */
 :root {
-  /* Crux cream-paper + vermilion terminal design system */
-  --crux-gold: #e0483b;
+  /* Surfaces: cream paper */
+  --background: #f1ece2;
   --crux-bg: #f1ece2;
-  --crux-accent: #e0483b;
+  --crux-bg-deeper: #e8e2d5;
+  --panel-bg: #f7f4ec;
+  --panel-bg-hover: #f2eee4;
+  --header-bg: rgba(247, 244, 236, 0.85);
   --crux-glass: rgba(247, 244, 236, 0.85);
+  --glass-bg: rgba(247, 244, 236, 0.7);
+  --glass-border: rgba(26, 24, 19, 0.12);
+  --panel-border: rgba(26, 24, 19, 0.14);
+  --panel-border-hover: rgba(184, 54, 43, 0.5);
   --crux-border: rgba(26, 24, 19, 0.14);
+
+  /* Text: ink on paper */
+  --foreground: #1a1813;
+  --text-primary: #1a1813;
+  --text-secondary: #6b6557; /* 5.3:1 on panel */
+  --text-tertiary: #6f695d; /* 5.0:1 on panel (was 3.4:1) */
+  --text-disabled: #8a8478; /* disabled controls are exempt from contrast rules */
+
+  /* Brand accent: vermilion. Fill for buttons and highlights; text variant for text. */
+  --crux-accent: #e0483b;
+  --crux-accent-rgb: 224 72 59;
+  --crux-accent-text: #b8362b; /* 5.3:1 on panel */
+  --crux-accent-dark: #c83a2e;
+  --crux-accent-light: #ea6a5e;
+  --crux-gold: var(--crux-accent); /* legacy name, kept for existing classes */
+
+  /* Warning: amber. Separate from the accent and from loss. */
+  --crux-warning: #c8860b;
+  --crux-warning-rgb: 200 134 11;
+  --crux-warning-text: #8a5a00; /* 5.4:1 on panel */
+
+  /* Profit: forest green */
+  --crux-green: #2e8b57;
+  --crux-green-rgb: 46 139 87;
+  --crux-green-text: #1e7347; /* 5.3:1 on panel */
+  --crux-green-bg: rgba(46, 139, 87, 0.12);
+  --crux-green-border: rgba(46, 139, 87, 0.35);
+
+  /* Loss: deep crimson. Darker and cooler than the accent so the two stay distinct. */
+  --crux-red: #b8242c;
+  --crux-red-rgb: 184 36 44;
+  --crux-red-text: #a51f27; /* 6.8:1 on panel */
+  --crux-red-bg: rgba(184, 36, 44, 0.1);
+  --crux-red-border: rgba(184, 36, 44, 0.35);
+
+  /* Legacy aliases. Do not use in new code. */
+  --crux-yellow: var(--crux-accent);
+  --crux-yellow-light: var(--crux-accent-light);
+  --crux-yellow-dark: var(--crux-accent-dark);
+  --crux-yellow-glow: rgba(224, 72, 59, 0.3);
 
   /* Soft accents (no neon on paper) */
   --glow-primary: none;
   --glow-accent: none;
   --glow-text: none;
-
-  --background: #f1ece2;
-  --header-bg: rgba(247, 244, 236, 0.85);
-
-  --glass-bg: rgba(247, 244, 236, 0.7);
-  --glass-border: rgba(26, 24, 19, 0.12);
-
-  --panel-bg: #f7f4ec;
-  --panel-bg-hover: #f2eee4;
-  --panel-border: rgba(26, 24, 19, 0.14);
-  --panel-border-hover: rgba(224, 72, 59, 0.5);
-
-  --foreground: #1a1813;
-  --text-primary: #1a1813;
-  --text-secondary: #6b6557;
-  --text-tertiary: #8a8478;
-  --text-disabled: #b4b2a9;
-
-  /* Trading Colors (forest green / crimson on paper) */
-  --crux-green: #2e8b57;
-  --crux-green-bg: rgba(46, 139, 87, 0.12);
-  --crux-green-border: rgba(46, 139, 87, 0.35);
-  --crux-red: #d6433a;
-  --crux-red-bg: rgba(214, 67, 58, 0.12);
-  --crux-red-border: rgba(214, 67, 58, 0.35);
-  --crux-yellow: #e0483b;
 
   /* Shadows (subtle on paper) */
   --shadow-sm: 0 1px 2px rgba(26, 24, 19, 0.08);
@@ -289,7 +319,7 @@ body {
  * use the literal cream palette here to stay readable everywhere.
  */
 .crux-toast {
-  background: #f1ece2 !important;
+  background: var(--crux-bg) !important;
   border: 1px solid #d8d2c4 !important;
   color: #1a1813 !important;
   box-shadow: 0 8px 28px rgba(26, 24, 19, 0.18) !important;
@@ -308,36 +338,36 @@ body {
 
 /* Per-type accent: cream background, colored left rail + title. */
 .crux-toast[data-type='success'] {
-  border-color: #2e8b57 !important;
-  border-left: 3px solid #2e8b57 !important;
+  border-color: var(--crux-green) !important;
+  border-left: 3px solid var(--crux-green) !important;
 }
 
 .crux-toast[data-type='success'] .sonner-title {
-  color: #1f6b41 !important;
+  color: var(--crux-green-text) !important;
 }
 
 .crux-toast[data-type='error'] {
-  border-color: #e0483b !important;
-  border-left: 3px solid #e0483b !important;
+  border-color: var(--crux-accent) !important;
+  border-left: 3px solid var(--crux-accent) !important;
 }
 
 .crux-toast[data-type='error'] .sonner-title {
-  color: #c23529 !important;
+  color: var(--crux-accent-text) !important;
 }
 
 .crux-toast[data-type='warning'],
 .crux-toast[data-type='info'] {
-  border-color: #c8860b !important;
-  border-left: 3px solid #c8860b !important;
+  border-color: var(--crux-warning) !important;
+  border-left: 3px solid var(--crux-warning) !important;
 }
 
 .crux-toast[data-type='warning'] .sonner-title,
 .crux-toast[data-type='info'] .sonner-title {
-  color: #9a6800 !important;
+  color: var(--crux-warning-text) !important;
 }
 
 .crux-toast .sonner-close-button {
-  background: #f1ece2 !important;
+  background: var(--crux-bg) !important;
   border-color: #d8d2c4 !important;
   color: #3a372e !important;
 }
@@ -372,11 +402,11 @@ button:hover:not(:disabled) {
 
 /* Soft Glow for Primary Buttons (Yellow) */
 .btn-primary-glow {
-  box-shadow: 0 0 15px rgba(252, 213, 53, 0.15);
+  box-shadow: 0 0 15px rgba(224, 72, 59, 0.15);
 }
 
 .btn-primary-glow:hover {
-  box-shadow: 0 0 20px rgba(252, 213, 53, 0.3);
+  box-shadow: 0 0 20px rgba(224, 72, 59, 0.3);
 }
 
 button:disabled {
@@ -414,9 +444,9 @@ button:disabled {
 }
 
 .btn-outline:hover:not(:disabled) {
-  border-color: #f0b90b;
-  color: #f0b90b;
-  background: rgba(240, 185, 11, 0.1);
+  border-color: var(--crux-accent);
+  color: var(--crux-accent-text);
+  background: rgba(224, 72, 59, 0.1);
 }
 
 /* Glass Effect Utility */
@@ -458,7 +488,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--crux-yellow);
-  box-shadow: 0 0 0 2px rgba(252, 213, 53, 0.15);
+  box-shadow: 0 0 0 2px rgba(224, 72, 59, 0.15);
   outline: none;
   background-color: var(--panel-bg-hover);
 }
@@ -470,7 +500,7 @@ textarea::placeholder {
 
 /* Specific Premium Input Utility */
 .premium-input {
-  background: rgba(11, 14, 17, 0.6);
+  background: var(--panel-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
@@ -487,16 +517,16 @@ textarea::placeholder {
 }
 
 .premium-input:hover {
-  border-color: rgba(240, 185, 11, 0.3);
-  background: rgba(11, 14, 17, 0.8);
+  border-color: rgba(224, 72, 59, 0.3);
+  background: var(--panel-bg-hover);
 }
 
 .premium-input:focus {
   border-color: var(--crux-yellow);
   box-shadow:
-    0 0 0 1px rgba(240, 185, 11, 0.2),
-    0 0 15px rgba(240, 185, 11, 0.1);
-  background: rgba(11, 14, 17, 0.9);
+    0 0 0 1px rgba(224, 72, 59, 0.2),
+    0 0 15px rgba(224, 72, 59, 0.1);
+  background: var(--panel-bg-hover);
 }
 
 /* Crux Card - Premium Polish */
@@ -521,7 +551,7 @@ textarea::placeholder {
   right: 18px;
   bottom: 18px;
   width: min(320px, 85vw);
-  background: rgba(11, 14, 17, 0.9);
+  background: var(--panel-bg-hover);
   border: 1px solid var(--panel-border);
   border-radius: 12px;
   padding: 16px;
@@ -589,13 +619,13 @@ textarea::placeholder {
 }
 
 .dev-toast-controller__actions button:first-child {
-  background: rgba(240, 185, 11, 0.15);
+  background: rgba(224, 72, 59, 0.15);
   color: var(--crux-yellow);
-  border: 1px solid rgba(240, 185, 11, 0.4);
+  border: 1px solid rgba(224, 72, 59, 0.4);
 }
 
 .dev-toast-controller__actions button:last-child {
-  background: rgba(132, 142, 156, 0.15);
+  background: rgba(26, 24, 19, 0.06);
   color: var(--text-secondary);
   border: 1px solid var(--panel-border);
 }
@@ -607,7 +637,7 @@ textarea::placeholder {
 .dev-custom-toast {
   padding: 12px 18px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f0b90b, #df8c0c);
+  background: linear-gradient(135deg, var(--crux-accent), var(--crux-accent-dark));
   color: #0a0a0a;
   font-weight: 600;
 }
@@ -649,10 +679,10 @@ textarea::placeholder {
 .crux-gradient-subtle {
   background: linear-gradient(
     135deg,
-    rgba(240, 185, 11, 0.15) 0%,
-    rgba(252, 213, 53, 0.05) 100%
+    rgba(224, 72, 59, 0.15) 0%,
+    rgba(224, 72, 59, 0.05) 100%
   );
-  border: 1px solid rgba(240, 185, 11, 0.2);
+  border: 1px solid rgba(224, 72, 59, 0.2);
 }
 
 .crux-glow {
@@ -688,7 +718,7 @@ textarea::placeholder {
   background-image: linear-gradient(
     90deg,
     transparent,
-    rgba(240, 185, 11, 0.05),
+    rgba(224, 72, 59, 0.05),
     transparent
   );
   background-size: 200% 100%;
@@ -706,12 +736,12 @@ textarea::placeholder {
   padding: 0.625rem 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(240, 185, 11, 0.3);
+  box-shadow: 0 2px 4px rgba(224, 72, 59, 0.3);
 }
 
 .btn-crux:hover {
   background: var(--crux-yellow-light);
-  box-shadow: 0 4px 8px rgba(240, 185, 11, 0.4);
+  box-shadow: 0 4px 8px rgba(224, 72, 59, 0.4);
   transform: translateY(-2px);
 }
 
@@ -732,7 +762,7 @@ textarea::placeholder {
 }
 
 .btn-outline:hover {
-  background: rgba(240, 185, 11, 0.1);
+  background: rgba(224, 72, 59, 0.1);
   border-color: var(--crux-yellow-light);
 }
 
@@ -766,7 +796,7 @@ tr:last-child {
 }
 
 tr:hover {
-  background: rgba(240, 185, 11, 0.03);
+  background: rgba(224, 72, 59, 0.03);
 }
 
 /* Badge/Chip styles */
@@ -782,8 +812,8 @@ tr:hover {
 }
 
 .badge-yellow {
-  background: rgba(240, 185, 11, 0.1);
-  border-color: rgba(240, 185, 11, 0.3);
+  background: rgba(224, 72, 59, 0.1);
+  border-color: rgba(224, 72, 59, 0.3);
   color: var(--crux-yellow);
 }
 
@@ -902,7 +932,7 @@ tr:hover {
 }
 
 .stat-card:hover {
-  border-color: rgba(240, 185, 11, 0.3);
+  border-color: rgba(224, 72, 59, 0.3);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
 }
@@ -974,10 +1004,10 @@ tr:hover {
     url('https://grainy-gradients.vercel.app/noise.svg'),
     conic-gradient(
       from 0deg at 50% 50%,
-      rgba(240, 185, 11, 0.1) 0deg,
+      rgba(224, 72, 59, 0.1) 0deg,
       rgba(0, 240, 255, 0.1) 120deg,
-      rgba(240, 185, 11, 0.1) 240deg,
-      rgba(240, 185, 11, 0.1) 360deg
+      rgba(224, 72, 59, 0.1) 240deg,
+      rgba(224, 72, 59, 0.1) 360deg
     );
   mix-blend-mode: overlay;
   background-blend-mode: overlay, normal;

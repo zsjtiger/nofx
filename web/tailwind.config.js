@@ -7,26 +7,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Cream-paper + vermilion terminal palette (was Neo-Gold dark)
+        // Color values live in src/app/index.css (:root). Channel variables allow
+        // opacity modifiers such as bg-crux-gold/20.
         'crux-gold': {
-          DEFAULT: '#E0483B', // vermilion brand accent
+          DEFAULT: 'rgb(var(--crux-accent-rgb) / <alpha-value>)',
           dim: 'rgba(224, 72, 59, 0.10)',
           glow: 'rgba(224, 72, 59, 0.30)',
-          highlight: '#C8392B',
+          highlight: 'var(--crux-accent-dark)',
         },
         'crux-bg': {
-          DEFAULT: '#F1ECE2', // warm paper
-          deeper: '#E8E2D5',  // recessed paper
-          lighter: '#F7F4EC', // panel
+          DEFAULT: 'var(--crux-bg)',
+          deeper: 'var(--crux-bg-deeper)',
+          lighter: 'var(--panel-bg)',
         },
-        'crux-accent': '#E0483B', // vermilion (was cyan)
+        'crux-accent': {
+          DEFAULT: 'rgb(var(--crux-accent-rgb) / <alpha-value>)',
+          text: 'var(--crux-accent-text)',
+        },
+        'crux-warning': {
+          DEFAULT: 'rgb(var(--crux-warning-rgb) / <alpha-value>)',
+          text: 'var(--crux-warning-text)',
+        },
         'crux-text': {
-          DEFAULT: '#1A1813', // ink
-          main: '#1A1813',
-          muted: '#8A8478',
+          DEFAULT: 'var(--text-primary)',
+          main: 'var(--text-primary)',
+          muted: 'var(--text-tertiary)',
         },
-        'crux-success': '#2E8B57', // forest green
-        'crux-danger': '#D6433A',  // crimson
+        'crux-success': {
+          DEFAULT: 'rgb(var(--crux-green-rgb) / <alpha-value>)',
+          text: 'var(--crux-green-text)',
+        },
+        'crux-danger': {
+          DEFAULT: 'rgb(var(--crux-red-rgb) / <alpha-value>)',
+          text: 'var(--crux-red-text)',
+        },
       },
       fontFamily: {
         sans: ['IBM Plex Mono', 'ui-monospace', 'Menlo', 'monospace'],

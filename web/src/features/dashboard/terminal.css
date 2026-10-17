@@ -1,27 +1,27 @@
 /*
  * Crux orchestration terminal theme — cream paper + vermilion accent.
- * Scoped under .crux-terminal so it can be built and previewed without
- * disturbing the global Neo-Gold theme. The global flip (task #6) promotes
- * these tokens to :root once the look is approved.
+ * The --tm-* names are aliases of the global color tokens in src/app/index.css,
+ * so the terminal and the rest of the app share one palette.
  */
 @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
 
 .crux-terminal {
   /* surfaces */
-  --tm-paper: #f1ece2;
-  --tm-panel: #f7f4ec;
-  --tm-ink: #1a1813;
+  --tm-paper: var(--crux-bg);
+  --tm-panel: var(--panel-bg);
+  --tm-ink: var(--text-primary);
   --tm-ink-2: #3a372e;
-  --tm-muted: #8a8478;
+  --tm-muted: var(--text-tertiary);
   --tm-hair: #d8d2c4;
-  --tm-rule: #1a1813;
+  --tm-rule: var(--text-primary);
   --tm-head: #16140f;
 
-  /* brand + semantic */
-  --tm-red: #e0483b;
+  /* brand + semantic (text variants, so numbers and labels meet contrast) */
+  --tm-red: var(--crux-accent-text);
   --tm-red-soft: #f6d9d2;
-  --tm-up: #2e8b57;
-  --tm-dn: #d6433a;
+  --tm-up: var(--crux-green-text);
+  --tm-dn: var(--crux-red-text);
+  --tm-warn: var(--crux-warning-text);
 
   --tm-mono: 'IBM Plex Mono', 'Courier New', monospace;
   --tm-px: 'Silkscreen', 'IBM Plex Mono', monospace;

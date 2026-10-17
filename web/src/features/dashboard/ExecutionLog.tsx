@@ -16,7 +16,7 @@ import type { Language } from '../../shared/i18n/translations'
  * verbose throttle and transport errors are summarized without inventing results.
  */
 
-const C_AMBER = '#c8860b' // throttle / block warnings
+const C_AMBER = 'var(--crux-warning)' // throttle / block warnings
 
 // Strip dex prefix + quote suffix to the bare base ticker.
 function baseSymbol(raw: string): string {
