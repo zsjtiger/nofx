@@ -73,18 +73,28 @@ type RecentOrder struct {
 
 // Context is everything the decision step knows about one cycle.
 type Context struct {
-	CurrentTime    string                             `json:"current_time"`
-	RuntimeMinutes int                                `json:"runtime_minutes"`
-	CallCount      int                                `json:"call_count"`
-	Account        AccountInfo                        `json:"account"`
-	Positions      []PositionInfo                     `json:"positions"`
-	CandidateCoins []CandidateCoin                    `json:"candidate_coins"`
-	PromptVariant  string                             `json:"prompt_variant,omitempty"`
-	TradingStats   *TradingStats                      `json:"trading_stats,omitempty"`
-	RecentOrders   []RecentOrder                      `json:"recent_orders,omitempty"`
-	MarketDataMap  map[string]*market.Data            `json:"-"`
-	MultiTFMarket  map[string]map[string]*market.Data `json:"-"`
-	Timeframes     []string                           `json:"-"`
+	CurrentTime    string                  `json:"current_time"`
+	RuntimeMinutes int                     `json:"runtime_minutes"`
+	CallCount      int                     `json:"call_count"`
+	Account        AccountInfo             `json:"account"`
+	Positions      []PositionInfo          `json:"positions"`
+	CandidateCoins []CandidateCoin         `json:"candidate_coins"`
+	PromptVariant  string                  `json:"prompt_variant,omitempty"`
+	TradingStats   *TradingStats           `json:"trading_stats,omitempty"`
+	RecentOrders   []RecentOrder           `json:"recent_orders,omitempty"`
+	MarketDataMap  map[string]*market.Data `json:"-"`
+	// Intel holds recent analysed web pages per symbol, newest first.
+	Intel         map[string][]IntelNote             `json:"-"`
+	MultiTFMarket map[string]map[string]*market.Data `json:"-"`
+	Timeframes    []string                           `json:"-"`
+}
+
+// IntelNote is one analysed web page about a candidate symbol.
+type IntelNote struct {
+	Time      time.Time
+	Sentiment float64 // -1 to 1
+	Risk      string  // none, low, high, or unknown
+	Summary   string
 }
 
 // Decision is one trading decision from the model.

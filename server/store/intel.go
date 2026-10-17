@@ -24,6 +24,14 @@ func (IntelItem) TableName() string {
 	return "intel_items"
 }
 
+// Risk values stored on an IntelItem.
+const (
+	IntelRiskNone    = "none"
+	IntelRiskLow     = "low"
+	IntelRiskHigh    = "high"
+	IntelRiskUnknown = "unknown"
+)
+
 // IntelStore persists intelligence analysis results.
 type IntelStore struct {
 	db *gorm.DB
@@ -50,6 +58,19 @@ func (s *IntelStore) ListBySymbol(userID, symbol string, limit int) ([]IntelItem
 	}
 	var items []IntelItem
 	err := s.db.Where("user_id = ? AND symbol = ?", userID, symbol).
+		Order("created_at DESC, id DESC").
+		Limit(limit).
+		Find(&items).Error
+	return items, err
+}
+
+// ListSince returns a user's items for a symbol created at or after since, newest first.
+func (s *IntelStore) ListSince(userID, symbol string, since time.Time, limit int) ([]IntelItem, error) {
+	if limit <= 0 || limit > 100 {
+		limit = 20
+	}
+	var items []IntelItem
+	err := s.db.Where("user_id = ? AND symbol = ? AND created_at >= ?", userID, symbol, since).
 		Order("created_at DESC, id DESC").
 		Limit(limit).
 		Find(&items).Error

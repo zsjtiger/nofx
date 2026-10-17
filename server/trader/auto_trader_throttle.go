@@ -51,6 +51,10 @@ func (at *AutoTrader) openThrottleReason(decision kernel.Decision, ctx *kernel.C
 		return ""
 	}
 
+	if reason := intelBlockReason(symbol, ctx); reason != "" {
+		return reason
+	}
+
 	if pos := rules.FindAnyContextPosition(ctx, symbol); pos != nil {
 		return fmt.Sprintf("trade throttle: %s already has an open %s position; manage or close it before opening another side", symbol, pos.Side)
 	}

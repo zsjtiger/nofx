@@ -566,6 +566,13 @@ func (at *AutoTrader) buildTradingContext() (*kernel.Context, error) {
 		CandidateCoins: candidateCoins,
 	}
 
+	// 6b. Attach recent intel for candidate symbols (prompt context and open-position gate)
+	symbols := make([]string, 0, len(candidateCoins))
+	for _, coin := range candidateCoins {
+		symbols = append(symbols, coin.Symbol)
+	}
+	ctx.Intel = at.loadRecentIntel(symbols)
+
 	// 7. Add recent closed trades (if store is available)
 	if at.store != nil {
 		// Get recent 10 closed trades for AI context
