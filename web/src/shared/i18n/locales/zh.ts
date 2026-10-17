@@ -21,6 +21,7 @@ const zh = {
   dashboardNav: '看板',
   strategyNav: '策略',
   faqNav: '常见问题',
+  intelNav: '情报',
 
   // Footer
   footerTitle: 'Crux - AI交易系统',
@@ -562,6 +563,35 @@ const zh = {
     side: '方向',
     bySymbolHistory: '按标的历史 · 交易/胜率/盈亏',
     noSymbolHistory: '暂无标的历史。',
+  },
+  intel: {
+    title: '情报分析',
+    subtitle:
+      '用 AI 模型分析某只股票的公开网页。结果会用于策略的选股筛选和开仓门槛。',
+    symbol: '股票代码',
+    symbolHint: '例如 600519.SH 或 AAPL',
+    urls: '网页地址',
+    urlsHint: '每行一个，最多 5 个',
+    model: 'AI 模型',
+    noModel: '请先在配置中启用一个 AI 模型',
+    run: '开始分析',
+    running: '分析中…',
+    results: '分析结果',
+    history: '最近的分析',
+    empty: '该股票还没有分析过的网页。',
+    notConfigured: '情报爬虫未配置。请在服务端设置 CRAWL4AI_URL。',
+    invalidUrls: '请至少输入一个 http(s) 地址。',
+    tooMany: '每次最多分析 5 个地址。',
+    risk: {
+      none: '无风险',
+      low: '低风险',
+      high: '高风险',
+      unknown: '未知',
+    },
+    sentiment: '情绪',
+    mentions: '同时提到',
+    failed: '失败',
+    load: '查询',
   },
 } as const
 

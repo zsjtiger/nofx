@@ -229,3 +229,28 @@ export interface PositionHistoryResponse {
   symbol_stats: SymbolStats[]
   direction_stats: DirectionStats[]
 }
+
+// Intelligence analysis (GET /api/intel, POST /api/intel/run)
+export interface IntelItem {
+  id: number
+  user_id: string
+  symbol: string
+  source_url: string
+  summary: string
+  sentiment: number // -1 to 1
+  risk: 'none' | 'low' | 'high' | 'unknown' | string
+  symbols: string // comma-separated other symbols the page mentions
+  created_at: string
+}
+
+export interface IntelRunRequest {
+  symbol: string
+  urls: string[]
+  model_id: string
+}
+
+export interface IntelRunResult {
+  url: string
+  item?: IntelItem
+  error?: string
+}

@@ -19,6 +19,7 @@ import { SetupPage } from '../../features/auth/SetupPage'
 import { CompetitionPage } from '../../features/traders/CompetitionPage'
 import { AITradersPage } from '../../features/traders/AITradersPage'
 import { FAQPage } from '../../features/faq/FAQPage'
+import { IntelPage } from '../../features/intel/IntelPage'
 import { SettingsPage } from '../../features/settings/SettingsPage'
 import { StrategyStudioPage } from '../../features/strategy/StrategyStudioPage'
 import { TerminalDashboard } from '../../features/dashboard/TerminalDashboard'
@@ -402,6 +403,18 @@ export function AppRoutes() {
               <Navigate to={ROUTES.login} replace />
             ) : (
               <SetupPage />
+            )
+          }
+        />
+        <Route
+          path={ROUTES.intel}
+          element={
+            isAuthenticated ? (
+              <AppChrome currentPage="intel" animateContent>
+                <IntelPage />
+              </AppChrome>
+            ) : (
+              <Navigate to={ROUTES.login} replace />
             )
           }
         />

@@ -21,6 +21,7 @@ const en = {
   dashboardNav: 'Dashboard',
   strategyNav: 'Strategy',
   faqNav: 'FAQ',
+  intelNav: 'Intel',
 
   // Footer
   footerTitle: 'Crux - AI Trading System',
@@ -591,6 +592,36 @@ const en = {
     side: 'side',
     bySymbolHistory: 'By-symbol history · trades/win/pnl',
     noSymbolHistory: 'No symbol history.',
+  },
+  intel: {
+    title: 'Intelligence',
+    subtitle:
+      'Analyse public web pages about a stock with an AI model. Results feed the strategy screen and the open-position gate.',
+    symbol: 'Stock code',
+    symbolHint: 'e.g. 600519.SH or AAPL',
+    urls: 'Page URLs',
+    urlsHint: 'One per line, up to 5',
+    model: 'AI model',
+    noModel: 'Enable an AI model in Config first',
+    run: 'Analyse',
+    running: 'Analysing…',
+    results: 'Results',
+    history: 'Recent analysis',
+    empty: 'No analysed pages yet for this stock.',
+    notConfigured:
+      'The intelligence crawler is not configured. Set CRAWL4AI_URL on the server.',
+    invalidUrls: 'Enter at least one http(s) URL.',
+    tooMany: 'At most 5 URLs per run.',
+    risk: {
+      none: 'No risk',
+      low: 'Low risk',
+      high: 'High risk',
+      unknown: 'Unknown',
+    },
+    sentiment: 'Sentiment',
+    mentions: 'Also mentions',
+    failed: 'Failed',
+    load: 'Load',
   },
 } as const
 

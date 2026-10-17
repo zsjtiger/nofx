@@ -21,6 +21,7 @@ const id = {
   dashboardNav: 'Dasbor',
   strategyNav: 'Strategi',
   faqNav: 'FAQ',
+  intelNav: 'Intel',
 
   // Footer
   footerTitle: 'Crux - Sistem Trading AI',
@@ -497,6 +498,36 @@ const id = {
     close: 'Tutup',
     yes: 'Ya',
     no: 'Tidak',
+  },
+  intel: {
+    title: 'Intelijen',
+    subtitle:
+      'Analisis halaman web publik tentang saham dengan model AI. Hasilnya dipakai untuk penyaringan strategi dan gerbang posisi.',
+    symbol: 'Kode saham',
+    symbolHint: 'mis. 600519.SH atau AAPL',
+    urls: 'Alamat halaman',
+    urlsHint: 'Satu per baris, maksimal 5',
+    model: 'Model AI',
+    noModel: 'Aktifkan model AI di Konfigurasi terlebih dahulu',
+    run: 'Analisis',
+    running: 'Menganalisis…',
+    results: 'Hasil',
+    history: 'Analisis terbaru',
+    empty: 'Belum ada halaman yang dianalisis untuk saham ini.',
+    notConfigured:
+      'Crawler intelijen belum dikonfigurasi. Atur CRAWL4AI_URL di server.',
+    invalidUrls: 'Masukkan minimal satu URL http(s).',
+    tooMany: 'Maksimal 5 URL per analisis.',
+    risk: {
+      none: 'Tanpa risiko',
+      low: 'Risiko rendah',
+      high: 'Risiko tinggi',
+      unknown: 'Tidak diketahui',
+    },
+    sentiment: 'Sentimen',
+    mentions: 'Juga menyebut',
+    failed: 'Gagal',
+    load: 'Muat',
   },
 } as const
 

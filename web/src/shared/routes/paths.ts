@@ -6,6 +6,7 @@ export type Page =
   | 'strategy-market'
   | 'data'
   | 'faq'
+  | 'intel'
   | 'login'
   | 'register'
 
@@ -16,6 +17,7 @@ export const ROUTES = {
   setup: '/setup',
   welcome: '/welcome',
   faq: '/faq',
+  intel: '/intel',
   resetPassword: '/reset-password',
   settings: '/settings',
   data: '/data',
@@ -51,6 +53,8 @@ export function getCurrentPageForPath(pathname: string): Page | undefined {
       return 'data'
     case ROUTES.faq:
       return 'faq'
+    case ROUTES.intel:
+      return 'intel'
     case ROUTES.login:
       return 'login'
     case ROUTES.register:

@@ -137,6 +137,12 @@ export default function HeaderBar({
                     requiresAuth: true,
                   },
                   {
+                    page: 'intel',
+                    path: ROUTES.intel,
+                    label: t('intelNav', language),
+                    requiresAuth: true,
+                  },
+                  {
                     page: 'faq',
                     path: ROUTES.faq,
                     label: t('faqNav', language),
@@ -383,6 +389,12 @@ export default function HeaderBar({
                       page: 'competition',
                       path: ROUTES.competition,
                       label: t('realtimeNav', language),
+                      requiresAuth: true,
+                    },
+                    {
+                      page: 'intel',
+                      path: ROUTES.intel,
+                      label: t('intelNav', language),
                       requiresAuth: true,
                     },
                     {
